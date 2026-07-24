@@ -186,114 +186,112 @@
     </div>
   </div>
 
-  <script>
-    // 1. Inisialisasi Supabase
-    const SUPABASE_URL = "https://lcpskriooezyxgrnarol.supabase.co"; 
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxjcHNrcmlvb2V6eXhncm5hcm9sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ5MDA0ODksImV4cCI6MjEwMDQ3NjQ4OX0.5mdkHtNvDSU_HkGpQfODJ7xE1M-fLioXuqxsY_kaFbA";
-    
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+<script>
+  // 1. Inisialisasi Supabase menggunakan Publishable Key Baru
+  const SUPABASE_URL = "https://lcpskriooezyxgrnarol.supabase.co"; 
+  const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_puy9U_93p-7_Q64oHrYUpg_iEF3nJ-c";
+  
+  // Masukkan Publishable Key ke dalam init client
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
-    // 2. Element DOM
-    const modalOverlay = document.getElementById('modalOverlay');
-    const openAuthBtn = document.getElementById('openAuthBtn');
-    const closeModalBtn = document.getElementById('closeModalBtn');
-    const authForm = document.getElementById('authForm');
-    const modalTitle = document.getElementById('modalTitle');
-    const submitBtn = document.getElementById('submitBtn');
-    const toggleAuthMode = document.getElementById('toggleAuthMode');
-    const toggleQuestion = document.getElementById('toggleQuestion');
-    const authMessage = document.getElementById('authMessage');
-    const authContainer = document.getElementById('authContainer');
-    const welcomeText = document.getElementById('welcomeText');
+  // 2. Element DOM
+  const modalOverlay = document.getElementById('modalOverlay');
+  const openAuthBtn = document.getElementById('openAuthBtn');
+  const closeModalBtn = document.getElementById('closeModalBtn');
+  const authForm = document.getElementById('authForm');
+  const modalTitle = document.getElementById('modalTitle');
+  const submitBtn = document.getElementById('submitBtn');
+  const toggleAuthMode = document.getElementById('toggleAuthMode');
+  const toggleQuestion = document.getElementById('toggleQuestion');
+  const authMessage = document.getElementById('authMessage');
+  const authContainer = document.getElementById('authContainer');
+  const welcomeText = document.getElementById('welcomeText');
 
-    let isSignUp = false; // Mode toggle (false = Login, true = Register)
+  let isSignUp = false;
 
-    // 3. Open & Close Modal Handlers
-    openAuthBtn.addEventListener('click', () => modalOverlay.classList.add('active'));
-    closeModalBtn.addEventListener('click', closeModal);
-    
-    // Close modal saat klik area luar/overlay
-    modalOverlay.addEventListener('click', (e) => {
-      if (e.target === modalOverlay) closeModal();
-    });
+  // 3. Open & Close Modal Handlers
+  openAuthBtn.addEventListener('click', () => modalOverlay.classList.add('active'));
+  closeModalBtn.addEventListener('click', closeModal);
+  
+  modalOverlay.addEventListener('click', (e) => {
+    if (e.target === modalOverlay) closeModal();
+  });
 
-    function closeModal() {
-      modalOverlay.classList.remove('active');
-      authMessage.textContent = '';
-      authForm.reset();
+  function closeModal() {
+    modalOverlay.classList.remove('active');
+    authMessage.textContent = '';
+    authForm.reset();
+  }
+
+  // 4. Toggle Mode (Login <-> Register)
+  toggleAuthMode.addEventListener('click', (e) => {
+    e.preventDefault();
+    isSignUp = !isSignUp;
+    authMessage.textContent = '';
+
+    if (isSignUp) {
+      modalTitle.textContent = 'Daftar Akun Baru';
+      submitBtn.textContent = 'Daftar';
+      toggleQuestion.textContent = 'Sudah punya akun?';
+      toggleAuthMode.textContent = 'Login di sini';
+    } else {
+      modalTitle.textContent = 'Login';
+      submitBtn.textContent = 'Masuk';
+      toggleQuestion.textContent = 'Belum punya akun?';
+      toggleAuthMode.textContent = 'Daftar sekarang';
     }
+  });
 
-    // 4. Toggle Mode (Login <-> Register)
-    toggleAuthMode.addEventListener('click', (e) => {
-      e.preventDefault();
-      isSignUp = !isSignUp;
-      authMessage.textContent = '';
+  // 5. Form Submit Handler (Login / Register)
+  authForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
 
-      if (isSignUp) {
-        modalTitle.textContent = 'Daftar Akun Baru';
-        submitBtn.textContent = 'Daftar';
-        toggleQuestion.textContent = 'Sudah punya akun?';
-        toggleAuthMode.textContent = 'Login di sini';
+    authMessage.style.color = '#333';
+    authMessage.textContent = 'Memproses...';
+
+    if (isSignUp) {
+      const { data, error } = await supabase.auth.signUp({ email, password });
+      if (error) {
+        authMessage.style.color = '#dc3545';
+        authMessage.textContent = error.message;
       } else {
-        modalTitle.textContent = 'Login';
-        submitBtn.textContent = 'Masuk';
-        toggleQuestion.textContent = 'Belum punya akun?';
-        toggleAuthMode.textContent = 'Daftar sekarang';
+        authMessage.style.color = '#198754';
+        authMessage.textContent = 'Pendaftaran berhasil! Cek email kamu untuk konfirmasi.';
       }
-    });
-
-    // 5. Form Submit Handler (Login / Register)
-    authForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
-
-      authMessage.style.color = '#333';
-      authMessage.textContent = 'Memproses...';
-
-      if (isSignUp) {
-        // Process Sign Up
-        const { data, error } = await supabase.auth.signUp({ email, password });
-        if (error) {
-          authMessage.style.color = '#dc3545';
-          authMessage.textContent = error.message;
-        } else {
-          authMessage.style.color = '#198754';
-          authMessage.textContent = 'Pendaftaran berhasil! Cek email kamu untuk konfirmasi.';
-        }
+    } else {
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) {
+        authMessage.style.color = '#dc3545';
+        authMessage.textContent = error.message;
       } else {
-        // Process Sign In
-        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) {
-          authMessage.style.color = '#dc3545';
-          authMessage.textContent = error.message;
-        } else {
-          closeModal();
-          checkUserSession();
-        }
-      }
-    });
-
-    // 6. Cek & Update Status User
-    async function checkUserSession() {
-      const { data: { session } } = await supabase.auth.getSession();
-
-      if (session) {
-        const userEmail = session.user.email;
-        welcomeText.textContent = `Selamat Datang, ${userEmail}!`;
-        authContainer.innerHTML = `
-          <button class="nav-btn logout-btn" id="logoutBtn">Logout</button>
-        `;
-
-        document.getElementById('logoutBtn').addEventListener('click', async () => {
-          await supabase.auth.signOut();
-          location.reload();
-        });
+        closeModal();
+        checkUserSession();
       }
     }
+  });
 
-    // Jalankan cek session saat halaman dimuat
-    checkUserSession();
-  </script>
+  // 6. Cek & Update Status User
+  async function checkUserSession() {
+    const { data: { session } } = await supabase.auth.getSession();
+
+    if (session) {
+      const userEmail = session.user.email;
+      welcomeText.textContent = `Selamat Datang, ${userEmail}!`;
+      authContainer.innerHTML = `
+        <button class="nav-btn logout-btn" id="logoutBtn">Logout</button>
+      `;
+
+      document.getElementById('logoutBtn').addEventListener('click', async () => {
+        await supabase.auth.signOut();
+        location.reload();
+      });
+    }
+  }
+
+  checkUserSession();
+</script>
+
 </body>
 </html>
