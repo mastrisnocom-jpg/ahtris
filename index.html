@@ -1,429 +1,244 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AHTRIS Tube - ahtris.my.id 🎵</title>
-  
-  <!-- Font Modern (Inter & Montserrat) -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp Clone</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
 
-  <style>
-    /* RESET & DASAR TEMA GOLIGHT / GOTUBE DARK MODE */
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+        body {
+            background-color: #d1d7db;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
 
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: #121212; /* Warna Hitam khas Aplikasi Streaming */
-      color: #f1f1f1;
-      line-height: 1.5;
-    }
+        /* Container Utama WhatsApp */
+        .app-container {
+            width: 100%;
+            max-width: 450px;
+            height: 90vh;
+            background-color: #efeae2;
+            display: flex;
+            flex-direction: column;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        }
 
-    .app-container {
-      max-width: 900px;
-      margin: 0 auto;
-      background-color: #181818;
-      min-height: 100vh;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-    }
+        /* Header Profil */
+        .chat-header {
+            background-color: #075e54;
+            color: white;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
 
-    /* NAVBAR GOTUBE STYLE */
-    .navbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 15px 20px;
-      background-color: #1f1f1f;
-      border-bottom: 1px solid #2d2d2d;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #075e54;
+        }
 
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      text-decoration: none;
-    }
+        .user-info .name {
+            font-size: 16px;
+            font-weight: 600;
+        }
 
-    .brand-icon {
-      width: 32px;
-      height: 32px;
-      background-color: #00c853; /* Hijau GoTube */
-      color: #000;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      font-size: 1.2rem;
-    }
+        .user-info .status {
+            font-size: 12px;
+            color: #25d366;
+        }
 
-    .brand-name {
-      font-size: 1.25rem;
-      font-weight: 700;
-      color: #ffffff;
-    }
+        /* Area Pesan Chat */
+        .chat-body {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            /* Pola latar belakang khas WhatsApp */
+            background-image: radial-gradient(#cbd5e1 1px, transparent 0);
+            background-size: 12px 12px;
+        }
 
-    .brand-name span {
-      color: #00c853; /* Hijau GoTube */
-    }
+        .message {
+            max-width: 75%;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            line-height: 1.4;
+            position: relative;
+            word-wrap: break-word;
+        }
 
-    .channel-link-btn {
-      background-color: #00c853;
-      color: #000000;
-      padding: 8px 16px;
-      border-radius: 20px;
-      text-decoration: none;
-      font-size: 0.85rem;
-      font-weight: 700;
-      transition: background-color 0.2s;
-    }
+        /* Pesan Masuk */
+        .message.received {
+            background-color: #ffffff;
+            align-self: flex-start;
+            border-top-left-radius: 0;
+            color: #111b21;
+        }
 
-    .channel-link-btn:hover {
-      background-color: #00e676;
-    }
+        /* Pesan Terkirim */
+        .message.sent {
+            background-color: #d9fdd3;
+            align-self: flex-end;
+            border-top-right-radius: 0;
+            color: #111b21;
+        }
 
-    /* LAYAR PEMUTAR VIDEO (MAIN PLAYER) */
-    .player-container {
-      width: 100%;
-      background-color: #000000;
-    }
+        .timestamp {
+            font-size: 10px;
+            color: #667781;
+            float: right;
+            margin-top: 4px;
+            margin-left: 8px;
+        }
 
-    .video-wrapper {
-      position: relative;
-      padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
-      height: 0;
-      overflow: hidden;
-    }
+        /* Footer Input Pesan */
+        .chat-footer {
+            background-color: #f0f2f5;
+            padding: 10px 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
 
-    .video-wrapper iframe {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      border: 0;
-    }
+        .chat-input {
+            flex: 1;
+            border: none;
+            outline: none;
+            padding: 10px 16px;
+            border-radius: 20px;
+            background-color: #ffffff;
+            font-size: 14px;
+        }
 
-    /* DETAIL VIDEO & AKSI GOTUBE */
-    .video-details {
-      padding: 16px;
-      border-bottom: 1px solid #2d2d2d;
-    }
+        .send-btn {
+            background-color: #00a884;
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s;
+        }
 
-    .video-title {
-      font-size: 1.2rem;
-      font-weight: 600;
-      color: #ffffff;
-      margin-bottom: 8px;
-    }
-
-    .video-meta {
-      font-size: 0.85rem;
-      color: #aaaaaa;
-      margin-bottom: 15px;
-    }
-
-    /* ACTION BUTTONS (LIKE, SHARE, SUBSCRIBE) */
-    .action-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-
-    .channel-info {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .channel-avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background-color: #00c853;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      color: #000;
-    }
-
-    .channel-text h4 {
-      font-size: 0.95rem;
-      color: #ffffff;
-    }
-
-    .channel-text p {
-      font-size: 0.8rem;
-      color: #aaaaaa;
-    }
-
-    .btn-group {
-      display: flex;
-      gap: 8px;
-    }
-
-    .btn-action {
-      background-color: #272727;
-      color: #ffffff;
-      border: none;
-      padding: 8px 14px;
-      border-radius: 18px;
-      font-size: 0.85rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      transition: background-color 0.2s;
-    }
-
-    .btn-action:hover {
-      background-color: #3f3f3f;
-    }
-
-    /* DAFTAR PUTAR / REKOMENDASI LAGU (PLAYLIST) */
-    .playlist-section {
-      padding: 20px 16px;
-    }
-
-    .playlist-title {
-      font-size: 1rem;
-      font-weight: 600;
-      color: #ffffff;
-      margin-bottom: 16px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .playlist-title::before {
-      content: '';
-      display: inline-block;
-      width: 4px;
-      height: 16px;
-      background-color: #00c853;
-      border-radius: 2px;
-    }
-
-    .video-list {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .item-card {
-      display: flex;
-      gap: 12px;
-      background-color: #212121;
-      padding: 8px;
-      border-radius: 12px;
-      cursor: pointer;
-      transition: background-color 0.2s, transform 0.1s;
-      border: 1px solid transparent;
-    }
-
-    .item-card:hover {
-      background-color: #2a2a2a;
-      border-color: #00c853;
-    }
-
-    .item-thumb {
-      position: relative;
-      width: 120px;
-      height: 68px;
-      flex-shrink: 0;
-      border-radius: 8px;
-      overflow: hidden;
-    }
-
-    .item-thumb img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .item-badge {
-      position: absolute;
-      bottom: 4px;
-      right: 4px;
-      background-color: rgba(0, 0, 0, 0.8);
-      color: #ffffff;
-      font-size: 0.7rem;
-      padding: 2px 4px;
-      border-radius: 4px;
-    }
-
-    .item-info {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-
-    .item-info h4 {
-      font-size: 0.9rem;
-      color: #ffffff;
-      font-weight: 500;
-      line-height: 1.3;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-      margin-bottom: 4px;
-    }
-
-    .item-info p {
-      font-size: 0.75rem;
-      color: #aaaaaa;
-    }
-
-    /* FOOTER */
-    footer {
-      text-align: center;
-      padding: 20px;
-      font-size: 0.8rem;
-      color: #777;
-      border-top: 1px solid #222;
-      margin-top: 20px;
-    }
-
-    footer a {
-      color: #00c853;
-      text-decoration: none;
-    }
-  </style>
+        .send-btn:hover {
+            background-color: #068f70;
+        }
+    </style>
 </head>
 <body>
 
-  <div class="app-container">
+    <div class="app-container">
+        <!-- Header Profil -->
+        <div class="chat-header">
+            <div class="avatar">A</div>
+            <div class="user-info">
+                <div class="name">Andi (Bot)</div>
+                <div class="status">online</div>
+            </div>
+        </div>
 
-    <!-- NAVBAR GOTUBE STYLE -->
-    <nav class="navbar">
-      <a href="https://ahtris.my.id" class="brand">
-        <div class="brand-icon">▶</div>
-        <div class="brand-name">AHTRIS<span>Tube</span></div>
-      </a>
-      <a href="https://youtube.com/channel/UCKf_12X2Hxj0PGtv6PyJdMg?si=y7ISLTYeqJvwm9Fr" target="_blank" class="channel-link-btn">
-        + Subscribe
-      </a>
-    </nav>
+        <!-- Area Percakapan -->
+        <div class="chat-body" id="chatBody">
+            <div class="message received">
+                Halo! Ada yang bisa saya bantu?
+                <span class="timestamp" id="initialTime">09:41</span>
+            </div>
+        </div>
 
-    <!-- PEMUTAR UTAMA (MAIN PLAYER) -->
-    <div class="player-container">
-      <div class="video-wrapper">
-        <iframe id="mainPlayer" src="https://www.youtube.com/embed/_SQSFcxytGA?autoplay=0" title="AHTRIS Player" allowfullscreen></iframe>
-      </div>
+        <!-- Kolom Input -->
+        <div class="chat-footer">
+            <input type="text" class="chat-input" id="messageInput" placeholder="Ketik pesan..." onkeypress="handleKeyPress(event)">
+            <button class="send-btn" onclick="sendMessage()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                </svg>
+            </button>
+        </div>
     </div>
 
-    <!-- DETAIL & INFORMASI VIDEO -->
-    <div class="video-details">
-      <h1 id="mainTitle" class="video-title">Ayah Pulang Bawa Pelukan ❤️ - Lagu Anak Lucu & Menghangatkan</h1>
-      <div class="video-meta">AHTRIS Official Channel • Pemutar Musik Anak</div>
+    <script>
+        // Set waktu jam awal
+        document.getElementById('initialTime').textContent = getCurrentTime();
 
-      <div class="action-bar">
-        <div class="channel-info">
-          <div class="channel-avatar">A</div>
-          <div class="channel-text">
-            <h4>AHTRIS</h4>
-            <p>Penyanyi Cilik Indonesia</p>
-          </div>
-        </div>
+        function getCurrentTime() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            return `${hours}:${minutes}`;
+        }
 
-        <div class="btn-group">
-          <button class="btn-action">👍 Suka</button>
-          <button class="btn-action">↗ Bagikan</button>
-        </div>
-      </div>
-    </div>
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const messageText = input.value.trim();
 
-    <!-- REKOMENDASI / DAFTAR LAGU GOTUBE -->
-    <div class="playlist-section">
-      <div class="playlist-title">Putar Selanjutnya</div>
+            if (messageText === '') return;
 
-      <div class="video-list">
+            // 1. Tampilkan pesan pengirim
+            appendMessage(messageText, 'sent');
+            input.value = '';
 
-        <!-- Item 1 -->
-        <div class="item-card" onclick="changeTrack('_SQSFcxytGA', 'Ayah Pulang Bawa Pelukan ❤️ - Lagu Anak Lucu & Menghangatkan')">
-          <div class="item-thumb">
-            <img src="https://img.youtube.com/vi/_SQSFcxytGA/hqdefault.jpg" alt="Ayah Pulang Bawa Pelukan">
-            <span class="item-badge">2:57</span>
-          </div>
-          <div class="item-info">
-            <h4>Ayah Pulang Bawa Pelukan ❤️</h4>
-            <p>AHTRIS • Lagu Anak</p>
-          </div>
-        </div>
+            // 2. Simulasikan balasan otomatis bot setelah 1 detik
+            setTimeout(() => {
+                const replies = [
+                    "Siap, pesan kamu sudah masuk!",
+                    "Menarik! Ceritakan lebih lanjut.",
+                    "Oke, nanti aku kabari lagi ya.",
+                    "Hahaha, betul banget!"
+                ];
+                const randomReply = replies[Math.floor(Math.random() * replies.length)];
+                appendMessage(randomReply, 'received');
+            }, 1000);
+        }
 
-        <!-- Item 2 -->
-        <div class="item-card" onclick="changeTrack('6QE65UCbsiI', 'Kereta Api Tut tut tut 🚂 - Terbaru Populer')">
-          <div class="item-thumb">
-            <img src="https://img.youtube.com/vi/6QE65UCbsiI/hqdefault.jpg" alt="Kereta Api Tut tut tut">
-            <span class="item-badge">2:04</span>
-          </div>
-          <div class="item-info">
-            <h4>Kereta Api Tut tut tut 🚂</h4>
-            <p>AHTRIS • Lagu Anak</p>
-          </div>
-        </div>
+        function appendMessage(text, type) {
+            const chatBody = document.getElementById('chatBody');
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message', type);
+            
+            messageDiv.innerHTML = `
+                ${text}
+                <span class="timestamp">${getCurrentTime()}</span>
+            `;
 
-        <!-- Item 3 -->
-        <div class="item-card" onclick="changeTrack('UbEhgN6Kegk', 'Pelangi Pagi Ceria 🌈 - Lagu Anak Indonesia Ceria & Edukatif')">
-          <div class="item-thumb">
-            <img src="https://img.youtube.com/vi/UbEhgN6Kegk/hqdefault.jpg" alt="Pelangi Pagi Ceria">
-            <span class="item-badge">2:36</span>
-          </div>
-          <div class="item-info">
-            <h4>Pelangi Pagi Ceria 🌈</h4>
-            <p>AHTRIS • Lagu Anak</p>
-          </div>
-        </div>
+            chatBody.appendChild(messageDiv);
+            
+            // Auto scroll ke pesan paling bawah
+            chatBody.scrollTop = chatBody.scrollHeight;
+        }
 
-        <!-- Item 4 -->
-        <div class="item-card" onclick="changeTrack('YA0AvtEmiOo', 'Naik Bus Surabaya Tulungagung 🚌 - Lagu Anak Lucu ke Rumah Tante')">
-          <div class="item-thumb">
-            <img src="https://img.youtube.com/vi/YA0AvtEmiOo/hqdefault.jpg" alt="Naik Bus Surabaya Tulungagung">
-            <span class="item-badge">2:16</span>
-          </div>
-          <div class="item-info">
-            <h4>Naik Bus Surabaya Tulungagung 🚌</h4>
-            <p>AHTRIS • Lagu Anak</p>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- FOOTER -->
-    <footer>
-      <p>&copy; 2026 <a href="https://ahtris.my.id">ahtris.my.id</a> — Powered by AHTRIS Channel</p>
-    </footer>
-
-  </div>
-
-  <!-- JAVASCRIPT GANTI VIDEO OTOMATIS -->
-  <script>
-    function changeTrack(videoId, titleText) {
-      const player = document.getElementById('mainPlayer');
-      const title = document.getElementById('mainTitle');
-
-      // Ganti URL Iframe agar otomatis memutar video baru
-      player.src = "https://www.youtube.com/embed/" + videoId + "?autoplay=1";
-      title.textContent = titleText;
-
-      // Scroll halus kembali ke pemutar atas
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  </script>
-
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+    </script>
 </body>
 </html>
