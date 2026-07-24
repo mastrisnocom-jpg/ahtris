@@ -211,13 +211,12 @@
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
       background: rgba(2, 20, 15, 0.85);
-      display: none;
+      display: none; /* Disembunyikan secara default */
       align-items: center;
       justify-content: center;
       z-index: 1000;
       backdrop-filter: blur(8px);
       padding: 20px;
-      animation: fadeIn 0.2s ease-out;
     }
 
     .modal {
@@ -240,11 +239,6 @@
       color: var(--text-muted);
       font-size: 1.5rem;
       cursor: pointer;
-      transition: color 0.2s;
-    }
-
-    .modal-close:hover {
-      color: #ffffff;
     }
 
     .modal-tabs {
@@ -263,7 +257,6 @@
       font-size: 1rem;
       cursor: pointer;
       border-bottom: 2px solid transparent;
-      transition: all 0.2s;
     }
 
     .tab-btn.active {
@@ -291,11 +284,6 @@
       color: #ffffff;
       outline: none;
       font-size: 0.95rem;
-      transition: border-color 0.2s;
-    }
-
-    .form-group input:focus {
-      border-color: var(--emerald-primary);
     }
 
     .form-submit-btn {
@@ -312,11 +300,6 @@
       color: var(--text-muted);
       border-top: 1px solid var(--border-emerald);
     }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: scale(0.95); }
-      to { opacity: 1; transform: scale(1); }
-    }
   </style>
 </head>
 <body>
@@ -327,7 +310,7 @@
       <span>🚀</span> CreatorTools
     </div>
     <div class="user-menu" id="userMenu">
-      <button class="btn" onclick="openAuthModal('login')">Login / Daftar</button>
+      <button class="btn" onclick="toggleModal(true, 'login')">Login / Daftar</button>
     </div>
   </header>
 
@@ -338,7 +321,7 @@
       <div class="lock-icon">🔒</div>
       <h2>Akses Terbatas</h2>
       <p>Silakan login terlebih dahulu untuk mengakses kumpulan alat pembuat konten.</p>
-      <button class="btn" onclick="openAuthModal('login')">Login Sekarang</button>
+      <button class="btn" onclick="toggleModal(true, 'login')">Login Sekarang</button>
     </div>
 
     <!-- Screen Dashboard -->
@@ -348,7 +331,7 @@
           <h2>Kumpulan Alat Pembuat Konten</h2>
           <p style="color: var(--text-muted);">Pilih alat yang Anda butuhkan untuk mempermudah pekerjaan.</p>
         </div>
-        <button id="btnAdminAdd" class="btn" style="display: none;" onclick="openModal('addToolModal')">
+        <button id="btnAdminAdd" class="btn" style="display: none;" onclick="document.getElementById('addToolModal').style.display='flex'">
           + Tambah Tool Baru
         </button>
       </div>
@@ -363,11 +346,11 @@
   <!-- POP-UP LOGIN / DAFTAR -->
   <div class="modal-overlay" id="authModal">
     <div class="modal">
-      <button class="modal-close" onclick="closeModal('authModal')">&times;</button>
+      <button class="modal-close" onclick="toggleModal(false)">&times;</button>
       
       <div class="modal-tabs">
-        <button class="tab-btn active" id="tabLogin" onclick="switchAuthTab('login')">Login</button>
-        <button class="tab-btn" id="tabRegister" onclick="switchAuthTab('register')">Daftar Akun</button>
+        <button class="tab-btn active" id="tabLogin" onclick="switchTab('login')">Login</button>
+        <button class="tab-btn" id="tabRegister" onclick="switchTab('register')">Daftar Akun</button>
       </div>
 
       <div class="form-group">
@@ -388,7 +371,7 @@
   <!-- POP-UP TAMBAH TOOL -->
   <div class="modal-overlay" id="addToolModal">
     <div class="modal">
-      <button class="modal-close" onclick="closeModal('addToolModal')">&times;</button>
+      <button class="modal-close" onclick="document.getElementById('addToolModal').style.display='none'">&times;</button>
       <h3 style="margin-bottom: 20px; color: #fff;">Tambah Tool Baru</h3>
       <div class="form-group">
         <label>Judul Tool</label>
@@ -407,7 +390,7 @@
         <input type="text" id="toolIconInput" placeholder="🎨" value="🔗" />
       </div>
       <div style="display: flex; gap: 10px; margin-top: 24px;">
-        <button class="btn btn-secondary" style="flex: 1;" onclick="closeModal('addToolModal')">Batal</button>
+        <button class="btn btn-secondary" style="flex: 1;" onclick="document.getElementById('addToolModal').style.display='none'">Batal</button>
         <button class="btn" style="flex: 1;" onclick="addNewTool()">Simpan</button>
       </div>
     </div>
@@ -426,6 +409,30 @@
     let authMode = 'login';
     let currentUser = null;
     let userRole = 'user';
+
+    // FUNGSI UNTUK MEMBUKA / MENUTUP POP-UP
+    function toggleModal(show, mode = 'login') {
+      const modal = document.getElementById('authModal');
+      modal.style.display = show ? 'flex' : 'none';
+      if(show) switchTab(mode);
+    }
+
+    function switchTab(mode) {
+      authMode = mode;
+      const tabLogin = document.getElementById('tabLogin');
+      const tabRegister = document.getElementById('tabRegister');
+      const submitBtn = document.getElementById('btnSubmitAuth');
+
+      if (mode === 'login') {
+        tabLogin.classList.add('active');
+        tabRegister.classList.remove('active');
+        submitBtn.innerText = 'Masuk';
+      } else {
+        tabRegister.classList.add('active');
+        tabLogin.classList.remove('active');
+        submitBtn.innerText = 'Buat Akun';
+      }
+    }
 
     window.addEventListener('DOMContentLoaded', () => {
       checkAuthState();
@@ -497,7 +504,7 @@
 
       const userMenu = document.getElementById('userMenu');
       userMenu.innerHTML = `
-        <button class="btn" onclick="openAuthModal('login')">Login / Daftar</button>
+        <button class="btn" onclick="toggleModal(true, 'login')">Login / Daftar</button>
       `;
     }
 
@@ -551,7 +558,7 @@
         alert('Gagal menambah tool: ' + error.message);
       } else {
         alert('Tool berhasil ditambahkan!');
-        closeModal('addToolModal');
+        document.getElementById('addToolModal').style.display = 'none';
         document.getElementById('toolTitleInput').value = '';
         document.getElementById('toolUrlInput').value = '';
         loadTools();
@@ -586,10 +593,10 @@
             const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
             if (signInError) {
               alert('Pendaftaran berhasil! Silakan pindah ke tab Login untuk masuk.');
-              switchAuthTab('login');
+              switchTab('login');
             } else {
               alert('Pendaftaran Berhasil! Selamat datang.');
-              closeModal('authModal');
+              toggleModal(false);
             }
           }
         } else {
@@ -597,7 +604,7 @@
           if (error) {
             alert('Login Gagal: ' + error.message);
           } else {
-            closeModal('authModal');
+            toggleModal(false);
           }
         }
       } catch (err) {
@@ -610,36 +617,6 @@
 
     async function handleLogout() {
       await supabase.auth.signOut();
-    }
-
-    function openAuthModal(mode = 'login') {
-      switchAuthTab(mode);
-      openModal('authModal');
-    }
-
-    function switchAuthTab(mode) {
-      authMode = mode;
-      const tabLogin = document.getElementById('tabLogin');
-      const tabRegister = document.getElementById('tabRegister');
-      const submitBtn = document.getElementById('btnSubmitAuth');
-
-      if (mode === 'login') {
-        tabLogin.classList.add('active');
-        tabRegister.classList.remove('active');
-        submitBtn.innerText = 'Masuk';
-      } else {
-        tabRegister.classList.add('active');
-        tabLogin.classList.remove('active');
-        submitBtn.innerText = 'Buat Akun';
-      }
-    }
-
-    function openModal(id) {
-      document.getElementById(id).style.display = 'flex';
-    }
-
-    function closeModal(id) {
-      document.getElementById(id).style.display = 'none';
     }
   </script>
 
