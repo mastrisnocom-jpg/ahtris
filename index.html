@@ -33,7 +33,6 @@
       flex-direction: column;
     }
 
-    /* Header & Navigation Bar */
     header {
       display: flex;
       justify-content: space-between;
@@ -98,7 +97,6 @@
       border-color: var(--emerald-primary);
     }
 
-    /* Main Layout */
     .container {
       max-width: 1100px;
       margin: 0 auto;
@@ -107,7 +105,6 @@
       width: 100%;
     }
 
-    /* Lock Screen / Akses Terbatas */
     .protected-screen {
       text-align: center;
       padding: 80px 20px;
@@ -127,7 +124,6 @@
       margin-bottom: 24px;
     }
 
-    /* Dashboard Header & Controls */
     .dashboard-header {
       display: flex;
       justify-content: space-between;
@@ -137,7 +133,6 @@
       gap: 15px;
     }
 
-    /* Grid Kartu Tool */
     .tools-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -191,7 +186,6 @@
       font-size: 0.9rem;
     }
 
-    /* Modal / Popup Form */
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -261,7 +255,6 @@
 </head>
 <body>
 
-  <!-- Header & Menu Login Pojok Atas -->
   <header>
     <div class="logo">
       <span>🚀</span> CreatorTools
@@ -273,7 +266,7 @@
 
   <div class="container">
 
-    <!-- Tampilan 1: Belum Login -->
+    <!-- Locked View -->
     <div id="lockedView" class="protected-screen">
       <div style="font-size: 3rem; margin-bottom: 15px;">🔒</div>
       <h2>Akses Terbatas</h2>
@@ -281,7 +274,7 @@
       <button class="btn" onclick="openModal('authModal')">Login Sekarang</button>
     </div>
 
-    <!-- Tampilan 2: Sudah Login -->
+    <!-- Dashboard View -->
     <div id="dashboardView" style="display: none;">
       <div class="dashboard-header">
         <div>
@@ -300,7 +293,7 @@
 
   </div>
 
-  <!-- Modal 1: Form Login / Register -->
+  <!-- Modal Auth -->
   <div class="modal-overlay" id="authModal">
     <div class="modal">
       <h3 id="authTitle">Login Akun</h3>
@@ -320,7 +313,7 @@
     </div>
   </div>
 
-  <!-- Modal 2: Form Tambah Tool -->
+  <!-- Modal Add Tool -->
   <div class="modal-overlay" id="addToolModal">
     <div class="modal">
       <h3>Tambah Tool Baru</h3>
@@ -352,10 +345,8 @@
   </footer>
 
   <script>
-    // GANTI BAGIAN INI DENGAN DATA SUPABASE ANDA
     const SUPABASE_URL = "https://lcpskriooezyxgrnarol.supabase.co"; 
-    // Key anon bawaan harus berformat eyJhbGciOiJIUzI1Ni...
-    const SUPABASE_ANON_KEY = "sb_publishable_puy9U_93p-7_Q64oHrYUpg_iEF3nJ-c"; 
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxjcHNrcmlvb2V6eXhncm5hcm9sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ5MDA0ODksImV4cCI6MjEwMDQ3NjQ4OX0.5mdkHtNvDSU_HkGpQfODJ7xE1M-fLioXuqxsY_kaFbA"; 
 
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -365,11 +356,23 @@
 
     window.addEventListener('DOMContentLoaded', () => {
       checkAuthState();
+
+      // Mendengarkan perubahan sesi login secara langsung (realtime)
+      supabase.auth.onAuthStateChange(async (event, session) => {
+        if (session) {
+          currentUser = session.user;
+          await fetchUserRole(currentUser.id);
+          renderLoggedInUI();
+          loadTools();
+        } else {
+          currentUser = null;
+          renderLoggedOutUI();
+        }
+      });
     });
 
     async function checkAuthState() {
       const { data: { session } } = await supabase.auth.getSession();
-
       if (session) {
         currentUser = session.user;
         await fetchUserRole(currentUser.id);
@@ -382,15 +385,19 @@
     }
 
     async function fetchUserRole(userId) {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', userId)
-        .maybeSingle();
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', userId)
+          .maybeSingle();
 
-      if (data && data.role) {
-        userRole = data.role;
-      } else {
+        if (data && data.role) {
+          userRole = data.role;
+        } else {
+          userRole = 'user';
+        }
+      } catch (err) {
         userRole = 'user';
       }
     }
@@ -499,24 +506,19 @@
 
       try {
         if (isRegisterMode) {
-          // PROSES DAFTAR
           const { data, error } = await supabase.auth.signUp({ email, password });
-          
           if (error) {
             alert('Gagal Daftar: ' + error.message);
           } else {
-            alert('Pendaftaran Berhasil! Silakan mencoba Login dengan akun tersebut.');
-            toggleAuthMode();
+            alert('Pendaftaran Berhasil! Mengalihkan ke halaman dashboard...');
+            closeModal('authModal');
           }
         } else {
-          // PROSES LOGIN
           const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-          
           if (error) {
             alert('Login Gagal: ' + error.message);
           } else {
             closeModal('authModal');
-            checkAuthState();
           }
         }
       } catch (err) {
@@ -529,7 +531,6 @@
 
     async function handleLogout() {
       await supabase.auth.signOut();
-      checkAuthState();
     }
 
     function openModal(id) {
