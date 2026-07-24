@@ -552,6 +552,139 @@
 
       if (error) {
         alert('Gagal menambah tool: ' + error.message);
+  <script>
+    const SUPABASE_URL = "https://lcpskriooezyxgrnarol.supabase.co"; 
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxjcHNrcmlvb2V6eXhncm5hcm9sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ5MDA0ODksImV4cCI6MjEwMDQ3NjQ4OX0.5mdkHtNvDSU_HkGpQfODJ7xE1M-fLioXuqxsY_kaFbA"; 
+
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    let authMode = 'login'; // Status 'login' atau 'register'
+    let currentUser = null;
+    let userRole = 'user';
+
+    window.addEventListener('DOMContentLoaded', () => {
+      checkAuthState();
+
+      // Listener realtime ketika status login/logout berubah
+      supabase.auth.onAuthStateChange(async (event, session) => {
+        if (session) {
+          currentUser = session.user;
+          await fetchUserRole(currentUser.id);
+          renderLoggedInUI();
+          loadTools();
+        } else {
+          currentUser = null;
+          renderLoggedOutUI();
+        }
+      });
+    });
+
+    async function checkAuthState() {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        currentUser = session.user;
+        await fetchUserRole(currentUser.id);
+        renderLoggedInUI();
+        loadTools();
+      } else {
+        currentUser = null;
+        renderLoggedOutUI();
+      }
+    }
+
+    async function fetchUserRole(userId) {
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', userId)
+          .maybeSingle();
+
+        if (data && data.role) {
+          userRole = data.role;
+        } else {
+          userRole = 'user';
+        }
+      } catch (err) {
+        userRole = 'user';
+      }
+    }
+
+    function renderLoggedInUI() {
+      document.getElementById('lockedView').style.display = 'none';
+      document.getElementById('dashboardView').style.display = 'block';
+
+      const userMenu = document.getElementById('userMenu');
+      userMenu.innerHTML = `
+        <span class="user-badge">${currentUser.email} (${userRole})</span>
+        <button class="btn btn-secondary" onclick="handleLogout()">Logout</button>
+      `;
+
+      if (userRole === 'super_admin') {
+        document.getElementById('btnAdminAdd').style.display = 'inline-block';
+      } else {
+        document.getElementById('btnAdminAdd').style.display = 'none';
+      }
+    }
+
+    function renderLoggedOutUI() {
+      document.getElementById('lockedView').style.display = 'block';
+      document.getElementById('dashboardView').style.display = 'none';
+
+      const userMenu = document.getElementById('userMenu');
+      userMenu.innerHTML = `
+        <button class="btn" onclick="openAuthModal('login')">Login / Daftar</button>
+      `;
+    }
+
+    async function loadTools() {
+      const container = document.getElementById('toolsContainer');
+      container.innerHTML = "<p style='color: var(--text-muted);'>Memuat data...</p>";
+
+      const { data: tools, error } = await supabase
+        .from('tools')
+        .select('*')
+        .order('id', { ascending: false });
+
+      if (error) {
+        container.innerHTML = `<p style='color: #f87171;'>Gagal memuat data: ${error.message}</p>`;
+        return;
+      }
+
+      if (tools.length === 0) {
+        container.innerHTML = "<p style='color: var(--text-muted);'>Belum ada tool yang ditambahkan.</p>";
+        return;
+      }
+
+      container.innerHTML = tools.map(tool => `
+        <a href="${tool.url}" target="_blank" class="tool-card">
+          <div>
+            <div class="tool-icon">${tool.icon || '🔗'}</div>
+            <div class="tool-title">${tool.title}</div>
+            <span class="tool-category">${tool.category || 'Umum'}</span>
+          </div>
+          <div class="tool-link-btn">Buka Tool ↗</div>
+        </a>
+      `).join('');
+    }
+
+    async function addNewTool() {
+      const title = document.getElementById('toolTitleInput').value.trim();
+      const url = document.getElementById('toolUrlInput').value.trim();
+      const category = document.getElementById('toolCategoryInput').value.trim() || 'Umum';
+      const icon = document.getElementById('toolIconInput').value.trim() || '🔗';
+
+      if (!title || !url) {
+        alert('Judul dan Link Tool wajib diisi!');
+        return;
+      }
+
+      const { error } = await supabase
+        .from('tools')
+        .insert([{ title, url, category, icon }]);
+
+      if (error) {
+        alert('Gagal menambah tool: ' + error.message);
       } else {
         alert('Tool berhasil ditambahkan!');
         closeModal('addToolModal');
@@ -561,7 +694,7 @@
       }
     }
 
-    // Penanganan Login & Register
+    // PENANGANAN AUTHENTICATION REVISI
     async function handleAuth() {
       const email = document.getElementById('authEmail').value.trim();
       const password = document.getElementById('authPassword').value;
@@ -582,14 +715,24 @@
 
       try {
         if (authMode === 'register') {
-          const { data, error } = await supabase.auth.signUp({ email, password });
-          if (error) {
-            alert('Gagal Daftar: ' + error.message);
+          // 1. PROSES DAFTAR
+          const { data: signUpData, error: signUpError } = await supabase.auth.signUp({ email, password });
+          
+          if (signUpError) {
+            alert('Gagal Daftar: ' + signUpError.message);
           } else {
-            alert('Pendaftaran Berhasil! Anda otomatis masuk.');
-            closeModal('authModal');
+            // 2. OTOMATIS LOGIN SETELAH DAFTAR
+            const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
+            if (signInError) {
+              alert('Pendaftaran berhasil, silakan login secara manual.');
+              switchAuthTab('login');
+            } else {
+              alert('Pendaftaran Berhasil! Selamat datang.');
+              closeModal('authModal');
+            }
           }
         } else {
+          // PROSES LOGIN
           const { data, error } = await supabase.auth.signInWithPassword({ email, password });
           if (error) {
             alert('Login Gagal: ' + error.message);
@@ -609,7 +752,7 @@
       await supabase.auth.signOut();
     }
 
-    /* Modal Control Functions */
+    /* Modal Controls */
     function openAuthModal(mode = 'login') {
       switchAuthTab(mode);
       openModal('authModal');
@@ -640,6 +783,7 @@
       document.getElementById(id).style.display = 'none';
     }
   </script>
+
 
 </body>
 </html>
