@@ -21,6 +21,7 @@
             --border-emerald: rgba(32, 146, 109, 0.4);
             --border-gold: rgba(212, 175, 55, 0.5);
             --text-light: #f1f5f9;
+            --wa-green: #25d366;
         }
 
         * {
@@ -233,19 +234,23 @@
             color: #94a3b8;
         }
 
-        /* Action Button */
+        /* Action Buttons Area */
         .action-area {
             text-align: center;
             margin-top: 35px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
         }
 
         .btn-celebrate {
             background: var(--gold-gradient);
             color: #041c14;
             font-family: 'Poppins', sans-serif;
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 700;
-            padding: 16px 42px;
+            padding: 14px 32px;
             border: none;
             border-radius: 50px;
             cursor: pointer;
@@ -253,7 +258,7 @@
             transition: all 0.3s ease;
             display: inline-flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             text-transform: uppercase;
             letter-spacing: 1px;
         }
@@ -263,8 +268,30 @@
             box-shadow: 0 12px 35px rgba(243, 198, 35, 0.6);
         }
 
-        .btn-celebrate:active {
-            transform: scale(0.98);
+        .btn-wa {
+            background: #25d366;
+            color: #ffffff;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            padding: 14px 32px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(37, 211, 102, 0.3);
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-decoration: none;
+        }
+
+        .btn-wa:hover {
+            transform: scale(1.05);
+            background: #20ba5a;
+            box-shadow: 0 12px 35px rgba(37, 211, 102, 0.5);
         }
 
         /* Poem Section */
@@ -280,6 +307,53 @@
             color: #cbd5e1;
             font-size: 0.95rem;
             line-height: 1.8;
+        }
+
+        /* Visitor Counter Section */
+        .counter-section {
+            margin-top: 35px;
+            padding-top: 25px;
+            border-top: 1px dashed var(--border-gold);
+        }
+
+        .counter-title {
+            font-family: 'Cinzel', serif;
+            font-size: 0.9rem;
+            color: var(--gold-primary);
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+
+        .counter-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .counter-box {
+            background: rgba(4, 28, 20, 0.8);
+            border: 1px solid var(--border-emerald);
+            border-radius: 12px;
+            padding: 12px 8px;
+            text-align: center;
+        }
+
+        .counter-num {
+            font-family: 'Cinzel', serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 2px;
+        }
+
+        .counter-label {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         /* Footer Wish */
@@ -307,7 +381,8 @@
         @media (max-width: 768px) {
             .wrapper { padding: 20px 15px 50px; }
             .card-container { padding: 25px 18px; }
-            .btn-celebrate { width: 100%; justify-content: center; padding: 14px 20px; }
+            .btn-celebrate, .btn-wa { width: 100%; justify-content: center; padding: 14px 20px; }
+            .counter-grid { grid-template-columns: repeat(2, 1fr); }
         }
     </style>
 </head>
@@ -371,12 +446,39 @@
                     "Masa purna bakti bukanlah akhir dari sebuah pengabdian, melainkan awal dari babak baru kehidupan yang penuh berkah dan kebahagiaan bersama keluarga tercinta. Terima kasih atas karya indah yang ditinggalkan."
                 </div>
 
-                <!-- Tombol Interaktif -->
+                <!-- Tombol Interaktif & Share WA -->
                 <div class="action-area">
                     <button class="btn-celebrate" onclick="triggerCelebration()">
-                        <span>🎉</span> Rayakan & Sebar Bunga <span>✨</span>
+                        <span>🎉</span> Sebar Bunga <span>✨</span>
                     </button>
+                    <a href="#" id="shareWaBtn" target="_blank" class="btn-wa">
+                        <span>💬</span> Bagikan ke WA
+                    </a>
                 </div>
+
+                <!-- Visitor Counter Section -->
+                <div class="counter-section">
+                    <div class="counter-title">📊 Statistik Pengunjung</div>
+                    <div class="counter-grid">
+                        <div class="counter-box">
+                            <div class="counter-num" id="count-today">...</div>
+                            <div class="counter-label">Hari Ini</div>
+                        </div>
+                        <div class="counter-box">
+                            <div class="counter-num" id="count-month">...</div>
+                            <div class="counter-label">Bulan Ini</div>
+                        </div>
+                        <div class="counter-box">
+                            <div class="counter-num" id="count-year">...</div>
+                            <div class="counter-label">Tahun Ini</div>
+                        </div>
+                        <div class="counter-box">
+                            <div class="counter-num" id="count-total">...</div>
+                            <div class="counter-label">Total</div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
 
@@ -388,7 +490,7 @@
     </div>
 
     <script>
-        // Animasi Partikel Emerald Green & Gold Dust
+        // --- 1. Animasi Partikel Emerald Green & Gold Dust ---
         const canvas = document.getElementById('bgCanvas');
         const ctx = canvas.getContext('2d');
 
@@ -416,7 +518,6 @@
                 this.speedX = (Math.random() - 0.5) * 0.3;
                 this.opacity = Math.random() * 0.8 + 0.2;
                 this.fade = Math.random() * 0.008 + 0.002;
-                // Selang seling warna hijau zamrud dan emas
                 this.color = Math.random() > 0.4 ? 'rgba(32, 146, 109, ' : 'rgba(243, 198, 35, ';
             }
 
@@ -456,7 +557,7 @@
 
         animateParticles();
 
-        // Efek Pesta Konfeti Emas & Emerald Green
+        // --- 2. Efek Konfeti ---
         function triggerCelebration() {
             const count = 200;
             const defaults = { origin: { y: 0.7 } };
@@ -467,7 +568,6 @@
                 }));
             }
 
-            // Warna emerald dan gold
             const emeraldColors = ['#20926d', '#135d46', '#f3c623', '#ffffff', '#d4af37'];
 
             fire(0.25, { spread: 26, startVelocity: 55, colors: emeraldColors });
@@ -477,10 +577,45 @@
             fire(0.1, { spread: 120, startVelocity: 45, colors: emeraldColors });
         }
 
-        // Jalankan konfeti otomatis saat dibuka
         window.addEventListener('load', () => {
             setTimeout(triggerCelebration, 800);
+            initCounter();
+            setupWaShare();
         });
+
+        // --- 3. Visitor Counter Online (Hari, Bulan, Tahun, Total) ---
+        function initCounter() {
+            const namespace = "purna-bakti-sujito-bsn";
+            const todayStr = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+            const monthStr = todayStr.substring(0, 7);              // YYYY-MM
+            const yearStr = todayStr.substring(0, 4);               // YYYY
+
+            // Fetch Online Counter API (CountAPI / HitCounters API)
+            const fetchCount = (key, elementId) => {
+                fetch(`https://api.counterapi.dev/v1/${namespace}/${key}/up`)
+                    .then(res => res.json())
+                    .then(data => {
+                        document.getElementById(elementId).innerText = data.value.toLocaleString('id-ID');
+                    })
+                    .catch(() => {
+                        // Fallback jika API terhalang / offline
+                        document.getElementById(elementId).innerText = "1";
+                    });
+            };
+
+            fetchCount(`today_${todayStr}`, 'count-today');
+            fetchCount(`month_${monthStr}`, 'count-month');
+            fetchCount(`year_${yearStr}`, 'count-year');
+            fetchCount('total_hits', 'count-total');
+        }
+
+        // --- 4. Setup Link Share WhatsApp ---
+        function setupWaShare() {
+            const pageUrl = window.location.href;
+            const message = `✨ *Selamat Purna Bakti Bapak Sujito* ✨\n\nTerima kasih atas segala dedikasi, integritas, dan pengabdian luar biasa di PT Binayasa Putra Batara - Unit BSN Surabaya.\n\nMari berikan ucapan dan doa terbaik melalui link berikut:\n${pageUrl}`;
+            const waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
+            document.getElementById('shareWaBtn').setAttribute('href', waUrl);
+        }
     </script>
 </body>
 </html>
