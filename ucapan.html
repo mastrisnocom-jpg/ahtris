@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Purna Bakti - Bapak Sujito</title>
-    <!-- Font Google Premium: Playfair Display & Montserrat -->
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <title>Purna Bakti - Bapak Sujito | PT. Binayasa Putra Batara</title>
+    
+    <!-- Google Fonts Premium -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Montserrat:wght@300;400;500;600&family=Great+Vibes&display=swap" rel="stylesheet">
     
     <style>
-        /* --- RESET & BASIC STYLES --- */
         * {
             margin: 0;
             padding: 0;
@@ -16,204 +16,235 @@
         }
 
         body {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #090d16 100%);
-            color: #f8fafc;
-            font-family: 'Montserrat', sans-serif;
+            background: radial-gradient(circle at center, #111827 0%, #030712 100%);
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            overflow-x: hidden;
-            position: relative;
+            font-family: 'Montserrat', sans-serif;
+            overflow: hidden;
+            perspective: 1000px;
+            color: #f8fafc;
         }
 
-        /* --- BACKGROUND ANIMATED PARTICLES --- */
-        #particles-js {
-            position: absolute;
-            width: 100%;
-            height: 100%;
+        /* Ambient Glow Canvas */
+        #canvas-bg {
+            position: fixed;
             top: 0;
             left: 0;
+            width: 100%;
+            height: 100%;
             z-index: 1;
             pointer-events: none;
         }
 
-        /* --- CARD CONTAINER (GLASSMORPHISM) --- */
-        .container {
+        /* 3D Card Container */
+        .card-wrapper {
             position: relative;
             z-index: 2;
             width: 90%;
-            max-width: 750px;
-            padding: 50px 40px;
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(212, 175, 55, 0.3); /* Sentuhan warna emas */
-            border-radius: 20px;
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5),
-                        inset 0 0 20px rgba(212, 175, 55, 0.05);
+            max-width: 800px;
+            padding: 3px; /* Border gradient space */
+            background: linear-gradient(135deg, #d4af37, #4a3b10, #bf953f, #aa771c);
+            border-radius: 24px;
+            box-shadow: 0 30px 90px rgba(0, 0, 0, 0.8), 0 0 50px rgba(212, 175, 55, 0.15);
+            transition: transform 0.1s ease-out;
+            transform-style: preserve-3d;
+        }
+
+        .card-inner {
+            background: rgba(10, 15, 26, 0.92);
+            backdrop-filter: blur(20px);
+            border-radius: 22px;
+            padding: 60px 50px;
             text-align: center;
-            opacity: 0;
-            transform: translateY(30px);
-            animation: fadeInUp 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            position: relative;
+            overflow: hidden;
         }
 
-        /* --- TYPOGRAPHY & ANIMATIONS --- */
-        .company-name {
-            font-size: 0.9rem;
+        /* Corner Ornaments (Luxury Touch) */
+        .card-inner::before, .card-inner::after {
+            content: '';
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            border: 2px solid #d4af37;
+            pointer-events: none;
+            opacity: 0.6;
+        }
+        .card-inner::before { top: 20px; left: 20px; border-right: none; border-bottom: none; }
+        .card-inner::after { bottom: 20px; right: 20px; border-left: none; border-top: none; }
+
+        /* Typography & Animated Text */
+        .company-tag {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.85rem;
             font-weight: 600;
-            letter-spacing: 4px;
-            color: #d4af37; /* Gold Corporate */
-            text-transform: uppercase;
-            margin-bottom: 25px;
-            opacity: 0;
-            animation: fadeIn 1s ease forwards 0.5s;
-        }
-
-        .badge-purna {
-            display: inline-block;
-            padding: 6px 18px;
-            border: 1px solid rgba(212, 175, 55, 0.5);
-            border-radius: 50px;
-            font-size: 0.8rem;
-            letter-spacing: 2px;
-            color: #e2e8f0;
+            letter-spacing: 5px;
+            color: #94a3b8;
             text-transform: uppercase;
             margin-bottom: 20px;
-            background: rgba(212, 175, 55, 0.1);
-            opacity: 0;
-            animation: fadeIn 1s ease forwards 0.7s;
         }
 
-        .main-title {
-            font-family: 'Playfair Display', serif;
+        .purna-badge {
+            display: inline-block;
+            font-family: 'Cinzel', serif;
+            font-size: 0.9rem;
+            letter-spacing: 3px;
+            color: #d4af37;
+            padding: 6px 24px;
+            border: 1px solid rgba(212, 175, 55, 0.4);
+            border-radius: 50px;
+            background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.1), transparent);
+            margin-bottom: 30px;
+            text-transform: uppercase;
+        }
+
+        .title-sub {
+            font-family: 'Great Vibes', cursive;
             font-size: 2.8rem;
-            font-weight: 700;
-            color: #ffffff;
-            margin-bottom: 5px;
-            line-height: 1.2;
-            opacity: 0;
-            animation: fadeIn 1s ease forwards 0.9s;
+            color: #e2e8f0;
+            margin-bottom: -10px;
+            display: block;
         }
 
-        .highlight-name {
-            background: linear-gradient(45deg, #f3e7e9 0%, #dad4ec 99%, #dad4ec 100%);
-            background: linear-gradient(to right, #ffe082, #d4af37, #f5af19);
+        /* Gold Foil Shimmer Effect */
+        .title-main {
+            font-family: 'Cinzel', serif;
+            font-size: 3.2rem;
+            font-weight: 900;
+            background: linear-gradient(90deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
+            background-size: 200% auto;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            font-style: italic;
+            animation: goldShimmer 4s linear infinite;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
         }
 
-        .divider {
-            width: 80px;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, #d4af37, transparent);
+        @keyframes goldShimmer {
+            to { background-position: 200% center; }
+        }
+
+        .divider-line {
+            display: flex;
+            align-items: center;
+            justify-content: center;
             margin: 25px auto;
-            opacity: 0;
-            animation: fadeIn 1s ease forwards 1.1s;
+            width: 60%;
+        }
+        .divider-line::before, .divider-line::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #d4af37, transparent);
+        }
+        .divider-diamond {
+            width: 8px;
+            height: 8px;
+            background: #d4af37;
+            transform: rotate(45deg);
+            margin: 0 15px;
+            box-shadow: 0 0 10px #d4af37;
         }
 
-        .message {
+        .content-text {
             font-size: 1.05rem;
-            line-height: 1.8;
+            line-height: 1.9;
             color: #cbd5e1;
             font-weight: 300;
-            margin-bottom: 35px;
-            opacity: 0;
-            animation: fadeIn 1s ease forwards 1.3s;
+            max-width: 650px;
+            margin: 0 auto 35px;
         }
 
-        .message strong {
-            color: #ffffff;
+        .content-text strong {
+            color: #fff;
             font-weight: 600;
         }
 
-        .closing {
-            font-family: 'Playfair Display', serif;
+        .quote-box {
             font-style: italic;
-            font-size: 1.1rem;
             color: #d4af37;
-            margin-bottom: 40px;
-            opacity: 0;
-            animation: fadeIn 1s ease forwards 1.5s;
+            font-size: 1rem;
+            border-left: 2px solid #d4af37;
+            padding-left: 20px;
+            margin: 0 auto 40px;
+            max-width: 550px;
+            text-align: left;
         }
 
-        .footer {
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            padding-top: 20px;
-            font-size: 0.85rem;
-            color: #94a3b8;
-            letter-spacing: 1px;
+        .signature-section {
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding-top: 25px;
+            font-size: 0.9rem;
+            color: #64748b;
+            letter-spacing: 1.5px;
             text-transform: uppercase;
-            opacity: 0;
-            animation: fadeIn 1s ease forwards 1.7s;
         }
 
-        /* --- KEYFRAMES --- */
-        @keyframes fadeInUp {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .signature-section strong {
+            color: #e2e8f0;
+            display: block;
+            margin-top: 5px;
+            font-weight: 600;
         }
 
-        @keyframes fadeIn {
-            to {
-                opacity: 1;
-            }
-        }
-
-        /* --- RESPONSIVE DESIGN --- */
-        @media (max-width: 600px) {
-            .container {
-                padding: 35px 20px;
-            }
-            .main-title {
-                font-size: 2rem;
-            }
-            .message {
-                font-size: 0.95rem;
-            }
+        /* Mobile Adjustments */
+        @media (max-width: 640px) {
+            .card-inner { padding: 40px 20px; }
+            .title-main { font-size: 2.2rem; }
+            .title-sub { font-size: 2.2rem; }
+            .content-text { font-size: 0.95rem; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Canvas Partikel Animasi Modern -->
-    <canvas id="particles-js"></canvas>
+    <!-- Particle Background -->
+    <canvas id="canvas-bg"></canvas>
 
-    <!-- Kartu Ucapan Utama -->
-    <div class="container">
-        <div class="company-name">PT. BINAYASA PUTRA BATARA</div>
-        <div class="badge-purna">Purna Bakti</div>
-        
-        <h1 class="main-title">
-            Selamat & Terima Kasih<br>
-            <span class="highlight-name">Bapak Sujito</span>
-        </h1>
+    <!-- 3D Interactive Card -->
+    <div class="card-wrapper" id="card">
+        <div class="card-inner">
+            <div class="company-tag">PT. Binayasa Putra Batara</div>
+            <div class="purna-badge">Purna Bakti</div>
+            
+            <span class="title-sub">Terima Kasih & Penghormatan</span>
+            <h1 class="title-main">Bapak Sujito</h1>
 
-        <div class="divider"></div>
+            <div class="divider-line">
+                <div class="divider-diamond"></div>
+            </div>
 
-        <p class="message">
-            Atas pengabdian, dedikasi, serta kontribusi luar biasa yang telah Bapak berikan selama bertugas. 
-            Jejak langkah, kepemimpinan, dan kerja keras Bapak akan selalu menjadi inspirasi bagi kami semua dalam meneruskan semangat profesionalisme di perusahaan ini.
-        </p>
+            <p class="content-text">
+                Atas masa bakti, dedikasi penuh integritas, dan kontribusi tak terhingga yang telah Bapak ukir. 
+                Kepemimpinan serta keteladanan Bapak akan senantiasa menjadi fondasi dan inspirasi yang bernilai bagi perjalanan kami ke depan.
+            </p>
 
-        <p class="closing">
-            "Semoga masa purna bakti ini membawa kebahagiaan, kesehatan, kehangatan bersama keluarga, serta keberkahan yang berlimpah."
-        </p>
+            <div class="quote-box">
+                "Selamat memasuki masa purna bakti. Semoga senantiasa dikaruniai kesehatan, kebahagiaan, dan keberkahan yang berlimpah bersama keluarga tercinta."
+            </div>
 
-        <div class="footer">
-            Salam Hormat & Apresiasi Setinggi-tingginya,<br>
-            <strong>Seluruh Unit PT. BINAYASA PUTRA BATARA</strong>
+            <div class="signature-section">
+                Hormat & Apresiasi Kami,
+                <strong>Unit - Unit PT. BINAYASA PUTRA BATARA</strong>
+            </div>
         </div>
     </div>
 
-    <!-- Script Animasi Partikel Halus -->
     <script>
-        const canvas = document.getElementById('particles-js');
-        const ctx = canvas.getContext('2d');
+        /* --- 3D TILT EFFECT ON MOUSE MOVE --- */
+        const card = document.getElementById('card');
+        document.addEventListener('mousemove', (e) => {
+            const xAxis = (window.innerWidth / 2 - e.pageX) / 25;
+            const yAxis = (window.innerHeight / 2 - e.pageY) / 25;
+            card.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
+        });
 
+        /* --- GOLDEN SPARKS & AMBIENT CANVAS --- */
+        const canvas = document.getElementById('canvas-bg');
+        const ctx = canvas.getContext('2d');
         let width = canvas.width = window.innerWidth;
         let height = canvas.height = window.innerHeight;
 
@@ -222,49 +253,49 @@
             height = canvas.height = window.innerHeight;
         });
 
-        class Particle {
+        class GoldSpark {
             constructor() {
+                this.reset();
+            }
+
+            reset() {
                 this.x = Math.random() * width;
-                this.y = Math.random() * height;
-                this.size = Math.random() * 2 + 0.5;
-                this.speedX = Math.random() * 0.5 - 0.25;
-                this.speedY = Math.random() * -0.5 - 0.1; // Bergerak perlahan ke atas
-                this.opacity = Math.random() * 0.5 + 0.2;
+                this.y = height + Math.random() * 100;
+                this.size = Math.random() * 2.5 + 0.5;
+                this.speedY = Math.random() * 1.5 + 0.5;
+                this.speedX = Math.random() * 0.6 - 0.3;
+                this.opacity = Math.random() * 0.8 + 0.2;
+                this.life = 0;
+                this.maxLife = Math.random() * 200 + 100;
             }
 
             update() {
+                this.y -= this.speedY;
                 this.x += this.speedX;
-                this.y += this.speedY;
-
-                if (this.y < 0) {
-                    this.y = height;
-                    this.x = Math.random() * width;
-                }
-                if (this.x < 0 || this.x > width) {
-                    this.x = Math.random() * width;
+                this.life++;
+                if (this.life >= this.maxLife || this.y < -10) {
+                    this.reset();
                 }
             }
 
             draw() {
-                ctx.fillStyle = `rgba(212, 175, 55, ${this.opacity})`; // Warna emas redup
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(212, 175, 55, ${this.opacity})`;
+                ctx.shadowBlur = 8;
+                ctx.shadowColor = "#d4af37";
                 ctx.fill();
+                ctx.shadowBlur = 0; // Reset
             }
         }
 
-        const particles = [];
-        const particleCount = Math.floor(width / 15); // Menyesuaikan jumlah partikel sesuai layar
-
-        for (let i = 0; i < particleCount; i++) {
-            particles.push(new Particle());
-        }
+        const sparks = Array.from({ length: 70 }, () => new GoldSpark());
 
         function animate() {
             ctx.clearRect(0, 0, width, height);
-            particles.forEach(p => {
-                p.update();
-                p.draw();
+            sparks.forEach(spark => {
+                spark.update();
+                spark.draw();
             });
             requestAnimationFrame(animate);
         }
