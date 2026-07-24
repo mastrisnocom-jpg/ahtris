@@ -3,134 +3,111 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AHTRIS - Official Website (ahtris.my.id) 🌟</title>
+  <title>Saluran Resmi AHTRIS - ahtris.my.id 🌿✨</title>
   
-  <!-- Font Anak-anak (Fredoka & Quicksand) -->
+  <!-- Font Anak-Anak & Modern -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
 
   <style>
-    /* RESET & BASE STYLES */
+    /* RESET & DASAR */
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
     }
-    
+
     body {
       font-family: 'Quicksand', sans-serif;
-      background-color: #fff9e6;
-      color: #333;
+      background-color: #f0fdf4; /* Background Hijau Sangat Lembut */
+      color: #2d3748;
       line-height: 1.6;
     }
 
-    h1, h2, h3 {
+    h1, h2, h3, h4 {
       font-family: 'Fredoka', cursive;
     }
 
-    /* CONTAINER */
     .container {
-      max-width: 1000px;
+      max-width: 1050px;
       margin: 0 auto;
       padding: 20px;
     }
 
-    /* HEADER / HERO SECTION */
+    /* BANNER & PROFILE (HERO) */
     header {
-      background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);
-      border-radius: 30px;
-      padding: 40px 20px;
+      background: linear-gradient(135deg, #a7f3d0 0%, #34d399 50%, #10b981 100%); /* Gradasi Hijau Ceria */
+      border-radius: 25px;
+      padding: 30px 20px;
       text-align: center;
-      margin-bottom: 40px;
-      box-shadow: 0 10px 20px rgba(255, 154, 158, 0.3);
+      color: #ffffff;
+      box-shadow: 0 10px 25px rgba(16, 185, 129, 0.2);
+      margin-bottom: 30px;
       position: relative;
-      overflow: hidden;
     }
 
-    .profile-img {
-      width: 160px;
-      height: 160px;
+    .profile-avatar {
+      width: 130px;
+      height: 130px;
       border-radius: 50%;
-      border: 6px solid #ffffff;
+      border: 5px solid #ffffff;
       object-fit: cover;
-      box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
-      margin-bottom: 15px;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+      margin-bottom: 12px;
     }
 
     header h1 {
-      font-size: 2.8rem;
-      color: #ff477e;
+      font-size: 2.5rem;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.15);
       margin-bottom: 5px;
-      text-shadow: 2px 2px #ffffff;
-      letter-spacing: 1px;
     }
 
     header p {
-      font-size: 1.2rem;
-      color: #4a4a4a;
-      font-weight: bold;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #ecfdf5;
     }
 
-    /* BADGE CERIA */
-    .star-badge {
+    .subscribe-btn {
       display: inline-block;
-      background: #ffbc00;
-      color: #fff;
-      padding: 6px 18px;
-      border-radius: 20px;
+      margin-top: 15px;
+      background-color: #059669;
+      color: #ffffff;
+      padding: 10px 25px;
+      border-radius: 30px;
+      text-decoration: none;
       font-weight: bold;
-      font-size: 0.95rem;
-      margin-top: 12px;
-      box-shadow: 0 4px 10px rgba(255, 188, 0, 0.4);
+      font-size: 1rem;
+      box-shadow: 0 4px 10px rgba(5, 150, 105, 0.4);
+      transition: transform 0.2s ease, background-color 0.2s ease;
     }
 
-    /* SECTION TITLES */
-    .section-title {
-      text-align: center;
-      font-size: 2rem;
-      color: #ff4a5a;
-      margin-bottom: 25px;
+    .subscribe-btn:hover {
+      background-color: #047857;
+      transform: scale(1.05);
     }
 
-    .section-title span {
-      background: #e0f7fa;
-      padding: 6px 22px;
-      border-radius: 25px;
-      border: 3px dashed #4dd0e1;
-      display: inline-block;
-    }
-
-    /* YOUTUBE SECTION */
-    .youtube-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 25px;
-      margin-bottom: 50px;
-    }
-
-    .video-card {
+    /* PEMUTAR VIDEO UTAMA (MAIN PLAYER) */
+    .main-player-section {
       background: #ffffff;
       border-radius: 20px;
-      padding: 15px;
-      box-shadow: 0 8px 15px rgba(0, 0, 0, 0.05);
-      border: 3px solid #ffecb3;
-      transition: transform 0.3s ease;
+      padding: 20px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+      border: 3px solid #6ee7b7;
+      margin-bottom: 40px;
     }
 
-    .video-card:hover {
-      transform: translateY(-5px);
-    }
-
-    .iframe-wrapper {
+    .main-video-wrapper {
       position: relative;
       padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
       height: 0;
       overflow: hidden;
       border-radius: 15px;
+      background-color: #000;
     }
 
-    .iframe-wrapper iframe {
+    .main-video-wrapper iframe {
       position: absolute;
       top: 0;
       left: 0;
@@ -139,187 +116,235 @@
       border: 0;
     }
 
-    .video-card h3 {
-      margin-top: 12px;
-      font-size: 1.1rem;
-      color: #333;
-      text-align: center;
+    .main-video-title {
+      margin-top: 15px;
+      font-size: 1.5rem;
+      color: #065f46;
     }
 
-    .channel-btn-wrapper {
-      text-align: center;
-      margin-top: -20px;
-      margin-bottom: 50px;
-    }
-
-    .channel-btn {
-      display: inline-block;
-      background: #ff0000;
-      color: white;
-      padding: 12px 28px;
-      border-radius: 30px;
-      font-weight: bold;
-      text-decoration: none;
-      box-shadow: 0 4px 10px rgba(255, 0, 0, 0.3);
-      transition: transform 0.2s ease;
-    }
-
-    .channel-btn:hover {
-      transform: scale(1.05);
-    }
-
-    /* STREAMING SERVICES SECTION */
-    .streaming-container {
-      background: #ffffff;
-      border-radius: 25px;
-      padding: 30px 20px;
-      text-align: center;
-      margin-bottom: 50px;
-      box-shadow: 0 8px 15px rgba(0,0,0,0.05);
-      border: 3px solid #b2f2bb;
-    }
-
-    .streaming-grid {
+    /* GALERI VIDEO (DAFTAR SALURAN) */
+    .section-header {
       display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 15px;
-      margin-top: 20px;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
     }
 
-    .stream-btn {
+    .section-header h2 {
+      font-size: 1.8rem;
+      color: #047857;
       display: flex;
       align-items: center;
       gap: 10px;
-      padding: 12px 24px;
-      border-radius: 50px;
-      text-decoration: none;
-      color: white;
-      font-weight: bold;
-      font-size: 1rem;
+    }
+
+    .video-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+
+    .video-card {
+      background: #ffffff;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      border: 2px solid #a7f3d0;
+      cursor: pointer;
       transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
 
-    .stream-btn:hover {
-      transform: scale(1.05);
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    .video-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 18px rgba(16, 185, 129, 0.2);
     }
 
-    /* Warna Tombol Platform */
-    .spotify { background-color: #1DB954; }
-    .youtube-music { background-color: #FF0000; }
-    .apple-music { background-color: #FA243C; }
-    .deezer { background-color: #FEAA2D; }
-    .amazon { background-color: #00A8E1; }
+    .thumbnail-wrapper {
+      position: relative;
+      width: 100%;
+      padding-top: 56.25%; /* 16:9 */
+    }
+
+    .thumbnail-wrapper img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .play-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(16, 185, 129, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    .video-card:hover .play-overlay {
+      opacity: 1;
+    }
+
+    .play-icon {
+      background: #ffffff;
+      color: #059669;
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+
+    .video-info {
+      padding: 12px;
+    }
+
+    .video-info h3 {
+      font-size: 1rem;
+      color: #1f2937;
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
 
     /* FOOTER */
     footer {
       text-align: center;
-      padding: 20px;
-      color: #777;
+      padding: 25px 0;
+      color: #047857;
       font-size: 0.95rem;
+      border-top: 2px dashed #a7f3d0;
     }
 
     footer a {
-      color: #ff477e;
-      text-decoration: none;
+      color: #059669;
       font-weight: bold;
-    }
-
-    footer a:hover {
-      text-decoration: underline;
+      text-decoration: none;
     }
   </style>
 </head>
 <body>
 
   <div class="container">
-    
-    <!-- HERO / PROFIL -->
+
+    <!-- HEADER / BANNER SALURAN -->
     <header>
-      <img src="https://picsum.photos/200" alt="Foto AHTRIS" class="profile-img">
-      <h1>Halo, Aku AHTRIS! 🎤✨</h1>
-      <p>Selamat datang di rumah musik resmi AHTRIS! Yuk dengarkan lagu-lagu ceriaku!</p>
-      <div class="star-badge">🌟 Penyanyi Cilik & Sahabat Anak</div>
+      <!-- Foto Sampul/Profil AHTRIS -->
+      <img src="https://picsum.photos/200" alt="AHTRIS" class="profile-avatar">
+      <h1>Saluran Lagu AHTRIS 🍃</h1>
+      <p>Kumpulan video musik anak ceria, lucu, dan edukatif dari AHTRIS!</p>
+      <a href="https://youtube.com/channel/UCKf_12X2Hxj0PGtv6PyJdMg?si=y7ISLTYeqJvwm9Fr" target="_blank" class="subscribe-btn">
+        🔔 Berlangganan di YouTube
+      </a>
     </header>
 
-    <!-- SECTION VIDEO YOUTUBE -->
+    <!-- PEMUTAR UTAMA -->
+    <section class="main-player-section">
+      <div class="main-video-wrapper">
+        <iframe id="mainPlayer" src="https://www.youtube.com/embed/_SQSFcxytGA?autoplay=0" title="Pemutar Utama AHTRIS" allowfullscreen></iframe>
+      </div>
+      <h2 id="mainVideoTitle" class="main-video-title">❤️ Ayah Pulang Bawa Pelukan</h2>
+    </section>
+
+    <!-- GALERI VIDEO SALURAN -->
     <section>
-      <h2 class="section-title"><span>🎬 Video Musik AHTRIS</span></h2>
-      
-      <div class="youtube-grid">
+      <div class="section-header">
+        <h2>🎬 Koleksi Video AHTRIS</h2>
+      </div>
+
+      <div class="video-grid">
+        
         <!-- Video 1 -->
-        <div class="video-card">
-          <div class="iframe-wrapper">
-            <iframe src="https://www.youtube.com/embed/_SQSFcxytGA" title="Ayah Pulang Bawa Pelukan" allowfullscreen></iframe>
+        <div class="video-card" onclick="playVideo('_SQSFcxytGA', '❤️ Ayah Pulang Bawa Pelukan')">
+          <div class="thumbnail-wrapper">
+            <img src="https://img.youtube.com/vi/_SQSFcxytGA/hqdefault.jpg" alt="Ayah Pulang Bawa Pelukan">
+            <div class="play-overlay">
+              <div class="play-icon">▶</div>
+            </div>
           </div>
-          <h3>❤️ Ayah Pulang Bawa Pelukan</h3>
+          <div class="video-info">
+            <h3>Ayah Pulang Bawa Pelukan ❤️</h3>
+          </div>
         </div>
 
         <!-- Video 2 -->
-        <div class="video-card">
-          <div class="iframe-wrapper">
-            <iframe src="https://www.youtube.com/embed/6QE65UCbsiI" title="Kereta Api Tut tut tut" allowfullscreen></iframe>
+        <div class="video-card" onclick="playVideo('6QE65UCbsiI', '🚂 Kereta Api Tut Tut Tut')">
+          <div class="thumbnail-wrapper">
+            <img src="https://img.youtube.com/vi/6QE65UCbsiI/hqdefault.jpg" alt="Kereta Api Tut Tut Tut">
+            <div class="play-overlay">
+              <div class="play-icon">▶</div>
+            </div>
           </div>
-          <h3>🚂 Kereta Api Tut Tut Tut</h3>
+          <div class="video-info">
+            <h3>Kereta Api Tut tut tut 🚂</h3>
+          </div>
         </div>
 
         <!-- Video 3 -->
-        <div class="video-card">
-          <div class="iframe-wrapper">
-            <iframe src="https://www.youtube.com/embed/UbEhgN6Kegk" title="Pelangi Pagi Ceria" allowfullscreen></iframe>
+        <div class="video-card" onclick="playVideo('UbEhgN6Kegk', '🌈 Pelangi Pagi Ceria')">
+          <div class="thumbnail-wrapper">
+            <img src="https://img.youtube.com/vi/UbEhgN6Kegk/hqdefault.jpg" alt="Pelangi Pagi Ceria">
+            <div class="play-overlay">
+              <div class="play-icon">▶</div>
+            </div>
           </div>
-          <h3>🌈 Pelangi Pagi Ceria</h3>
+          <div class="video-info">
+            <h3>Pelangi Pagi Ceria 🌈</h3>
+          </div>
         </div>
 
         <!-- Video 4 -->
-        <div class="video-card">
-          <div class="iframe-wrapper">
-            <iframe src="https://www.youtube.com/embed/YA0AvtEmiOo" title="Naik Bus Surabaya Tulungagung" allowfullscreen></iframe>
+        <div class="video-card" onclick="playVideo('YA0AvtEmiOo', '🚌 Naik Bus Surabaya Tulungagung')">
+          <div class="thumbnail-wrapper">
+            <img src="https://img.youtube.com/vi/YA0AvtEmiOo/hqdefault.jpg" alt="Naik Bus Surabaya Tulungagung">
+            <div class="play-overlay">
+              <div class="play-icon">▶</div>
+            </div>
           </div>
-          <h3>🚌 Naik Bus Surabaya Tulungagung</h3>
+          <div class="video-info">
+            <h3>Naik Bus Surabaya Tulungagung 🚌</h3>
+          </div>
         </div>
-      </div>
 
-      <div class="channel-btn-wrapper">
-        <a href="https://youtube.com/channel/UCKf_12X2Hxj0PGtv6PyJdMg?si=y7ISLTYeqJvwm9Fr" target="_blank" class="channel-btn">
-          ▶ Kunjungi Channel YouTube AHTRIS
-        </a>
-      </div>
-    </section>
-
-    <!-- SECTION PLATFORM STREAMING -->
-    <section>
-      <div class="streaming-container">
-        <h2 class="section-title"><span>🎧 Dengarkan AHTRIS di Sini</span></h2>
-        <p>Klik tombol di bawah untuk mendengarkan lagu-lagu AHTRIS di pemutar musik favoritmu!</p>
-        
-        <div class="streaming-grid">
-          <a href="#" target="_blank" class="stream-btn spotify">
-            <span>Spotify</span>
-          </a>
-          <a href="https://youtube.com/channel/UCKf_12X2Hxj0PGtv6PyJdMg?si=y7ISLTYeqJvwm9Fr" target="_blank" class="stream-btn youtube-music">
-            <span>YouTube Music</span>
-          </a>
-          <a href="#" target="_blank" class="stream-btn apple-music">
-            <span>Apple Music</span>
-          </a>
-          <a href="#" target="_blank" class="stream-btn deezer">
-            <span>Deezer</span>
-          </a>
-          <a href="#" target="_blank" class="stream-btn amazon">
-            <span>Amazon Music</span>
-          </a>
-        </div>
       </div>
     </section>
 
     <!-- FOOTER -->
     <footer>
-      <p>&copy; 2026 Official Website <a href="https://ahtris.my.id">ahtris.my.id</a>. Dibuat dengan 💖 untuk musik anak Indonesia.</p>
+      <p>&copy; 2026 Saluran Resmi <a href="https://ahtris.my.id">ahtris.my.id</a> — Tempat Lagu Anak-anak Ceria 🌿</p>
     </footer>
 
   </div>
+
+  <!-- JAVASCRIPT UNTUK GANTI VIDEO KETIKA DIKLIK -->
+  <script>
+    function playVideo(videoId, title) {
+      const player = document.getElementById('mainPlayer');
+      const titleElement = document.getElementById('mainVideoTitle');
+      
+      // Ubah sumber iframe video ke video yang diklik (beserta fitur auto play)
+      player.src = "https://www.youtube.com/embed/" + videoId + "?autoplay=1";
+      
+      // Ubah judul video di bawah layar utama
+      titleElement.textContent = title;
+
+      // Scroll ke layar atas secara halus
+      window.scrollTo({ top: 200, behavior: 'smooth' });
+    }
+  </script>
 
 </body>
 </html>
