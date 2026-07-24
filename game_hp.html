@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Misi Purna Bakti - Game HP</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+        }
+
+        body {
+            background: #090d16;
+            font-family: 'Fredoka', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            overflow: hidden;
+        }
+
+        /* Container Game Berukuran Layar HP */
+        .mobile-screen {
+            position: relative;
+            width: 100vw;
+            max-width: 420px;
+            height: 100vh;
+            max-height: 850px;
+            background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(0,0,0,0.8);
+        }
+
+        /* Canvas Game Area */
+        .game-canvas-area {
+            position: relative;
+            flex: 1;
+            width: 100%;
+            background: #020617;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        /* HUD Score Top Bar */
+        .top-hud {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            right: 15px;
+            display: flex;
+            justify-content: space-between;
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        .hud-badge {
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: #facc15;
+            font-weight: 700;
+        }
+
+        /* CONTROLLER D-PAD AREA (Bawah Layar HP) */
+        .controller-area {
+            height: 170px;
+            background: #0f172a;
+            border-top: 2px solid #1e293b;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px 20px;
+        }
+
+        .dpad-group {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn-ctrl {
+            background: #1e293b;
+            border: 2px solid #38bdf8;
+            color: #38bdf8;
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.8rem;
+            font-weight: bold;
+            box-shadow: 0 6px 0 #0284c7;
+            transition: all 0.05s ease;
+        }
+
+        .btn-ctrl:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 #0284c7;
+            background: #38bdf8;
+            color: #fff;
+        }
+
+        .btn-jump {
+            background: #f59e0b;
+            border: 2px solid #fbbf24;
+            color: #fff;
+            width: 75px;
+            height: 75px;
+            border-radius: 50%;
+            font-size: 1.1rem;
+            font-weight: 700;
+            box-shadow: 0 6px 0 #d97706;
+        }
+
+        .btn-jump:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 #d97706;
+            background: #fbbf24;
+        }
+
+        /* OVERLAYS */
+        .overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.92);
+            backdrop-filter: blur(6px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 25px;
+            z-index: 20;
+        }
+
+        .overlay.hidden { display: none; }
+
+        .title {
+            font-size: 1.8rem;
+            color: #facc15;
+            margin-bottom: 10px;
+        }
+
+        .btn-start {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            color: #fff;
+            font-family: inherit;
+            font-size: 1.2rem;
+            font-weight: 700;
+            padding: 14px 40px;
+            border: none;
+            border-radius: 50px;
+            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.4);
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="mobile-screen">
+        <!-- Area Game Canvas -->
+        <div class="game-canvas-area">
+            <div class="top-hud">
+                <div class="hud-badge">✈️ Tiket: <span id="scoreText">0</span>/5</div>
+                <div class="hud-badge">🏁 Tujuan: Purna Bakti</div>
+            </div>
+            <canvas id="canvas"></canvas>
+
+            <!-- Screen Start -->
+            <div class="overlay" id="startScreen">
+                <div style="font-size: 3.5rem; margin-bottom: 10px;">👴✈️</div>
+                <div class="title">MISI PURNA BAKTI</div>
+                <p style="color: #cbd5e1; font-size: 0.9rem; line-height: 1.5; margin-bottom: 15px;">
+                    Kumpulkan <strong>5 Tiket Liburan ✈️</strong> dan capai <strong>Gerbang Purna Bakti 🏖️</strong> di ujung jalan!<br><br>
+                    Gunakan tombol kontrol di bagian bawah layar HP Anda.
+                </p>
+                <button class="btn-start" onclick="startGame()">MULAI MAIN</button>
+            </div>
+
+            <!-- Screen Win / Game Over -->
+            <div class="overlay hidden" id="endScreen">
+                <div style="font-size: 4rem; margin-bottom: 10px;" id="endEmoji">🎉</div>
+                <div class="title" id="endTitle">SELAMAT PENSIUN!</div>
+                <p style="color: #cbd5e1; font-size: 0.95rem; margin-bottom: 20px;" id="endDesc">
+                    Anda berhasil menyelesaikan misi purna bakti!
+                </p>
+                <button class="btn-start" onclick="startGame()">MAIN LAGI</button>
+            </div>
+        </div>
+
+        <!-- Tombol Kontrol khusus Jempol Layar HP -->
+        <div class="controller-area">
+            <div class="dpad-group">
+                <div class="btn-ctrl" id="btnLeft">◀</div>
+                <div class="btn-ctrl" id="btnRight">▶</div>
+            </div>
+            <div class="btn-ctrl btn-jump" id="btnJump">LOMPAT</div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        // Adjust Canvas Size sesuai kontainer HP
+        function resize() {
+            canvas.width = canvas.parentElement.offsetWidth;
+            canvas.height = canvas.parentElement.offsetHeight;
+        }
+        resize();
+        window.addEventListener('resize', resize);
+
+        // Sound Effects (Web Audio API)
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playSound(freq, type='sine', duration=0.1) {
+            if(audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + duration);
+        }
+
+        // Game State Variables
+        let isPlaying = false;
+        let score = 0;
+        let cameraX = 0;
+
+        // Player (Sang Pensiunan)
+        const player = {
+            x: 50,
+            y: 100,
+            width: 35,
+            height: 45,
+            vx: 0,
+            vy: 0,
+            speed: 3.5,
+            jumpPower: -9.5,
+            grounded: false
+        };
+
+        // Controls State
+        const keys = { left: false, right: false, jump: false };
+
+        // Bind Touch Control Buttons
+        function bindBtn(id, keyName) {
+            const btn = document.getElementById(id);
+            btn.addEventListener('touchstart', (e) => { e.preventDefault(); keys[keyName] = true; });
+            btn.addEventListener('touchend', (e) => { e.preventDefault(); keys[keyName] = false; });
+            btn.addEventListener('mousedown', () => { keys[keyName] = true; });
+            btn.addEventListener('mouseup', () => { keys[keyName] = false; });
+        }
+        bindBtn('btnLeft', 'left');
+        bindBtn('btnRight', 'right');
+        bindBtn('btnJump', 'jump');
+
+        // World Data (Platform, Obstacles, Items)
+        const groundY = 240;
+        let items = [];
+        let obstacles = [];
+        const finishLineX = 1800; // Jarak finish
+
+        function initWorld() {
+            score = 0;
+            cameraX = 0;
+            player.x = 50;
+            player.y = 100;
+            player.vx = 0;
+            player.vy = 0;
+            document.getElementById('scoreText').textContent = '0';
+
+            // Generate Tiket Liburan ✈️
+            items = [
+                { x: 300, y: 180, taken: false },
+                { x: 600, y: 150, taken: false },
+                { x: 950, y: 180, taken: false },
+                { x: 1300, y: 140, taken: false },
+                { x: 1600, y: 180, taken: false }
+            ];
+
+            // Generate Tumpukan Berkas Kantor 📁
+            obstacles = [
+                { x: 450, w: 40, h: 40 },
+                { x: 750, w: 40, h: 60 },
+                { x: 1100, w: 50, h: 40 },
+                { x: 1450, w: 40, h: 50 }
+            ];
+        }
+
+        function startGame() {
+            if(audioCtx.state === 'suspended') audioCtx.resume();
+            initWorld();
+            document.getElementById('startScreen').classList.add('hidden');
+            document.getElementById('endScreen').classList.add('hidden');
+            isPlaying = true;
+            requestAnimationFrame(gameLoop);
+        }
+
+        function gameLoop() {
+            if (!isPlaying) return;
+
+            // --- 1. PHYSICS & LOGIC ---
+            if (keys.left) player.vx = -player.speed;
+            else if (keys.right) player.vx = player.speed;
+            else player.vx = 0;
+
+            if (keys.jump && player.grounded) {
+                player.vy = player.jumpPower;
+                player.grounded = false;
+                playSound(400, 'triangle', 0.15);
+            }
+
+            // Gravity
+            player.vy += 0.45;
+            player.x += player.vx;
+            player.y += player.vy;
+
+            // Batas Tanah
+            if (player.y + player.height >= groundY) {
+                player.y = groundY - player.height;
+                player.vy = 0;
+                player.grounded = true;
+            }
+
+            // Batas Kiri Dunia
+            if (player.x < 10) player.x = 10;
+
+            // Camera Tracking Player
+            cameraX = player.x - 80;
+
+            // --- 2. RENDER ---
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.save();
+            ctx.translate(-cameraX, 0);
+
+            // Gambar Tanah (Ground)
+            ctx.fillStyle = '#1e293b';
+            ctx.fillRect(cameraX, groundY, canvas.width, canvas.height - groundY);
+            ctx.fillStyle = '#38bdf8';
+            ctx.fillRect(0, groundY, finishLineX + 200, 4);
+
+            // Gambar Berkas Kantor (Obstacles)
+            obstacles.forEach(obs => {
+                ctx.fillStyle = '#ef4444';
+                ctx.fillRect(obs.x, groundY - obs.h, obs.w, obs.h);
+                ctx.font = '22px serif';
+                ctx.fillText('📁', obs.x + 8, groundY - obs.h + 28);
+
+                // Cek Nabrak
+                if (
+                    player.x + player.width > obs.x &&
+                    player.x < obs.x + obs.w &&
+                    player.y + player.height > groundY - obs.h
+                ) {
+                    gameOver("Tertangkap Lembur Kantor!", "📁 Waduh! Anda menabrak tumpukan berkas lembur. Coba lagi!");
+                }
+            });
+
+            // Gambar Tiket Liburan (Items)
+            items.forEach(item => {
+                if (!item.taken) {
+                    ctx.font = '26px serif';
+                    ctx.fillText('✈️', item.x, item.y);
+
+                    // Cek Ambil Item
+                    if (Math.hypot(player.x - item.x, player.y - item.y) < 35) {
+                        item.taken = true;
+                        score++;
+                        document.getElementById('scoreText').textContent = score;
+                        playSound(800, 'sine', 0.15);
+                    }
+                }
+            });
+
+            // Gambar Gerbang Purna Bakti (Finish Line)
+            ctx.fillStyle = '#facc15';
+            ctx.fillRect(finishLineX, groundY - 120, 10, 120);
+            ctx.font = '40px serif';
+            ctx.fillText('🏖️', finishLineX - 15, groundY - 130);
+
+            // Cek Sampai Finish
+            if (player.x >= finishLineX - 20) {
+                gameWin();
+            }
+
+            // Gambar Karakter Pensiunan
+            ctx.font = '32px serif';
+            ctx.fillText('👴', player.x, player.y + 32);
+
+            ctx.restore();
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        function gameWin() {
+            isPlaying = false;
+            playSound(600, 'sine', 0.3);
+            document.getElementById('endEmoji').textContent = '🏖️';
+            document.getElementById('endTitle').textContent = 'PURNA BAKTI SELESAI!';
+            document.getElementById('endDesc').textContent = `Luar biasa! Anda berhasil mengumpulkan ${score}/5 tiket liburan dan mencapai masa santai!`;
+            document.getElementById('endScreen').classList.remove('hidden');
+        }
+
+        function gameOver(title, desc) {
+            isPlaying = false;
+            playSound(150, 'sawtooth', 0.3);
+            document.getElementById('endEmoji').textContent = '💥';
+            document.getElementById('endTitle').textContent = title;
+            document.getElementById('endDesc').textContent = desc;
+            document.getElementById('endScreen').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
