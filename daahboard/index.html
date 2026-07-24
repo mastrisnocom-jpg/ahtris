@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Content Creator Tools Hub</title>
+  <!-- Supabase JS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root {
+      --bg-dark: #022c22;
+      --bg-card: rgba(6, 78, 59, 0.4);
+      --border-emerald: rgba(16, 185, 129, 0.25);
+      --emerald-primary: #10b981;
+      --emerald-hover: #059669;
+      --emerald-light: #a7f3d0;
+      --text-main: #f0fdf4;
+      --text-muted: #6ee7b7;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #022c22 0%, #064e3b 100%);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header & Navigation Bar */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 40px;
+      background: rgba(2, 44, 34, 0.8);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border-emerald);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--emerald-primary);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .user-menu {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .user-badge {
+      font-size: 0.8rem;
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--emerald-light);
+      padding: 4px 10px;
+      border-radius: 20px;
+      border: 1px solid var(--border-emerald);
+    }
+
+    .btn {
+      background: var(--emerald-primary);
+      color: #022c22;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn:hover {
+      background: var(--emerald-hover);
+      color: #ffffff;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--emerald-light);
+      border: 1px solid var(--border-emerald);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(16, 185, 129, 0.1);
+      border-color: var(--emerald-primary);
+    }
+
+    /* Main Layout */
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 40px 20px;
+      flex-grow: 1;
+      width: 100%;
+    }
+
+    /* Lock Screen / Akses Terbatas */
+    .protected-screen {
+      text-align: center;
+      padding: 80px 20px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-emerald);
+      border-radius: 16px;
+      margin-top: 40px;
+    }
+
+    .protected-screen h2 {
+      font-size: 2rem;
+      margin-bottom: 12px;
+    }
+
+    .protected-screen p {
+      color: var(--text-muted);
+      margin-bottom: 24px;
+    }
+
+    /* Dashboard Header & Controls */
+    .dashboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    /* Grid Kartu Tool */
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .tool-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-emerald);
+      border-radius: 12px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      text-decoration: none;
+      color: inherit;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .tool-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--emerald-primary);
+    }
+
+    .tool-icon {
+      font-size: 2rem;
+      margin-bottom: 10px;
+    }
+
+    .tool-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 6px;
+    }
+
+    .tool-category {
+      font-size: 0.75rem;
+      color: var(--emerald-light);
+      background: rgba(16, 185, 129, 0.1);
+      padding: 3px 8px;
+      border-radius: 4px;
+      display: inline-block;
+      margin-bottom: 15px;
+    }
+
+    .tool-link-btn {
+      text-align: right;
+      color: var(--emerald-primary);
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    /* Modal / Popup Form */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      backdrop-filter: blur(4px);
+    }
+
+    .modal {
+      background: #064e3b;
+      border: 1px solid var(--border-emerald);
+      padding: 30px;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    }
+
+    .modal h3 {
+      margin-bottom: 20px;
+      color: #ffffff;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: 6px;
+      border: 1px solid var(--border-emerald);
+      background: rgba(2, 44, 34, 0.6);
+      color: #ffffff;
+      outline: none;
+    }
+
+    .form-group input:focus {
+      border-color: var(--emerald-primary);
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 24px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border-emerald);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header & Menu Login Pojok Atas -->
+  <header>
+    <div class="logo">
+      <span>🚀</span> CreatorTools
+    </div>
+    <div class="user-menu" id="userMenu">
+      <!-- Tombol/Informasi User diisi dinamis oleh JS -->
+      <button class="btn" onclick="openModal('authModal')">Login / Daftar</button>
+    </div>
+  </header>
+
+  <div class="container">
+
+    <!-- Tampilan 1: Belum Login (Locked View) -->
+    <div id="lockedView" class="protected-screen">
+      <div style="font-size: 3rem; margin-bottom: 15px;">🔒</div>
+      <h2>Akses Terbatas</h2>
+      <p>Silakan login terlebih dahulu untuk mengakses kumpulan alat pembuat konten.</p>
+      <button class="btn" onclick="openModal('authModal')">Login Sekarang</button>
+    </div>
+
+    <!-- Tampilan 2: Sudah Login (Dashboard Main Content) -->
+    <div id="dashboardView" style="display: none;">
+      <div class="dashboard-header">
+        <div>
+          <h2>Kumpulan Alat Pembuat Konten</h2>
+          <p style="color: var(--text-muted);">Pilih alat yang Anda butuhkan untuk mempermudah pekerjaan.</p>
+        </div>
+        <!-- Tombol Tambah Tool (Hanya Tampil untuk Super Admin) -->
+        <button id="btnAdminAdd" class="btn" style="display: none;" onclick="openModal('addToolModal')">
+          + Tambah Tool Baru
+        </button>
+      </div>
+
+      <!-- Grid Tempat Daftar Tool Dipanggil dari Supabase -->
+      <div class="tools-grid" id="toolsContainer">
+        <p style="color: var(--text-muted);">Memuat data tool...</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Modal 1: Form Login / Register -->
+  <div class="modal-overlay" id="authModal">
+    <div class="modal">
+      <h3 id="authTitle">Login Akun</h3>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="authEmail" placeholder="nama@email.com" />
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="authPassword" placeholder="••••••••" />
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeModal('authModal')">Batal</button>
+        <button class="btn btn-secondary" onclick="toggleAuthMode()" id="btnToggleAuth">Ke Daftar</button>
+        <button class="btn" onclick="handleAuth()" id="btnSubmitAuth">Login</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 2: Form Tambah Tool (Super Admin Only) -->
+  <div class="modal-overlay" id="addToolModal">
+    <div class="modal">
+      <h3>Tambah Tool Baru</h3>
+      <div class="form-group">
+        <label>Judul Tool</label>
+        <input type="text" id="toolTitleInput" placeholder="Contoh: Canva" />
+      </div>
+      <div class="form-group">
+        <label>Link / URL Tool</label>
+        <input type="url" id="toolUrlInput" placeholder="https://www.canva.com" />
+      </div>
+      <div class="form-group">
+        <label>Kategori</label>
+        <input type="text" id="toolCategoryInput" placeholder="Contoh: Desain, Video, AI" />
+      </div>
+      <div class="form-group">
+        <label>Emoji Icon</label>
+        <input type="text" id="toolIconInput" placeholder="🎨" value="🔗" />
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeModal('addToolModal')">Batal</button>
+        <button class="btn" onclick="addNewTool()">Simpan Tool</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    &copy; 2026 Content Creator Toolkit — Emerald Edition.
+  </footer>
+
+  <!-- Javascript Supabase Logic -->
+  <script>
+    // 1. ISI CONFIG SUPABASE ANDA DI SINI
+    const SUPABASE_URL = "https://lcpskriooezyxgrnarol.supabase.co"; // Ganti dengan Supabase URL Anda
+    const SUPABASE_ANON_KEY = "sb_publishable_puy9U_93p-7_Q64oHrYUpg_iEF3nJ-c";       // Ganti dengan Anon Key Anda
+
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    let isRegisterMode = false;
+    let currentUser = null;
+    let userRole = 'user';
+
+    // Inisialisasi Saat Halaman Dimuat
+    window.addEventListener('DOMContentLoaded', async () => {
+      checkAuthState();
+    });
+
+    // 2. Cek Status Login Pengguna
+    async function checkAuthState() {
+      const { data: { session } } = await supabase.auth.getSession();
+
+      if (session) {
+        currentUser = session.user;
+        await fetchUserRole(currentUser.id);
+        renderLoggedInUI();
+        loadTools();
+      } else {
+        currentUser = null;
+        renderLoggedOutUI();
+      }
+    }
+
+    // 3. Ambil Role User dari Tabel Profiles
+    async function fetchUserRole(userId) {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', userId)
+        .single();
+
+      if (data) {
+        userRole = data.role;
+      } else {
+        userRole = 'user';
+      }
+    }
+
+    // Render UI Jika Sudah Login
+    function renderLoggedInUI() {
+      document.getElementById('lockedView').style.display = 'none';
+      document.getElementById('dashboardView').style.display = 'block';
+
+      const userMenu = document.getElementById('userMenu');
+      userMenu.innerHTML = `
+        <span class="user-badge">${currentUser.email} (${userRole})</span>
+        <button class="btn btn-secondary" onclick="handleLogout()">Logout</button>
+      `;
+
+      // Jika Super Admin, Munculkan Tombol Tambah
+      if (userRole === 'super_admin') {
+        document.getElementById('btnAdminAdd').style.display = 'inline-block';
+      } else {
+        document.getElementById('btnAdminAdd').style.display = 'none';
+      }
+    }
+
+    // Render UI Jika Belum Login
+    function renderLoggedOutUI() {
+      document.getElementById('lockedView').style.display = 'block';
+      document.getElementById('dashboardView').style.display = 'none';
+
+      const userMenu = document.getElementById('userMenu');
+      userMenu.innerHTML = `
+        <button class="btn" onclick="openModal('authModal')">Login / Daftar</button>
+      `;
+    }
+
+    // 4. Ambil Daftar Tool dari Database Supabase
+    async function loadTools() {
+      const container = document.getElementById('toolsContainer');
+      container.innerHTML = "<p style='color: var(--text-muted);'>Memuat data...</p>";
+
+      const { data: tools, error } = await supabase
+        .from('tools')
+        .select('*')
+        .order('id', { ascending: false });
+
+      if (error) {
+        container.innerHTML = `<p style='color: red;'>Gagal memuat data: ${error.message}</p>`;
+        return;
+      }
+
+      if (tools.length === 0) {
+        container.innerHTML = "<p style='color: var(--text-muted);'>Belum ada tool yang ditambahkan.</p>";
+        return;
+      }
+
+      container.innerHTML = tools.map(tool => `
+        <a href="${tool.url}" target="_blank" class="tool-card">
+          <div>
+            <div class="tool-icon">${tool.icon || '🔗'}</div>
+            <div class="tool-title">${tool.title}</div>
+            <span class="tool-category">${tool.category || 'Umum'}</span>
+          </div>
+          <div class="tool-link-btn">Buka Tool ↗</div>
+        </a>
+      `).join('');
+    }
+
+    // 5. Tambah Tool Baru (Khusus Super Admin)
+    async function addNewTool() {
+      const title = document.getElementById('toolTitleInput').value.trim();
+      const url = document.getElementById('toolUrlInput').value.trim();
+      const category = document.getElementById('toolCategoryInput').value.trim() || 'Umum';
+      const icon = document.getElementById('toolIconInput').value.trim() || '🔗';
+
+      if (!title || !url) {
+        alert('Judul dan Link Tool wajib diisi!');
+        return;
+      }
+
+      const { error } = await supabase
+        .from('tools')
+        .insert([{ title, url, category, icon }]);
+
+      if (error) {
+        alert('Gagal menambah tool: ' + error.message);
+      } else {
+        alert('Tool berhasil ditambahkan!');
+        closeModal('addToolModal');
+        // Reset Form
+        document.getElementById('toolTitleInput').value = '';
+        document.getElementById('toolUrlInput').value = '';
+        loadTools();
+      }
+    }
+
+    // 6. Penanganan Login & Register Supabase Auth
+    async function handleAuth() {
+      const email = document.getElementById('authEmail').value;
+      const password = document.getElementById('authPassword').value;
+
+      if (!email || !password) {
+        alert('Silakan isi email dan password');
+        return;
+      }
+
+      if (isRegisterMode) {
+        // Register
+        const { data, error } = await supabase.auth.signUp({ email, password });
+        if (error) {
+          alert('Gagal Pendaftaran: ' + error.message);
+        } else {
+          alert('Pendaftaran Berhasil! Silakan Login.');
+          toggleAuthMode();
+        }
+      } else {
+        // Login
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) {
+          alert('Login Gagal: ' + error.message);
+        } else {
+          closeModal('authModal');
+          checkAuthState();
+        }
+      }
+    }
+
+    // Logout
+    async function handleLogout() {
+      await supabase.auth.signOut();
+      checkAuthState();
+    }
+
+    // Functions Pendukung Modal UI
+    function openModal(id) {
+      document.getElementById(id).style.display = 'flex';
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).style.display = 'none';
+    }
+
+    function toggleAuthMode() {
+      isRegisterMode = !isRegisterMode;
+      document.getElementById('authTitle').innerText = isRegisterMode ? 'Daftar Akun Baru' : 'Login Akun';
+      document.getElementById('btnSubmitAuth').innerText = isRegisterMode ? 'Daftar' : 'Login';
+      document.getElementById('btnToggleAuth').innerText = isRegisterMode ? 'Ke Login' : 'Ke Daftar';
+    }
+  </script>
+
+</body>
+</html>
