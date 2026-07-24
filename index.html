@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Supabase Auth Modal</title>
+  <title>Supabase Dynamic Menu & Super Admin</title>
 
   <!-- Supabase JS Library -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -26,6 +26,29 @@
       border-bottom: 1px solid #e9ecef;
     }
 
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+    }
+
+    .nav-links {
+      display: flex;
+      list-style: none;
+      gap: 1.2rem;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: #495057;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover {
+      color: #3ecf8e;
+    }
+
     .nav-btn {
       padding: 8px 16px;
       background-color: #3ecf8e; /* Supabase Green */
@@ -43,6 +66,27 @@
 
     .logout-btn {
       background-color: #dc3545;
+    }
+
+    /* --- Dashboard Admin --- */
+    .admin-dashboard {
+      display: none; /* Sembunyikan default */
+      margin: 2rem auto;
+      padding: 1.5rem;
+      max-width: 500px;
+      background: #ffffff;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+
+    .admin-dashboard.active {
+      display: block;
+    }
+
+    .admin-dashboard h3 {
+      margin-bottom: 1rem;
+      color: #333;
     }
 
     /* --- Modal Overlay & Container --- */
@@ -147,7 +191,14 @@
 
   <!-- Top Navigation Bar -->
   <nav>
-    <h2>Website Saya</h2>
+    <div class="nav-brand">
+      <h2>Website Saya</h2>
+      <!-- Dynamic Menu Container -->
+      <ul class="nav-links" id="dynamicNavLinks">
+        <!-- Menu dari Supabase akan dirender di sini -->
+      </ul>
+    </div>
+
     <div id="authContainer">
       <button class="nav-btn" id="openAuthBtn" type="button">Login / Register</button>
     </div>
@@ -156,7 +207,24 @@
   <!-- Content Placeholder -->
   <main style="padding: 2rem; text-align: center;">
     <h1 id="welcomeText">Selamat Datang!</h1>
-    <p>Silakan login untuk mengakses fitur lengkap.</p>
+    <p id="subWelcomeText">Silakan login untuk mengakses fitur lengkap.</p>
+
+    <!-- Super Admin Dashboard (Tambah Menu) -->
+    <div class="admin-dashboard" id="adminDashboard">
+      <h3>Panel Super Admin - Tambah Menu Navigasi</h3>
+      <form id="addMenuForm">
+        <div class="form-group" style="text-align: left;">
+          <label for="menuTitle">Judul Menu</label>
+          <input type="text" id="menuTitle" placeholder="Contoh: Berita, About Us, Layanan" required>
+        </div>
+        <div class="form-group" style="text-align: left;">
+          <label for="menuUrl">Link (URL)</label>
+          <input type="text" id="menuUrl" placeholder="Contoh: /berita atau https://google.com" required>
+        </div>
+        <button type="submit" class="submit-btn" id="saveMenuBtn">Tambah Menu</button>
+      </form>
+      <div class="message" id="adminMessage"></div>
+    </div>
   </main>
 
   <!-- Pop-up Modal Auth -->
@@ -167,11 +235,11 @@
       <h2 id="modalTitle" style="margin-bottom: 1.2rem;">Login</h2>
 
       <form id="authForm">
-        <div class="form-group">
+        <div class="form-group" style="text-align: left;">
           <label for="email">Email</label>
           <input type="email" id="email" placeholder="nama@email.com" required>
         </div>
-        <div class="form-group">
+        <div class="form-group" style="text-align: left;">
           <label for="password">Password</label>
           <input type="password" id="password" placeholder="••••••••" required>
         </div>
@@ -188,13 +256,15 @@
   </div>
 
   <script>
-    // Menunggu sampai seluruh elemen HTML selesai dimuat browser
     document.addEventListener("DOMContentLoaded", () => {
       // 1. Inisialisasi Supabase
       const SUPABASE_URL = "https://lcpskriooezyxgrnarol.supabase.co"; 
       const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_puy9U_93p-7_Q64oHrYUpg_iEF3nJ-c";
       
       const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+
+      // Email yang diizinkan sebagai Super Admin (Silakan sesuaikan email Anda)
+      const SUPER_ADMIN_EMAIL = "admin@email.com"; 
 
       // 2. Element DOM
       const modalOverlay = document.getElementById('modalOverlay');
@@ -208,14 +278,42 @@
       const authMessage = document.getElementById('authMessage');
       const authContainer = document.getElementById('authContainer');
       const welcomeText = document.getElementById('welcomeText');
+      const subWelcomeText = document.getElementById('subWelcomeText');
+
+      // Admin & Menu DOM
+      const dynamicNavLinks = document.getElementById('dynamicNavLinks');
+      const adminDashboard = document.getElementById('adminDashboard');
+      const addMenuForm = document.getElementById('addMenuForm');
+      const adminMessage = document.getElementById('adminMessage');
 
       let isSignUp = false;
 
-      // 3. Open & Close Modal Handlers
-      if (openAuthBtn) {
-        openAuthBtn.addEventListener('click', () => {
-          modalOverlay.classList.add('active');
+      // 3. Render Dynamic Nav Items dari Supabase
+      async function loadDynamicMenus() {
+        dynamicNavLinks.innerHTML = "<li>Loading menu...</li>";
+
+        const { data: menus, error } = await supabase
+          .from('menus')
+          .select('*')
+          .order('created_at', { ascending: true });
+
+        if (error) {
+          console.error("Gagal memuat menu:", error.message);
+          dynamicNavLinks.innerHTML = "";
+          return;
+        }
+
+        dynamicNavLinks.innerHTML = "";
+        menus.forEach(item => {
+          const li = document.createElement('li');
+          li.innerHTML = `<a href="${item.url}">${item.title}</a>`;
+          dynamicNavLinks.appendChild(li);
         });
+      }
+
+      // 4. Modal Event Handlers
+      if (openAuthBtn) {
+        openAuthBtn.addEventListener('click', () => modalOverlay.classList.add('active'));
       }
 
       if (closeModalBtn) {
@@ -232,7 +330,7 @@
         authForm.reset();
       }
 
-      // 4. Toggle Mode (Login <-> Register)
+      // Toggle Login / Register
       toggleAuthMode.addEventListener('click', (e) => {
         e.preventDefault();
         isSignUp = !isSignUp;
@@ -251,7 +349,7 @@
         }
       });
 
-      // 5. Form Submit Handler (Login / Register)
+      // 5. Auth Submit Handler
       authForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const email = document.getElementById('email').value;
@@ -281,13 +379,42 @@
         }
       });
 
-      // 6. Cek & Update Status User
+      // 6. Form Tambah Menu oleh Admin
+      addMenuForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const title = document.getElementById('menuTitle').value;
+        const url = document.getElementById('menuUrl').value;
+
+        adminMessage.style.color = '#333';
+        adminMessage.textContent = 'Menyimpan menu...';
+
+        // Insert ke database Supabase
+        const { data, error } = await supabase
+          .from('menus')
+          .insert([{ title, url }]);
+
+        if (error) {
+          adminMessage.style.color = '#dc3545';
+          adminMessage.textContent = 'Gagal menyimpan: ' + error.message;
+        } else {
+          adminMessage.style.color = '#198754';
+          adminMessage.textContent = 'Menu berhasil ditambahkan!';
+          addMenuForm.reset();
+          
+          // Reload daftar menu di navigasi secara otomatis
+          loadDynamicMenus();
+        }
+      });
+
+      // 7. Cek Status User & Tampilkan Dashboard Admin jika berhak
       async function checkUserSession() {
         const { data: { session } } = await supabase.auth.getSession();
 
         if (session) {
           const userEmail = session.user.email;
           welcomeText.textContent = `Selamat Datang, ${userEmail}!`;
+
+          // Ganti tombol login dengan logout
           authContainer.innerHTML = `
             <button class="nav-btn logout-btn" id="logoutBtn" type="button">Logout</button>
           `;
@@ -299,9 +426,22 @@
               location.reload();
             });
           }
+
+          // Cek apakah user adalah Super Admin (Bisa diganti logika atau email-nya)
+          if (userEmail === SUPER_ADMIN_EMAIL || userEmail.includes('admin')) {
+            adminDashboard.classList.add('active');
+            subWelcomeText.textContent = "Anda masuk sebagai Super Admin. Gunakan panel di bawah untuk mengelola menu.";
+          } else {
+            adminDashboard.classList.remove('active');
+            subWelcomeText.textContent = "Anda berhasil login sebagai Pengguna Biasa.";
+          }
+        } else {
+          adminDashboard.classList.remove('active');
         }
       }
 
+      // Inisialisasi awal
+      loadDynamicMenus();
       checkUserSession();
     });
   </script>
