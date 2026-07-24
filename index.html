@@ -104,7 +104,7 @@
     /* YOUTUBE SECTION */
     .youtube-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 25px;
       margin-bottom: 50px;
     }
@@ -141,9 +141,31 @@
 
     .video-card h3 {
       margin-top: 12px;
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       color: #333;
       text-align: center;
+    }
+
+    .channel-btn-wrapper {
+      text-align: center;
+      margin-top: -20px;
+      margin-bottom: 50px;
+    }
+
+    .channel-btn {
+      display: inline-block;
+      background: #ff0000;
+      color: white;
+      padding: 12px 28px;
+      border-radius: 30px;
+      font-weight: bold;
+      text-decoration: none;
+      box-shadow: 0 4px 10px rgba(255, 0, 0, 0.3);
+      transition: transform 0.2s ease;
+    }
+
+    .channel-btn:hover {
+      transform: scale(1.05);
     }
 
     /* STREAMING SERVICES SECTION */
@@ -187,7 +209,7 @@
     .spotify { background-color: #1DB954; }
     .youtube-music { background-color: #FF0000; }
     .apple-music { background-color: #FA243C; }
-    .joox { background-color: #00C853; }
+    .deezer { background-color: #FEAA2D; }
     .amazon { background-color: #00A8E1; }
 
     /* FOOTER */
@@ -215,7 +237,6 @@
     
     <!-- HERO / PROFIL -->
     <header>
-      <!-- Ganti URL gambar di bawah dengan foto asli AHTRIS -->
       <img src="https://picsum.photos/200" alt="Foto AHTRIS" class="profile-img">
       <h1>Halo, Aku AHTRIS! 🎤✨</h1>
       <p>Selamat datang di rumah musik resmi AHTRIS! Yuk dengarkan lagu-lagu ceriaku!</p>
@@ -230,20 +251,40 @@
         <!-- Video 1 -->
         <div class="video-card">
           <div class="iframe-wrapper">
-            <!-- Ganti ID 'dQw4w9WgXcQ' dengan ID Video YouTube asli AHTRIS -->
-            <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="Lagu AHTRIS 1" allowfullscreen></iframe>
+            <iframe src="https://www.youtube.com/embed/_SQSFcxytGA" title="Ayah Pulang Bawa Pelukan" allowfullscreen></iframe>
           </div>
-          <h3>🎶 Video Musik Terbaru</h3>
+          <h3>❤️ Ayah Pulang Bawa Pelukan</h3>
         </div>
 
         <!-- Video 2 -->
         <div class="video-card">
           <div class="iframe-wrapper">
-            <!-- Ganti ID 'dQw4w9WgXcQ' dengan ID Video YouTube asli AHTRIS -->
-            <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="Lagu AHTRIS 2" allowfullscreen></iframe>
+            <iframe src="https://www.youtube.com/embed/6QE65UCbsiI" title="Kereta Api Tut tut tut" allowfullscreen></iframe>
           </div>
-          <h3>🎈 Penampilan Spesial</h3>
+          <h3>🚂 Kereta Api Tut Tut Tut</h3>
         </div>
+
+        <!-- Video 3 -->
+        <div class="video-card">
+          <div class="iframe-wrapper">
+            <iframe src="https://www.youtube.com/embed/UbEhgN6Kegk" title="Pelangi Pagi Ceria" allowfullscreen></iframe>
+          </div>
+          <h3>🌈 Pelangi Pagi Ceria</h3>
+        </div>
+
+        <!-- Video 4 -->
+        <div class="video-card">
+          <div class="iframe-wrapper">
+            <iframe src="https://www.youtube.com/embed/YA0AvtEmiOo" title="Naik Bus Surabaya Tulungagung" allowfullscreen></iframe>
+          </div>
+          <h3>🚌 Naik Bus Surabaya Tulungagung</h3>
+        </div>
+      </div>
+
+      <div class="channel-btn-wrapper">
+        <a href="https://youtube.com/channel/UCKf_12X2Hxj0PGtv6PyJdMg?si=y7ISLTYeqJvwm9Fr" target="_blank" class="channel-btn">
+          ▶ Kunjungi Channel YouTube AHTRIS
+        </a>
       </div>
     </section>
 
@@ -251,21 +292,20 @@
     <section>
       <div class="streaming-container">
         <h2 class="section-title"><span>🎧 Dengarkan AHTRIS di Sini</span></h2>
-        <p>Klik tombol di bawah untuk mendengarkan karya lagu AHTRIS di platform favoritmu!</p>
+        <p>Klik tombol di bawah untuk mendengarkan lagu-lagu AHTRIS di pemutar musik favoritmu!</p>
         
         <div class="streaming-grid">
-          <!-- Ganti link '#' dengan link profil/lagu AHTRIS di tiap platform -->
           <a href="#" target="_blank" class="stream-btn spotify">
             <span>Spotify</span>
           </a>
-          <a href="#" target="_blank" class="stream-btn youtube-music">
+          <a href="https://youtube.com/channel/UCKf_12X2Hxj0PGtv6PyJdMg?si=y7ISLTYeqJvwm9Fr" target="_blank" class="stream-btn youtube-music">
             <span>YouTube Music</span>
           </a>
           <a href="#" target="_blank" class="stream-btn apple-music">
             <span>Apple Music</span>
           </a>
-          <a href="#" target="_blank" class="stream-btn joox">
-            <span>JOOX</span>
+          <a href="#" target="_blank" class="stream-btn deezer">
+            <span>Deezer</span>
           </a>
           <a href="#" target="_blank" class="stream-btn amazon">
             <span>Amazon Music</span>
