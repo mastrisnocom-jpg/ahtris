@@ -33,7 +33,7 @@
       flex-direction: column;
     }
 
-    /* Header & Navigation */
+    /* Navigation Header */
     header {
       display: flex;
       justify-content: space-between;
@@ -99,7 +99,7 @@
       border-color: var(--emerald-primary);
     }
 
-    /* Layout Utama */
+    /* Main Layout */
     .container {
       max-width: 1100px;
       margin: 0 auto;
@@ -111,7 +111,7 @@
       justify-content: center;
     }
 
-    /* Lock Screen / Akses Terbatas */
+    /* Lock Screen (Tampilan Saat Belum Login) */
     .protected-screen {
       text-align: center;
       padding: 60px 24px;
@@ -143,7 +143,7 @@
       line-height: 1.5;
     }
 
-    /* Dashboard Tools */
+    /* Dashboard Layout */
     .dashboard-header {
       display: flex;
       justify-content: space-between;
@@ -206,17 +206,18 @@
       font-size: 0.9rem;
     }
 
-    /* POP-UP (MODAL) STYLING */
+    /* POP-UP MODAL STYLING */
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
       background: rgba(2, 20, 15, 0.85);
-      display: none; /* Disembunyikan secara default */
+      display: none; /* Disembunyikan sampai tombol diklik */
       align-items: center;
       justify-content: center;
       z-index: 1000;
       backdrop-filter: blur(8px);
       padding: 20px;
+      animation: fadeIn 0.2s ease-out;
     }
 
     .modal {
@@ -300,6 +301,11 @@
       color: var(--text-muted);
       border-top: 1px solid var(--border-emerald);
     }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
   </style>
 </head>
 <body>
@@ -310,21 +316,21 @@
       <span>🚀</span> CreatorTools
     </div>
     <div class="user-menu" id="userMenu">
-      <button class="btn" onclick="toggleModal(true, 'login')">Login / Daftar</button>
+      <button class="btn" onclick="showAuthModal('login')">Login / Daftar</button>
     </div>
   </header>
 
   <div class="container">
 
-    <!-- Screen Terkunci -->
+    <!-- Locked View -->
     <div id="lockedView" class="protected-screen">
       <div class="lock-icon">🔒</div>
       <h2>Akses Terbatas</h2>
       <p>Silakan login terlebih dahulu untuk mengakses kumpulan alat pembuat konten.</p>
-      <button class="btn" onclick="toggleModal(true, 'login')">Login Sekarang</button>
+      <button class="btn" onclick="showAuthModal('login')">Login Sekarang</button>
     </div>
 
-    <!-- Screen Dashboard -->
+    <!-- Dashboard View -->
     <div id="dashboardView" style="display: none;">
       <div class="dashboard-header">
         <div>
@@ -343,10 +349,10 @@
 
   </div>
 
-  <!-- POP-UP LOGIN / DAFTAR -->
+  <!-- POP-UP LOGIN / DAFTAR MODAL -->
   <div class="modal-overlay" id="authModal">
     <div class="modal">
-      <button class="modal-close" onclick="toggleModal(false)">&times;</button>
+      <button class="modal-close" onclick="closeAuthModal()">&times;</button>
       
       <div class="modal-tabs">
         <button class="tab-btn active" id="tabLogin" onclick="switchTab('login')">Login</button>
@@ -368,7 +374,7 @@
     </div>
   </div>
 
-  <!-- POP-UP TAMBAH TOOL -->
+  <!-- POP-UP TAMBAH TOOL MODAL -->
   <div class="modal-overlay" id="addToolModal">
     <div class="modal">
       <button class="modal-close" onclick="document.getElementById('addToolModal').style.display='none'">&times;</button>
@@ -400,6 +406,7 @@
     &copy; 2026 Content Creator Toolkit — Emerald Edition.
   </footer>
 
+  <!-- SCRIPT LOGIC SUPABASE & POPUP -->
   <script>
     const SUPABASE_URL = "https://lcpskriooezyxgrnarol.supabase.co"; 
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxjcHNrcmlvb2V6eXhncm5hcm9sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ5MDA0ODksImV4cCI6MjEwMDQ3NjQ4OX0.5mdkHtNvDSU_HkGpQfODJ7xE1M-fLioXuqxsY_kaFbA"; 
@@ -410,11 +417,14 @@
     let currentUser = null;
     let userRole = 'user';
 
-    // FUNGSI UNTUK MEMBUKA / MENUTUP POP-UP
-    function toggleModal(show, mode = 'login') {
-      const modal = document.getElementById('authModal');
-      modal.style.display = show ? 'flex' : 'none';
-      if(show) switchTab(mode);
+    // FUNGSI KONTROL POP-UP (PASTI BERJALAN)
+    function showAuthModal(mode = 'login') {
+      switchTab(mode);
+      document.getElementById('authModal').style.display = 'flex';
+    }
+
+    function closeAuthModal() {
+      document.getElementById('authModal').style.display = 'none';
     }
 
     function switchTab(mode) {
@@ -434,6 +444,7 @@
       }
     }
 
+    // INIT PAGE & AUTH LISTENER
     window.addEventListener('DOMContentLoaded', () => {
       checkAuthState();
 
@@ -504,7 +515,7 @@
 
       const userMenu = document.getElementById('userMenu');
       userMenu.innerHTML = `
-        <button class="btn" onclick="toggleModal(true, 'login')">Login / Daftar</button>
+        <button class="btn" onclick="showAuthModal('login')">Login / Daftar</button>
       `;
     }
 
@@ -585,26 +596,29 @@
 
       try {
         if (authMode === 'register') {
+          // PROSES REGISTER
           const { data: signUpData, error: signUpError } = await supabase.auth.signUp({ email, password });
           
           if (signUpError) {
             alert('Gagal Daftar: ' + signUpError.message);
           } else {
+            // LOGIN OTOMATIS SETELAH REGISTRASI BERHASIL
             const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
             if (signInError) {
               alert('Pendaftaran berhasil! Silakan pindah ke tab Login untuk masuk.');
               switchTab('login');
             } else {
               alert('Pendaftaran Berhasil! Selamat datang.');
-              toggleModal(false);
+              closeAuthModal();
             }
           }
         } else {
+          // PROSES LOGIN
           const { data, error } = await supabase.auth.signInWithPassword({ email, password });
           if (error) {
             alert('Login Gagal: ' + error.message);
           } else {
-            toggleModal(false);
+            closeAuthModal();
           }
         }
       } catch (err) {
