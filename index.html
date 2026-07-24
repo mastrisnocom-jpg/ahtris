@@ -1,638 +1,299 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Content Creator Tools Hub</title>
-  <!-- Supabase JS SDK -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <style>
-    :root {
-      --bg-dark: #022c22;
-      --bg-card: rgba(6, 78, 59, 0.4);
-      --border-emerald: rgba(16, 185, 129, 0.25);
-      --emerald-primary: #10b981;
-      --emerald-hover: #059669;
-      --emerald-light: #a7f3d0;
-      --text-main: #f0fdf4;
-      --text-muted: #6ee7b7;
-    }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Supabase Auth Modal Example</title>
 
+  <!-- Supabase JS Library -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: Arial, sans-serif;
     }
 
-    body {
-      background: linear-gradient(135deg, #022c22 0%, #064e3b 100%);
-      color: var(--text-main);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-
-    /* Navigation Header */
-    header {
+    /* --- Top Navigation --- */
+    nav {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 16px 24px;
-      background: rgba(2, 44, 34, 0.85);
-      backdrop-filter: blur(10px);
-      border-bottom: 1px solid var(--border-emerald);
-      position: sticky;
-      top: 0;
-      z-index: 100;
+      padding: 1rem 2rem;
+      background-color: #f8f9fa;
+      border-bottom: 1px solid #e9ecef;
     }
 
-    .logo {
-      font-size: 1.25rem;
-      font-weight: 700;
-      color: var(--emerald-primary);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .user-menu {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-    }
-
-    .user-badge {
-      font-size: 0.8rem;
-      background: rgba(16, 185, 129, 0.15);
-      color: var(--emerald-light);
-      padding: 6px 12px;
-      border-radius: 20px;
-      border: 1px solid var(--border-emerald);
-    }
-
-    .btn {
-      background: var(--emerald-primary);
-      color: #022c22;
+    .nav-btn {
+      padding: 8px 16px;
+      background-color: #3ecf8e; /* Supabase Green */
+      color: white;
       border: none;
-      padding: 10px 20px;
-      border-radius: 10px;
-      font-weight: 600;
+      border-radius: 6px;
       cursor: pointer;
-      transition: all 0.2s ease;
-      font-size: 0.9rem;
+      font-weight: bold;
+      transition: opacity 0.2s;
     }
 
-    .btn:hover {
-      background: var(--emerald-hover);
-      color: #ffffff;
+    .nav-btn:hover {
+      opacity: 0.9;
     }
 
-    .btn-secondary {
-      background: transparent;
-      color: var(--emerald-light);
-      border: 1px solid var(--border-emerald);
+    .logout-btn {
+      background-color: #dc3545;
     }
 
-    .btn-secondary:hover {
-      background: rgba(16, 185, 129, 0.1);
-      border-color: var(--emerald-primary);
-    }
-
-    /* Main Layout */
-    .container {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 40px 20px;
-      flex-grow: 1;
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-
-    /* Lock Screen (Tampilan Saat Belum Login) */
-    .protected-screen {
-      text-align: center;
-      padding: 60px 24px;
-      background: rgba(6, 78, 59, 0.3);
-      border: 1px solid var(--border-emerald);
-      border-radius: 20px;
-      max-width: 500px;
-      margin: 0 auto;
-      width: 100%;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-    }
-
-    .protected-screen .lock-icon {
-      font-size: 4rem;
-      margin-bottom: 16px;
-    }
-
-    .protected-screen h2 {
-      font-size: 1.8rem;
-      font-weight: 700;
-      margin-bottom: 12px;
-      color: #ffffff;
-    }
-
-    .protected-screen p {
-      color: var(--text-muted);
-      margin-bottom: 28px;
-      font-size: 0.95rem;
-      line-height: 1.5;
-    }
-
-    /* Dashboard Layout */
-    .dashboard-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 30px;
-      flex-wrap: wrap;
-      gap: 15px;
-    }
-
-    .tools-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 20px;
-    }
-
-    .tool-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-emerald);
-      border-radius: 14px;
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      text-decoration: none;
-      color: inherit;
-      transition: transform 0.2s ease, border-color 0.2s ease;
-    }
-
-    .tool-card:hover {
-      transform: translateY(-4px);
-      border-color: var(--emerald-primary);
-    }
-
-    .tool-icon {
-      font-size: 2rem;
-      margin-bottom: 10px;
-    }
-
-    .tool-title {
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: #ffffff;
-      margin-bottom: 6px;
-    }
-
-    .tool-category {
-      font-size: 0.75rem;
-      color: var(--emerald-light);
-      background: rgba(16, 185, 129, 0.1);
-      padding: 3px 8px;
-      border-radius: 4px;
-      display: inline-block;
-      margin-bottom: 15px;
-    }
-
-    .tool-link-btn {
-      text-align: right;
-      color: var(--emerald-primary);
-      font-weight: 600;
-      font-size: 0.9rem;
-    }
-
-    /* POP-UP MODAL STYLING */
+    /* --- Modal Overlay & Container --- */
     .modal-overlay {
       position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(2, 20, 15, 0.85);
-      display: none; /* Disembunyikan sampai tombol diklik */
-      align-items: center;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
       justify-content: center;
-      z-index: 1000;
-      backdrop-filter: blur(8px);
-      padding: 20px;
-      animation: fadeIn 0.2s ease-out;
+      align-items: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
     }
 
-    .modal {
-      background: #064e3b;
-      border: 1px solid var(--border-emerald);
-      padding: 32px 28px;
-      border-radius: 16px;
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 2rem;
+      border-radius: 8px;
       width: 100%;
-      max-width: 400px;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+      max-width: 380px;
       position: relative;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
     }
 
-    .modal-close {
+    .close-btn {
       position: absolute;
-      top: 16px;
-      right: 20px;
+      top: 12px;
+      right: 15px;
       background: none;
       border: none;
-      color: var(--text-muted);
       font-size: 1.5rem;
       cursor: pointer;
+      color: #6c757d;
     }
 
-    .modal-tabs {
-      display: flex;
-      border-bottom: 1px solid var(--border-emerald);
-      margin-bottom: 24px;
-    }
-
-    .tab-btn {
-      flex: 1;
-      padding: 10px;
-      background: none;
-      border: none;
-      color: var(--text-muted);
-      font-weight: 600;
-      font-size: 1rem;
-      cursor: pointer;
-      border-bottom: 2px solid transparent;
-    }
-
-    .tab-btn.active {
-      color: var(--emerald-primary);
-      border-bottom-color: var(--emerald-primary);
-    }
-
+    /* --- Form Styling --- */
     .form-group {
-      margin-bottom: 18px;
+      margin-bottom: 1rem;
     }
 
     .form-group label {
       display: block;
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      margin-bottom: 8px;
+      margin-bottom: 0.3rem;
+      font-size: 0.9rem;
+      color: #333;
     }
 
     .form-group input {
       width: 100%;
-      padding: 12px 14px;
-      border-radius: 8px;
-      border: 1px solid var(--border-emerald);
-      background: rgba(2, 44, 34, 0.7);
-      color: #ffffff;
-      outline: none;
-      font-size: 0.95rem;
-    }
-
-    .form-submit-btn {
-      width: 100%;
-      margin-top: 10px;
-      padding: 12px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
       font-size: 1rem;
     }
 
-    footer {
-      text-align: center;
-      padding: 20px;
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      border-top: 1px solid var(--border-emerald);
+    .submit-btn {
+      width: 100%;
+      padding: 10px;
+      background-color: #3ecf8e;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1rem;
+      margin-top: 0.5rem;
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: scale(0.95); }
-      to { opacity: 1; transform: scale(1); }
+    .toggle-text {
+      text-align: center;
+      margin-top: 1rem;
+      font-size: 0.85rem;
+    }
+
+    .toggle-text a {
+      color: #3ecf8e;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .toggle-text a:hover {
+      text-decoration: underline;
+    }
+
+    .message {
+      margin-top: 0.8rem;
+      font-size: 0.85rem;
+      text-align: center;
     }
   </style>
 </head>
 <body>
 
-  <!-- Header -->
-  <header>
-    <div class="logo">
-      <span>🚀</span> CreatorTools
+  <!-- Top Navigation Bar -->
+  <nav>
+    <h2>Website Saya</h2>
+    <div id="authContainer">
+      <button class="nav-btn" id="openAuthBtn">Login / Register</button>
     </div>
-    <div class="user-menu" id="userMenu">
-      <button class="btn" onclick="showAuthModal('login')">Login / Daftar</button>
-    </div>
-  </header>
+  </nav>
 
-  <div class="container">
+  <!-- Content Placeholder -->
+  <main style="padding: 2rem; text-align: center;">
+    <h1 id="welcomeText">Selamat Datang!</h1>
+    <p>Silakan login untuk mengakses fitur lengkap.</p>
+  </main>
 
-    <!-- Locked View -->
-    <div id="lockedView" class="protected-screen">
-      <div class="lock-icon">🔒</div>
-      <h2>Akses Terbatas</h2>
-      <p>Silakan login terlebih dahulu untuk mengakses kumpulan alat pembuat konten.</p>
-      <button class="btn" onclick="showAuthModal('login')">Login Sekarang</button>
-    </div>
-
-    <!-- Dashboard View -->
-    <div id="dashboardView" style="display: none;">
-      <div class="dashboard-header">
-        <div>
-          <h2>Kumpulan Alat Pembuat Konten</h2>
-          <p style="color: var(--text-muted);">Pilih alat yang Anda butuhkan untuk mempermudah pekerjaan.</p>
-        </div>
-        <button id="btnAdminAdd" class="btn" style="display: none;" onclick="document.getElementById('addToolModal').style.display='flex'">
-          + Tambah Tool Baru
-        </button>
-      </div>
-
-      <div class="tools-grid" id="toolsContainer">
-        <p style="color: var(--text-muted);">Memuat data tool...</p>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- POP-UP LOGIN / DAFTAR MODAL -->
-  <div class="modal-overlay" id="authModal">
-    <div class="modal">
-      <button class="modal-close" onclick="closeAuthModal()">&times;</button>
+  <!-- Pop-up Modal Auth -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal-content">
+      <button class="close-btn" id="closeModalBtn">&times;</button>
       
-      <div class="modal-tabs">
-        <button class="tab-btn active" id="tabLogin" onclick="switchTab('login')">Login</button>
-        <button class="tab-btn" id="tabRegister" onclick="switchTab('register')">Daftar Akun</button>
+      <h2 id="modalTitle" style="margin-bottom: 1.2rem;">Login</h2>
+
+      <form id="authForm">
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" placeholder="nama@email.com" required>
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" placeholder="••••••••" required>
+        </div>
+        <button type="submit" class="submit-btn" id="submitBtn">Masuk</button>
+      </form>
+
+      <div class="toggle-text">
+        <span id="toggleQuestion">Belum punya akun?</span>
+        <a href="#" id="toggleAuthMode">Daftar sekarang</a>
       </div>
 
-      <div class="form-group">
-        <label>Email</label>
-        <input type="email" id="authEmail" placeholder="nama@email.com" />
-      </div>
-      <div class="form-group">
-        <label>Password</label>
-        <input type="password" id="authPassword" placeholder="••••••••" />
-      </div>
-
-      <button class="btn form-submit-btn" id="btnSubmitAuth" onclick="handleAuth()">
-        Masuk
-      </button>
+      <div class="message" id="authMessage"></div>
     </div>
   </div>
 
-  <!-- POP-UP TAMBAH TOOL MODAL -->
-  <div class="modal-overlay" id="addToolModal">
-    <div class="modal">
-      <button class="modal-close" onclick="document.getElementById('addToolModal').style.display='none'">&times;</button>
-      <h3 style="margin-bottom: 20px; color: #fff;">Tambah Tool Baru</h3>
-      <div class="form-group">
-        <label>Judul Tool</label>
-        <input type="text" id="toolTitleInput" placeholder="Contoh: Canva" />
-      </div>
-      <div class="form-group">
-        <label>Link / URL Tool</label>
-        <input type="url" id="toolUrlInput" placeholder="https://www.canva.com" />
-      </div>
-      <div class="form-group">
-        <label>Kategori</label>
-        <input type="text" id="toolCategoryInput" placeholder="Contoh: Desain, Video, AI" />
-      </div>
-      <div class="form-group">
-        <label>Emoji Icon</label>
-        <input type="text" id="toolIconInput" placeholder="🎨" value="🔗" />
-      </div>
-      <div style="display: flex; gap: 10px; margin-top: 24px;">
-        <button class="btn btn-secondary" style="flex: 1;" onclick="document.getElementById('addToolModal').style.display='none'">Batal</button>
-        <button class="btn" style="flex: 1;" onclick="addNewTool()">Simpan</button>
-      </div>
-    </div>
-  </div>
-
-  <footer>
-    &copy; 2026 Content Creator Toolkit — Emerald Edition.
-  </footer>
-
-  <!-- SCRIPT LOGIC SUPABASE & POPUP -->
   <script>
+    // 1. Inisialisasi Supabase
     const SUPABASE_URL = "https://lcpskriooezyxgrnarol.supabase.co"; 
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxjcHNrcmlvb2V6eXhncm5hcm9sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ5MDA0ODksImV4cCI6MjEwMDQ3NjQ4OX0.5mdkHtNvDSU_HkGpQfODJ7xE1M-fLioXuqxsY_kaFbA"; 
-
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxjcHNrcmlvb2V6eXhncm5hcm9sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ5MDA0ODksImV4cCI6MjEwMDQ3NjQ4OX0.5mdkHtNvDSU_HkGpQfODJ7xE1M-fLioXuqxsY_kaFbA";
+    
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    let authMode = 'login';
-    let currentUser = null;
-    let userRole = 'user';
+    // 2. Element DOM
+    const modalOverlay = document.getElementById('modalOverlay');
+    const openAuthBtn = document.getElementById('openAuthBtn');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    const authForm = document.getElementById('authForm');
+    const modalTitle = document.getElementById('modalTitle');
+    const submitBtn = document.getElementById('submitBtn');
+    const toggleAuthMode = document.getElementById('toggleAuthMode');
+    const toggleQuestion = document.getElementById('toggleQuestion');
+    const authMessage = document.getElementById('authMessage');
+    const authContainer = document.getElementById('authContainer');
+    const welcomeText = document.getElementById('welcomeText');
 
-    // FUNGSI KONTROL POP-UP (PASTI BERJALAN)
-    function showAuthModal(mode = 'login') {
-      switchTab(mode);
-      document.getElementById('authModal').style.display = 'flex';
-    }
+    let isSignUp = false; // Mode toggle (false = Login, true = Register)
 
-    function closeAuthModal() {
-      document.getElementById('authModal').style.display = 'none';
-    }
-
-    function switchTab(mode) {
-      authMode = mode;
-      const tabLogin = document.getElementById('tabLogin');
-      const tabRegister = document.getElementById('tabRegister');
-      const submitBtn = document.getElementById('btnSubmitAuth');
-
-      if (mode === 'login') {
-        tabLogin.classList.add('active');
-        tabRegister.classList.remove('active');
-        submitBtn.innerText = 'Masuk';
-      } else {
-        tabRegister.classList.add('active');
-        tabLogin.classList.remove('active');
-        submitBtn.innerText = 'Buat Akun';
-      }
-    }
-
-    // INIT PAGE & AUTH LISTENER
-    window.addEventListener('DOMContentLoaded', () => {
-      checkAuthState();
-
-      supabase.auth.onAuthStateChange(async (event, session) => {
-        if (session) {
-          currentUser = session.user;
-          await fetchUserRole(currentUser.id);
-          renderLoggedInUI();
-          loadTools();
-        } else {
-          currentUser = null;
-          renderLoggedOutUI();
-        }
-      });
+    // 3. Open & Close Modal Handlers
+    openAuthBtn.addEventListener('click', () => modalOverlay.classList.add('active'));
+    closeModalBtn.addEventListener('click', closeModal);
+    
+    // Close modal saat klik area luar/overlay
+    modalOverlay.addEventListener('click', (e) => {
+      if (e.target === modalOverlay) closeModal();
     });
 
-    async function checkAuthState() {
+    function closeModal() {
+      modalOverlay.classList.remove('active');
+      authMessage.textContent = '';
+      authForm.reset();
+    }
+
+    // 4. Toggle Mode (Login <-> Register)
+    toggleAuthMode.addEventListener('click', (e) => {
+      e.preventDefault();
+      isSignUp = !isSignUp;
+      authMessage.textContent = '';
+
+      if (isSignUp) {
+        modalTitle.textContent = 'Daftar Akun Baru';
+        submitBtn.textContent = 'Daftar';
+        toggleQuestion.textContent = 'Sudah punya akun?';
+        toggleAuthMode.textContent = 'Login di sini';
+      } else {
+        modalTitle.textContent = 'Login';
+        submitBtn.textContent = 'Masuk';
+        toggleQuestion.textContent = 'Belum punya akun?';
+        toggleAuthMode.textContent = 'Daftar sekarang';
+      }
+    });
+
+    // 5. Form Submit Handler (Login / Register)
+    authForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      authMessage.style.color = '#333';
+      authMessage.textContent = 'Memproses...';
+
+      if (isSignUp) {
+        // Process Sign Up
+        const { data, error } = await supabase.auth.signUp({ email, password });
+        if (error) {
+          authMessage.style.color = '#dc3545';
+          authMessage.textContent = error.message;
+        } else {
+          authMessage.style.color = '#198754';
+          authMessage.textContent = 'Pendaftaran berhasil! Cek email kamu untuk konfirmasi.';
+        }
+      } else {
+        // Process Sign In
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) {
+          authMessage.style.color = '#dc3545';
+          authMessage.textContent = error.message;
+        } else {
+          closeModal();
+          checkUserSession();
+        }
+      }
+    });
+
+    // 6. Cek & Update Status User
+    async function checkUserSession() {
       const { data: { session } } = await supabase.auth.getSession();
+
       if (session) {
-        currentUser = session.user;
-        await fetchUserRole(currentUser.id);
-        renderLoggedInUI();
-        loadTools();
-      } else {
-        currentUser = null;
-        renderLoggedOutUI();
+        const userEmail = session.user.email;
+        welcomeText.textContent = `Selamat Datang, ${userEmail}!`;
+        authContainer.innerHTML = `
+          <button class="nav-btn logout-btn" id="logoutBtn">Logout</button>
+        `;
+
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+          await supabase.auth.signOut();
+          location.reload();
+        });
       }
     }
 
-    async function fetchUserRole(userId) {
-      try {
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('role')
-          .eq('id', userId)
-          .maybeSingle();
-
-        if (data && data.role) {
-          userRole = data.role;
-        } else {
-          userRole = 'user';
-        }
-      } catch (err) {
-        userRole = 'user';
-      }
-    }
-
-    function renderLoggedInUI() {
-      document.getElementById('lockedView').style.display = 'none';
-      document.getElementById('dashboardView').style.display = 'block';
-
-      const userMenu = document.getElementById('userMenu');
-      userMenu.innerHTML = `
-        <span class="user-badge">${currentUser.email} (${userRole})</span>
-        <button class="btn btn-secondary" onclick="handleLogout()">Logout</button>
-      `;
-
-      if (userRole === 'super_admin') {
-        document.getElementById('btnAdminAdd').style.display = 'inline-block';
-      } else {
-        document.getElementById('btnAdminAdd').style.display = 'none';
-      }
-    }
-
-    function renderLoggedOutUI() {
-      document.getElementById('lockedView').style.display = 'block';
-      document.getElementById('dashboardView').style.display = 'none';
-
-      const userMenu = document.getElementById('userMenu');
-      userMenu.innerHTML = `
-        <button class="btn" onclick="showAuthModal('login')">Login / Daftar</button>
-      `;
-    }
-
-    async function loadTools() {
-      const container = document.getElementById('toolsContainer');
-      container.innerHTML = "<p style='color: var(--text-muted);'>Memuat data tool...</p>";
-
-      const { data: tools, error } = await supabase
-        .from('tools')
-        .select('*')
-        .order('id', { ascending: false });
-
-      if (error) {
-        container.innerHTML = `<p style='color: #f87171;'>Gagal memuat data: ${error.message}</p>`;
-        return;
-      }
-
-      if (!tools || tools.length === 0) {
-        container.innerHTML = "<p style='color: var(--text-muted);'>Belum ada tool yang ditambahkan.</p>";
-        return;
-      }
-
-      container.innerHTML = tools.map(tool => `
-        <a href="${tool.url}" target="_blank" class="tool-card">
-          <div>
-            <div class="tool-icon">${tool.icon || '🔗'}</div>
-            <div class="tool-title">${tool.title}</div>
-            <span class="tool-category">${tool.category || 'Umum'}</span>
-          </div>
-          <div class="tool-link-btn">Buka Tool ↗</div>
-        </a>
-      `).join('');
-    }
-
-    async function addNewTool() {
-      const title = document.getElementById('toolTitleInput').value.trim();
-      const url = document.getElementById('toolUrlInput').value.trim();
-      const category = document.getElementById('toolCategoryInput').value.trim() || 'Umum';
-      const icon = document.getElementById('toolIconInput').value.trim() || '🔗';
-
-      if (!title || !url) {
-        alert('Judul dan Link Tool wajib diisi!');
-        return;
-      }
-
-      const { error } = await supabase
-        .from('tools')
-        .insert([{ title, url, category, icon }]);
-
-      if (error) {
-        alert('Gagal menambah tool: ' + error.message);
-      } else {
-        alert('Tool berhasil ditambahkan!');
-        document.getElementById('addToolModal').style.display = 'none';
-        document.getElementById('toolTitleInput').value = '';
-        document.getElementById('toolUrlInput').value = '';
-        loadTools();
-      }
-    }
-
-    async function handleAuth() {
-      const email = document.getElementById('authEmail').value.trim();
-      const password = document.getElementById('authPassword').value;
-      const submitBtn = document.getElementById('btnSubmitAuth');
-
-      if (!email || !password) {
-        alert('Silakan isi email dan password!');
-        return;
-      }
-
-      if (password.length < 6) {
-        alert('Password minimal terdiri dari 6 karakter!');
-        return;
-      }
-
-      submitBtn.innerText = 'Memproses...';
-      submitBtn.disabled = true;
-
-      try {
-        if (authMode === 'register') {
-          // PROSES REGISTER
-          const { data: signUpData, error: signUpError } = await supabase.auth.signUp({ email, password });
-          
-          if (signUpError) {
-            alert('Gagal Daftar: ' + signUpError.message);
-          } else {
-            // LOGIN OTOMATIS SETELAH REGISTRASI BERHASIL
-            const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
-            if (signInError) {
-              alert('Pendaftaran berhasil! Silakan pindah ke tab Login untuk masuk.');
-              switchTab('login');
-            } else {
-              alert('Pendaftaran Berhasil! Selamat datang.');
-              closeAuthModal();
-            }
-          }
-        } else {
-          // PROSES LOGIN
-          const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-          if (error) {
-            alert('Login Gagal: ' + error.message);
-          } else {
-            closeAuthModal();
-          }
-        }
-      } catch (err) {
-        alert('Terjadi kesalahan: ' + err.message);
-      } finally {
-        submitBtn.innerText = authMode === 'register' ? 'Buat Akun' : 'Masuk';
-        submitBtn.disabled = false;
-      }
-    }
-
-    async function handleLogout() {
-      await supabase.auth.signOut();
-    }
+    // Jalankan cek session saat halaman dimuat
+    checkUserSession();
   </script>
-
 </body>
 </html>
