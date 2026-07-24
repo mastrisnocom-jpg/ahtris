@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Kabur ke Masa Purna Bakti!</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        body {
+            background: #0f172a;
+            font-family: 'Fredoka', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            overflow: hidden;
+        }
+
+        .game-container {
+            position: relative;
+            width: 100%;
+            max-width: 420px;
+            height: 600px;
+            background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+            border-radius: 24px;
+            border: 4px solid #38bdf8;
+            box-shadow: 0 20px 60px rgba(56, 189, 248, 0.2);
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* --- HUD & OVERLAYS --- */
+        .hud-score {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.88);
+            backdrop-filter: blur(8px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 25px;
+            z-index: 20;
+            transition: opacity 0.2s;
+        }
+
+        .overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #facc15;
+            text-shadow: 0 4px 12px rgba(250, 204, 21, 0.3);
+            margin-bottom: 10px;
+            line-height: 1.2;
+        }
+
+        .desc {
+            font-size: 0.95rem;
+            color: #cbd5e1;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+
+        .btn-start {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: #fff;
+            font-family: inherit;
+            font-size: 1.2rem;
+            font-weight: 700;
+            padding: 14px 40px;
+            border: none;
+            border-radius: 50px;
+            box-shadow: 0 8px 25px rgba(245, 158, 11, 0.4);
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+
+        .btn-start:active {
+            transform: scale(0.95);
+        }
+
+        .badge-powerup {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(250, 204, 21, 0.2);
+            border: 1px solid #facc15;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: #facc15;
+            display: none;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="game-container" id="gameContainer">
+        <div class="hud-score" id="scoreDisplay">0</div>
+        <div class="badge-powerup" id="powerupBadge">⚡ KOPI PENSIUN: KEBAL!</div>
+
+        <canvas id="gameCanvas" width="420" height="600"></canvas>
+
+        <!-- Start Screen -->
+        <div class="overlay" id="startScreen">
+            <div style="font-size: 4rem; margin-bottom: 10px;">🏃‍♂️💨</div>
+            <div class="title">KABUR KE MASA PURNA BAKTI!</div>
+            <div class="desc">
+                Klik layar / tekan **SPASI** untuk terbang melompati bertumpuk-tumpuk berkas lembur & deadline kantor!
+            </div>
+            <button class="btn-start" onclick="startGame(event)">MULAI KABUR</button>
+        </div>
+
+        <!-- Game Over Screen -->
+        <div class="overlay hidden" id="gameOverScreen">
+            <div style="font-size: 3.5rem; margin-bottom: 5px;" id="gameoverEmoji">💥</div>
+            <div class="title" style="color: #ef4444;" id="gameoverTitle">LERTANGKAP LEMBUR!</div>
+            <div class="desc" id="gameoverDesc">
+                Skor Jarak Purna Bakti Anda: <strong id="finalScore" style="color:#facc15; font-size: 1.3rem;">0</strong>
+            </div>
+            <button class="btn-start" onclick="startGame(event)">COBA LAGI</button>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const container = document.getElementById('gameContainer');
+
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        const powerupBadge = document.getElementById('powerupBadge');
+        const startScreen = document.getElementById('startScreen');
+        const gameOverScreen = document.getElementById('gameOverScreen');
+        const finalScore = document.getElementById('finalScore');
+
+        // Audio Effects menggunakan Web Audio API (Tanpa file luar)
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playSound(freq, type = 'sine', duration = 0.1) {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + duration);
+        }
+
+        // Game Variables
+        let isRunning = false;
+        let score = 0;
+        let frames = 0;
+
+        // Player (Sang Pensiunan)
+        const player = {
+            x: 70,
+            y: 250,
+            width: 40,
+            height: 40,
+            gravity: 0.38,
+            lift: -7.5,
+            velocity: 0,
+            invincible: false,
+            invincibleTimer: 0
+        };
+
+        // Obstacles & Items
+        let obstacles = [];
+        let items = [];
+
+        function jump() {
+            if (!isRunning) return;
+            player.velocity = player.lift;
+            playSound(400, 'triangle', 0.15); // Efek Loncat
+        }
+
+        // Input Listeners
+        window.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') jump();
+        });
+        container.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            jump();
+        });
+        container.addEventListener('mousedown', (e) => {
+            if(e.target.tagName !== 'BUTTON') jump();
+        });
+
+        function startGame(e) {
+            if(e) e.stopPropagation();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+
+            // Reset Game State
+            player.y = 250;
+            player.velocity = 0;
+            player.invincible = false;
+            obstacles = [];
+            items = [];
+            score = 0;
+            frames = 0;
+            scoreDisplay.textContent = '0';
+            powerupBadge.style.display = 'none';
+
+            startScreen.classList.add('hidden');
+            gameOverScreen.classList.add('hidden');
+            isRunning = true;
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        function createObstacle() {
+            const gap = 160; // Celah antar rintangan berkas
+            const minHeight = 50;
+            const maxHeight = canvas.height - gap - minHeight - 60;
+            const topHeight = Math.floor(Math.random() * (maxHeight - minHeight + 1)) + minHeight;
+
+            obstacles.push({
+                x: canvas.width,
+                top: topHeight,
+                bottom: canvas.height - topHeight - gap,
+                passed: false
+            });
+
+            // Random Item Spawning di tengah celah
+            if (Math.random() < 0.4) {
+                const isCoffee = Math.random() < 0.5;
+                items.push({
+                    x: canvas.width + 20,
+                    y: topHeight + gap / 2 - 15,
+                    type: isCoffee ? '☕' : '✈️',
+                    effect: isCoffee ? 'coffee' : 'ticket'
+                });
+            }
+        }
+
+        function gameLoop() {
+            if (!isRunning) return;
+
+            frames++;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // 1. Draw Background Grid/Lines
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+            ctx.lineWidth = 2;
+            for(let i = 0; i < canvas.width; i += 40) {
+                ctx.beginPath();
+                ctx.moveTo(i - (frames % 40), 0);
+                ctx.lineTo(i - (frames % 40), canvas.height);
+                ctx.stroke();
+            }
+
+            // 2. Player Logic & Render
+            player.velocity += player.gravity;
+            player.y += player.velocity;
+
+            // Invincibility Timer
+            if (player.invincible) {
+                player.invincibleTimer--;
+                if (player.invincibleTimer <= 0) {
+                    player.invincible = false;
+                    powerupBadge.style.display = 'none';
+                }
+            }
+
+            // Render Player Emoji (Pensiunan)
+            ctx.save();
+            ctx.font = '36px serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            // Efek Kelip kalau Kebal
+            if (player.invincible && Math.floor(frames / 5) % 2 === 0) {
+                ctx.globalAlpha = 0.5;
+            }
+
+            ctx.fillText(player.invincible ? '😎' : '👨‍💼', player.x, player.y);
+            ctx.restore();
+
+            // Batas Atas & Bawah Screen
+            if (player.y + 20 >= canvas.height || player.y - 20 <= 0) {
+                if (!player.invincible) gameOver();
+            }
+
+            // 3. Obstacles (Tumpukan Berkas Kantor)
+            if (frames % 100 === 0) createObstacle();
+
+            for (let i = obstacles.length - 1; i >= 0; i--) {
+                let obs = obstacles[i];
+                obs.x -= 3; // Kecepatan gerak berkas
+
+                // Gambar Rintangan Atas & Bawah (Representasi Berkas)
+                ctx.fillStyle = '#f87171'; // Merah Kantor
+                ctx.strokeStyle = '#ef4444';
+                ctx.lineWidth = 3;
+
+                // Top Pipe (Berkas Atas)
+                ctx.fillRect(obs.x, 0, 50, obs.top);
+                ctx.strokeRect(obs.x, 0, 50, obs.top);
+
+                // Bottom Pipe (Berkas Bawah)
+                ctx.fillRect(obs.x, canvas.height - obs.bottom, 50, obs.bottom);
+                ctx.strokeRect(obs.x, canvas.height - obs.bottom, 50, obs.bottom);
+
+                // Icon Berkas/Tugas pada Rintangan
+                ctx.font = '20px serif';
+                ctx.fillText('📁', obs.x + 15, obs.top - 20);
+                ctx.fillText('📊', obs.x + 15, canvas.height - obs.bottom + 30);
+
+                // Check Score
+                if (!obs.passed && obs.x < player.x) {
+                    obs.passed = true;
+                    score++;
+                    scoreDisplay.textContent = score;
+                    playSound(600, 'sine', 0.1);
+                }
+
+                // Check Collision
+                if (!player.invincible) {
+                    if (
+                        player.x + 15 > obs.x &&
+                        player.x - 15 < obs.x + 50 &&
+                        (player.y - 15 < obs.top || player.y + 15 > canvas.height - obs.bottom)
+                    ) {
+                        gameOver();
+                    }
+                }
+
+                // Delete Offscreen
+                if (obs.x < -60) obstacles.splice(i, 1);
+            }
+
+            // 4. Power-Up Items
+            for (let i = items.length - 1; i >= 0; i--) {
+                let item = items[i];
+                item.x -= 3;
+
+                ctx.font = '28px serif';
+                ctx.fillText(item.type, item.x, item.y);
+
+                // Collision with Item
+                const dist = Math.hypot(player.x - item.x, player.y - item.y);
+                if (dist < 30) {
+                    if (item.effect === 'coffee') {
+                        player.invincible = true;
+                        player.invincibleTimer = 200; // ~3.5 detik kebal
+                        powerupBadge.style.display = 'block';
+                        playSound(800, 'square', 0.3);
+                    } else if (item.effect === 'ticket') {
+                        score += 3; // Bonus Poin
+                        scoreDisplay.textContent = score;
+                        playSound(1000, 'sine', 0.2);
+                    }
+                    items.splice(i, 1);
+                }
+
+                if (item.x < -40) items.splice(i, 1);
+            }
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        function gameOver() {
+            isRunning = false;
+            playSound(150, 'sawtooth', 0.4); // Sound saat kalah
+            finalScore.textContent = score;
+            gameOverScreen.classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
