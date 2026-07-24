@@ -267,14 +267,13 @@
       <span>🚀</span> CreatorTools
     </div>
     <div class="user-menu" id="userMenu">
-      <!-- Tombol/Informasi User diisi dinamis oleh JS -->
       <button class="btn" onclick="openModal('authModal')">Login / Daftar</button>
     </div>
   </header>
 
   <div class="container">
 
-    <!-- Tampilan 1: Belum Login (Locked View) -->
+    <!-- Tampilan 1: Belum Login -->
     <div id="lockedView" class="protected-screen">
       <div style="font-size: 3rem; margin-bottom: 15px;">🔒</div>
       <h2>Akses Terbatas</h2>
@@ -282,20 +281,18 @@
       <button class="btn" onclick="openModal('authModal')">Login Sekarang</button>
     </div>
 
-    <!-- Tampilan 2: Sudah Login (Dashboard Main Content) -->
+    <!-- Tampilan 2: Sudah Login -->
     <div id="dashboardView" style="display: none;">
       <div class="dashboard-header">
         <div>
           <h2>Kumpulan Alat Pembuat Konten</h2>
           <p style="color: var(--text-muted);">Pilih alat yang Anda butuhkan untuk mempermudah pekerjaan.</p>
         </div>
-        <!-- Tombol Tambah Tool (Hanya Tampil untuk Super Admin) -->
         <button id="btnAdminAdd" class="btn" style="display: none;" onclick="openModal('addToolModal')">
           + Tambah Tool Baru
         </button>
       </div>
 
-      <!-- Grid Tempat Daftar Tool Dipanggil dari Supabase -->
       <div class="tools-grid" id="toolsContainer">
         <p style="color: var(--text-muted);">Memuat data tool...</p>
       </div>
@@ -312,7 +309,7 @@
         <input type="email" id="authEmail" placeholder="nama@email.com" />
       </div>
       <div class="form-group">
-        <label>Password</label>
+        <label>Password (Min. 6 Karakter)</label>
         <input type="password" id="authPassword" placeholder="••••••••" />
       </div>
       <div class="modal-actions">
@@ -323,7 +320,7 @@
     </div>
   </div>
 
-  <!-- Modal 2: Form Tambah Tool (Super Admin Only) -->
+  <!-- Modal 2: Form Tambah Tool -->
   <div class="modal-overlay" id="addToolModal">
     <div class="modal">
       <h3>Tambah Tool Baru</h3>
@@ -354,11 +351,11 @@
     &copy; 2026 Content Creator Toolkit — Emerald Edition.
   </footer>
 
-  <!-- Javascript Supabase Logic -->
   <script>
-    // 1. ISI CONFIG SUPABASE ANDA DI SINI
-    const SUPABASE_URL = "sb_publishable_puy9U_93p-7_Q64oHrYUpg_iEF3nJ-c"; // Ganti dengan Supabase URL Anda
-    const SUPABASE_ANON_KEY = "sb_publishable_puy9U_93p-7_Q64oHrYUpg_iEF3nJ-c";       // Ganti dengan Anon Key Anda
+    // GANTI BAGIAN INI DENGAN DATA SUPABASE ANDA
+    const SUPABASE_URL = "https://lcpskriooezyxgrnarol.supabase.co"; 
+    // Key anon bawaan harus berformat eyJhbGciOiJIUzI1Ni...
+    const SUPABASE_ANON_KEY = "sb_publishable_puy9U_93p-7_Q64oHrYUpg_iEF3nJ-c"; 
 
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -366,12 +363,10 @@
     let currentUser = null;
     let userRole = 'user';
 
-    // Inisialisasi Saat Halaman Dimuat
-    window.addEventListener('DOMContentLoaded', async () => {
+    window.addEventListener('DOMContentLoaded', () => {
       checkAuthState();
     });
 
-    // 2. Cek Status Login Pengguna
     async function checkAuthState() {
       const { data: { session } } = await supabase.auth.getSession();
 
@@ -386,22 +381,20 @@
       }
     }
 
-    // 3. Ambil Role User dari Tabel Profiles
     async function fetchUserRole(userId) {
       const { data, error } = await supabase
         .from('profiles')
         .select('role')
         .eq('id', userId)
-        .single();
+        .maybeSingle();
 
-      if (data) {
+      if (data && data.role) {
         userRole = data.role;
       } else {
         userRole = 'user';
       }
     }
 
-    // Render UI Jika Sudah Login
     function renderLoggedInUI() {
       document.getElementById('lockedView').style.display = 'none';
       document.getElementById('dashboardView').style.display = 'block';
@@ -412,7 +405,6 @@
         <button class="btn btn-secondary" onclick="handleLogout()">Logout</button>
       `;
 
-      // Jika Super Admin, Munculkan Tombol Tambah
       if (userRole === 'super_admin') {
         document.getElementById('btnAdminAdd').style.display = 'inline-block';
       } else {
@@ -420,7 +412,6 @@
       }
     }
 
-    // Render UI Jika Belum Login
     function renderLoggedOutUI() {
       document.getElementById('lockedView').style.display = 'block';
       document.getElementById('dashboardView').style.display = 'none';
@@ -431,7 +422,6 @@
       `;
     }
 
-    // 4. Ambil Daftar Tool dari Database Supabase
     async function loadTools() {
       const container = document.getElementById('toolsContainer');
       container.innerHTML = "<p style='color: var(--text-muted);'>Memuat data...</p>";
@@ -442,7 +432,7 @@
         .order('id', { ascending: false });
 
       if (error) {
-        container.innerHTML = `<p style='color: red;'>Gagal memuat data: ${error.message}</p>`;
+        container.innerHTML = `<p style='color: #f87171;'>Gagal memuat data: ${error.message}</p>`;
         return;
       }
 
@@ -463,7 +453,6 @@
       `).join('');
     }
 
-    // 5. Tambah Tool Baru (Khusus Super Admin)
     async function addNewTool() {
       const title = document.getElementById('toolTitleInput').value.trim();
       const url = document.getElementById('toolUrlInput').value.trim();
@@ -484,51 +473,65 @@
       } else {
         alert('Tool berhasil ditambahkan!');
         closeModal('addToolModal');
-        // Reset Form
         document.getElementById('toolTitleInput').value = '';
         document.getElementById('toolUrlInput').value = '';
         loadTools();
       }
     }
 
-    // 6. Penanganan Login & Register Supabase Auth
     async function handleAuth() {
-      const email = document.getElementById('authEmail').value;
+      const email = document.getElementById('authEmail').value.trim();
       const password = document.getElementById('authPassword').value;
+      const submitBtn = document.getElementById('btnSubmitAuth');
 
       if (!email || !password) {
-        alert('Silakan isi email dan password');
+        alert('Silakan isi email dan password!');
         return;
       }
 
-      if (isRegisterMode) {
-        // Register
-        const { data, error } = await supabase.auth.signUp({ email, password });
-        if (error) {
-          alert('Gagal Pendaftaran: ' + error.message);
+      if (password.length < 6) {
+        alert('Password minimal terdiri dari 6 karakter!');
+        return;
+      }
+
+      submitBtn.innerText = 'Proses...';
+      submitBtn.disabled = true;
+
+      try {
+        if (isRegisterMode) {
+          // PROSES DAFTAR
+          const { data, error } = await supabase.auth.signUp({ email, password });
+          
+          if (error) {
+            alert('Gagal Daftar: ' + error.message);
+          } else {
+            alert('Pendaftaran Berhasil! Silakan mencoba Login dengan akun tersebut.');
+            toggleAuthMode();
+          }
         } else {
-          alert('Pendaftaran Berhasil! Silakan Login.');
-          toggleAuthMode();
+          // PROSES LOGIN
+          const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+          
+          if (error) {
+            alert('Login Gagal: ' + error.message);
+          } else {
+            closeModal('authModal');
+            checkAuthState();
+          }
         }
-      } else {
-        // Login
-        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) {
-          alert('Login Gagal: ' + error.message);
-        } else {
-          closeModal('authModal');
-          checkAuthState();
-        }
+      } catch (err) {
+        alert('Terjadi kesalahan: ' + err.message);
+      } finally {
+        submitBtn.innerText = isRegisterMode ? 'Daftar' : 'Login';
+        submitBtn.disabled = false;
       }
     }
 
-    // Logout
     async function handleLogout() {
       await supabase.auth.signOut();
       checkAuthState();
     }
 
-    // Functions Pendukung Modal UI
     function openModal(id) {
       document.getElementById(id).style.display = 'flex';
     }
