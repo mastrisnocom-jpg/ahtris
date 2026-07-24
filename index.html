@@ -1,1 +1,278 @@
-tes
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Website Resmi Penyanyi Cilik 🌟</title>
+  
+  <!-- Font Anak-anak (Fredoka & Quicksand) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* RESET & BASE STYLES */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Quicksand', sans-serif;
+      background-color: #fff9e6;
+      color: #333;
+      line-height: 1.6;
+    }
+
+    h1, h2, h3 {
+      font-family: 'Fredoka', cursive;
+    }
+
+    /* CONTAINER */
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    /* HEADER / HERO SECTION */
+    header {
+      background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);
+      border-radius: 30px;
+      padding: 40px 20px;
+      text-align: center;
+      margin-bottom: 40px;
+      box-shadow: 0 10px 20px rgba(255, 154, 158, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .profile-img {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      border: 6px solid #ffffff;
+      object-fit: cover;
+      box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+      margin-bottom: 15px;
+    }
+
+    header h1 {
+      font-size: 2.5rem;
+      color: #ff477e;
+      margin-bottom: 5px;
+      text-shadow: 2px 2px #ffffff;
+    }
+
+    header p {
+      font-size: 1.2rem;
+      color: #4a4a4a;
+      font-weight: bold;
+    }
+
+    /* BADGE CERIA */
+    .star-badge {
+      display: inline-block;
+      background: #ffbc00;
+      color: #fff;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-weight: bold;
+      font-size: 0.9rem;
+      margin-top: 10px;
+    }
+
+    /* SECTION TITLES */
+    .section-title {
+      text-align: center;
+      font-size: 2rem;
+      color: #ff4a5a;
+      margin-bottom: 25px;
+      position: relative;
+    }
+
+    .section-title span {
+      background: #e0f7fa;
+      padding: 5px 20px;
+      border-radius: 25px;
+      border: 3px dashed #4dd0e1;
+      display: inline-block;
+    }
+
+    /* YOUTUBE SECTION */
+    .youtube-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 25px;
+      margin-bottom: 50px;
+    }
+
+    .video-card {
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 15px;
+      box-shadow: 0 8px 15px rgba(0, 0, 0, 0.05);
+      border: 3px solid #ffecb3;
+      transition: transform 0.3s ease;
+    }
+
+    .video-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .iframe-wrapper {
+      position: relative;
+      padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+      height: 0;
+      overflow: hidden;
+      border-radius: 15px;
+    }
+
+    .iframe-wrapper iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
+    .video-card h3 {
+      margin-top: 12px;
+      font-size: 1.2rem;
+      color: #333;
+      text-align: center;
+    }
+
+    /* STREAMING SERVICES SECTION */
+    .streaming-container {
+      background: #ffffff;
+      border-radius: 25px;
+      padding: 30px 20px;
+      text-align: center;
+      margin-bottom: 50px;
+      box-shadow: 0 8px 15px rgba(0,0,0,0.05);
+      border: 3px solid #b2f2bb;
+    }
+
+    .streaming-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .stream-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 24px;
+      border-radius: 50px;
+      text-decoration: none;
+      color: white;
+      font-weight: bold;
+      font-size: 1rem;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .stream-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Warna Tombol Platform */
+    .spotify { background-color: #1DB954; }
+    .youtube-music { background-color: #FF0000; }
+    .apple-music { background-color: #FA243C; }
+    .joox { background-color: #00C853; }
+    .amazon { background-color: #00A8E1; }
+
+    /* FOOTER */
+    footer {
+      text-align: center;
+      padding: 20px;
+      color: #777;
+      font-size: 0.9rem;
+    }
+
+    footer span {
+      color: #ff477e;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    
+    <!-- HERO / PROFIL -->
+    <header>
+      <!-- Ganti URL gambar di bawah dengan foto penyanyi -->
+      <img src="https://picsum.photos/200" alt="Foto Penyanyi Cilik" class="profile-img">
+      <h1>Halo, Aku Bintang Cilik! 🎤✨</h1>
+      <p>Selamat datang di rumah musikku. Yuk dengarkan lagu-lagu ceriaku!</p>
+      <div class="star-badge">🌟 Penyanyi & Sahabat Anak</div>
+    </header>
+
+    <!-- SECTION VIDEO YOUTUBE -->
+    <section>
+      <h2 class="section-title"><span>🎬 Video Musik YouTube</span></h2>
+      
+      <div class="youtube-grid">
+        <!-- Video 1 -->
+        <div class="video-card">
+          <div class="iframe-wrapper">
+            <!-- Ganti ID 'dQw4w9WgXcQ' dengan ID Video YouTube kamu -->
+            <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="Lagu Bintang Cilik 1" allowfullscreen></iframe>
+          </div>
+          <h3>🎶 Lagu Ceria Pertama</h3>
+        </div>
+
+        <!-- Video 2 -->
+        <div class="video-card">
+          <div class="iframe-wrapper">
+            <!-- Ganti ID 'dQw4w9WgXcQ' dengan ID Video YouTube kamu -->
+            <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="Lagu Bintang Cilik 2" allowfullscreen></iframe>
+          </div>
+          <h3>🎈 Bermain Bersama</h3>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION PLATFORM STREAMING -->
+    <section>
+      <div class="streaming-container">
+        <h2 class="section-title"><span>🎧 Dengarkan di Platform Favoritmu</span></h2>
+        <p>Klik tombol di bawah untuk mendengarkan lagu-laguku secara full!</p>
+        
+        <div class="streaming-grid">
+          <!-- Ganti link '#' dengan URL profil/lagu kamu di masing-masing platform -->
+          <a href="#" target="_blank" class="stream-btn spotify">
+            <span>Spotify</span>
+          </a>
+          <a href="#" target="_blank" class="stream-btn youtube-music">
+            <span>YouTube Music</span>
+          </a>
+          <a href="#" target="_blank" class="stream-btn apple-music">
+            <span>Apple Music</span>
+          </a>
+          <a href="#" target="_blank" class="stream-btn joox">
+            <span>JOOX</span>
+          </a>
+          <a href="#" target="_blank" class="stream-btn amazon">
+            <span>Amazon Music</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+      <p>&copy; 2026 Website Resmi Penyanyi Cilik. Dibuat dengan 💖 untuk anak-anak Indonesia.</p>
+    </footer>
+
+  </div>
+
+</body>
+</html>
