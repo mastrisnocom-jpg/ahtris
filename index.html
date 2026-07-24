@@ -94,6 +94,35 @@
             margin-bottom: 40px;
         }
 
+        /* Profile Photo Container */
+        .profile-container {
+            margin: 0 auto 25px;
+            width: 200px;
+            height: 200px;
+            position: relative;
+            animation: fadeInUp 1.2s ease-out;
+        }
+
+        .profile-frame {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            padding: 5px;
+            background: var(--gold-gradient);
+            box-shadow: 0 0 30px rgba(243, 198, 35, 0.4), 0 0 15px rgba(32, 146, 109, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .profile-img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--emerald-dark);
+        }
+
         .title-sub {
             font-family: 'Cinzel', serif;
             font-size: 1.2rem;
@@ -309,53 +338,6 @@
             line-height: 1.8;
         }
 
-        /* Visitor Counter Section */
-        .counter-section {
-            margin-top: 35px;
-            padding-top: 25px;
-            border-top: 1px dashed var(--border-gold);
-        }
-
-        .counter-title {
-            font-family: 'Cinzel', serif;
-            font-size: 0.9rem;
-            color: var(--gold-primary);
-            letter-spacing: 2px;
-            margin-bottom: 15px;
-            text-transform: uppercase;
-        }
-
-        .counter-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
-            max-width: 700px;
-            margin: 0 auto;
-        }
-
-        .counter-box {
-            background: rgba(4, 28, 20, 0.8);
-            border: 1px solid var(--border-emerald);
-            border-radius: 12px;
-            padding: 12px 8px;
-            text-align: center;
-        }
-
-        .counter-num {
-            font-family: 'Cinzel', serif;
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: #ffffff;
-            margin-bottom: 2px;
-        }
-
-        .counter-label {
-            font-size: 0.75rem;
-            color: #94a3b8;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
         /* Footer Wish */
         .footer-wish {
             text-align: center;
@@ -382,7 +364,7 @@
             .wrapper { padding: 20px 15px 50px; }
             .card-container { padding: 25px 18px; }
             .btn-celebrate, .btn-wa { width: 100%; justify-content: center; padding: 14px 20px; }
-            .counter-grid { grid-template-columns: repeat(2, 1fr); }
+            .profile-container { width: 160px; height: 160px; }
         }
     </style>
 </head>
@@ -399,8 +381,13 @@
             </div>
         </div>
 
-        <!-- Judul Utama -->
+        <!-- Judul Utama & Foto Profil -->
         <div class="hero-section">
+            <div class="profile-container">
+                <div class="profile-frame">
+                    <img src="596765.jpg" alt="Foto Bapak Sujito" class="profile-img">
+                </div>
+            </div>
             <div class="title-sub">PENGABDIAN TIADA HENTI</div>
             <h1 class="title-main">SELAMAT PURNA BAKTI</h1>
             <div class="retiree-name">Bapak Sujito</div>
@@ -454,29 +441,6 @@
                     <a href="#" id="shareWaBtn" target="_blank" class="btn-wa">
                         <span>💬</span> Bagikan ke WA
                     </a>
-                </div>
-
-                <!-- Visitor Counter Section -->
-                <div class="counter-section">
-                    <div class="counter-title">📊 Statistik Pengunjung</div>
-                    <div class="counter-grid">
-                        <div class="counter-box">
-                            <div class="counter-num" id="count-today">...</div>
-                            <div class="counter-label">Hari Ini</div>
-                        </div>
-                        <div class="counter-box">
-                            <div class="counter-num" id="count-month">...</div>
-                            <div class="counter-label">Bulan Ini</div>
-                        </div>
-                        <div class="counter-box">
-                            <div class="counter-num" id="count-year">...</div>
-                            <div class="counter-label">Tahun Ini</div>
-                        </div>
-                        <div class="counter-box">
-                            <div class="counter-num" id="count-total">...</div>
-                            <div class="counter-label">Total</div>
-                        </div>
-                    </div>
                 </div>
 
             </div>
@@ -579,37 +543,10 @@
 
         window.addEventListener('load', () => {
             setTimeout(triggerCelebration, 800);
-            initCounter();
             setupWaShare();
         });
 
-        // --- 3. Visitor Counter Online (Hari, Bulan, Tahun, Total) ---
-        function initCounter() {
-            const namespace = "purna-bakti-sujito-bsn";
-            const todayStr = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
-            const monthStr = todayStr.substring(0, 7);              // YYYY-MM
-            const yearStr = todayStr.substring(0, 4);               // YYYY
-
-            // Fetch Online Counter API (CountAPI / HitCounters API)
-            const fetchCount = (key, elementId) => {
-                fetch(`https://api.counterapi.dev/v1/${namespace}/${key}/up`)
-                    .then(res => res.json())
-                    .then(data => {
-                        document.getElementById(elementId).innerText = data.value.toLocaleString('id-ID');
-                    })
-                    .catch(() => {
-                        // Fallback jika API terhalang / offline
-                        document.getElementById(elementId).innerText = "1";
-                    });
-            };
-
-            fetchCount(`today_${todayStr}`, 'count-today');
-            fetchCount(`month_${monthStr}`, 'count-month');
-            fetchCount(`year_${yearStr}`, 'count-year');
-            fetchCount('total_hits', 'count-total');
-        }
-
-        // --- 4. Setup Link Share WhatsApp ---
+        // --- 3. Setup Link Share WhatsApp ---
         function setupWaShare() {
             const pageUrl = window.location.href;
             const message = `✨ *Selamat Purna Bakti Bapak Sujito* ✨\n\nTerima kasih atas segala dedikasi, integritas, dan pengabdian luar biasa di PT Binayasa Putra Batara - Unit BSN Surabaya.\n\nMari berikan ucapan dan doa terbaik melalui link berikut:\n${pageUrl}`;
