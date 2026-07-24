@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nusantara Consulting CRM</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Google Fonts (Inter & JetBrains Mono) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        slate: {
+                            850: '#1e293b',
+                            900: '#0f172a',
+                        },
+                        brand: {
+                            blue: '#1e40af',
+                            light: '#3b82f6',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        @keyframes toast-slide-in {
+            from { transform: translateY(-100%) translateX(-50%); opacity: 0; }
+            to { transform: translateY(0) translateX(-50%); opacity: 1; }
+        }
+        .animate-toast {
+            animation: toast-slide-in 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 font-sans text-slate-800 antialiased h-screen flex overflow-hidden">
+
+    <!-- TOAST NOTIFICATION FOR DEAL MOVED / SUCCESS -->
+    <div id="toast" class="hidden fixed top-5 left-1/2 -translate-x-1/2 z-50 bg-slate-900 text-white px-6 py-3.5 rounded-xl shadow-2xl flex items-center gap-3 border border-slate-700 animate-toast">
+        <div class="bg-emerald-500/20 p-2 rounded-lg text-emerald-400">
+            <i data-lucide="check-circle" class="w-5 h-5"></i>
+        </div>
+        <div>
+            <p id="toast-title" class="font-semibold text-sm">Berhasil Diperbarui!</p>
+            <p id="toast-message" class="text-xs text-slate-300">Stage deal telah diperbarui dan dashboard di-refresh.</p>
+        </div>
+    </div>
+
+    <!-- SIDEBAR DARK SLATE -->
+    <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col justify-between shrink-0 border-r border-slate-800 select-none">
+        <div>
+            <!-- Logo Firma -->
+            <div class="p-6 border-b border-slate-800/80 flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-700 to-indigo-500 flex items-center justify-center text-white shadow-lg shadow-blue-900/40">
+                    <i data-lucide="briefcase" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-white text-base tracking-tight leading-tight">Nusantara</h1>
+                    <p class="text-[11px] text-slate-400 font-medium tracking-wider uppercase">Advisor Group</p>
+                </div>
+            </div>
+
+            <!-- Navigation Links -->
+            <nav class="p-4 space-y-1.5">
+                <button onclick="switchTab('dashboard')" id="nav-dashboard" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium transition-all text-white bg-blue-700/80 shadow-md">
+                    <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Dashboard
+                </button>
+                <button onclick="switchTab('pipeline')" id="nav-pipeline" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium transition-all text-slate-400 hover:text-slate-200 hover:bg-slate-800/60">
+                    <i data-lucide="kanban" class="w-4 h-4"></i> Pipeline Deals
+                </button>
+                <button onclick="switchTab('clients')" id="nav-clients" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium transition-all text-slate-400 hover:text-slate-200 hover:bg-slate-800/60">
+                    <i data-lucide="building-2" class="w-4 h-4"></i> Klien & Kontak
+                </button>
+                <button onclick="switchTab('activities')" id="nav-activities" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium transition-all text-slate-400 hover:text-slate-200 hover:bg-slate-800/60">
+                    <i data-lucide="calendar-check" class="w-4 h-4"></i> Aktivitas & Log
+                </button>
+            </nav>
+        </div>
+
+        <!-- User Profile Footer -->
+        <div class="p-4 border-t border-slate-800/80 flex items-center gap-3">
+            <div class="w-9 h-9 rounded-full bg-slate-700 flex items-center justify-center font-semibold text-xs text-white border border-slate-600">
+                AD
+            </div>
+            <div class="overflow-hidden">
+                <p class="text-xs font-semibold text-white truncate">Adnan Director</p>
+                <p class="text-[10px] text-slate-400 truncate">Senior Lead Partner</p>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT AREA (WHITE BACKGROUND) -->
+    <main class="flex-1 flex flex-col min-w-0 bg-white overflow-hidden">
+        
+        <!-- TOP HEADER -->
+        <header class="h-16 border-b border-slate-200 px-8 flex items-center justify-between shrink-0 bg-white">
+            <div class="flex items-center gap-3">
+                <h2 id="page-title" class="text-xl font-bold text-slate-800">Dashboard Visual</h2>
+                <span class="bg-blue-50 text-blue-700 text-xs px-2.5 py-0.5 rounded-full font-semibold border border-blue-200/60">
+                    Q3 2026
+                </span>
+            </div>
+            
+            <div class="flex items-center gap-3">
+                <button onclick="openDealModal()" class="flex items-center gap-2 bg-blue-700 hover:bg-blue-800 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm">
+                    <i data-lucide="plus" class="w-4 h-4"></i> Deal Baru
+                </button>
+                <button onclick="openActivityModal()" class="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors border border-slate-200">
+                    <i data-lucide="calendar-plus" class="w-4 h-4"></i> Catat Aktivitas
+                </button>
+            </div>
+        </header>
+
+        <!-- PAGE CONTENTS WRAPPER -->
+        <div class="flex-1 overflow-y-auto p-8 custom-scrollbar bg-slate-50/50">
+
+            <!-- TAB 1: DASHBOARD -->
+            <div id="tab-dashboard" class="space-y-8">
+                <!-- METRIC CARDS -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-5">
+                    <!-- Total Pipeline -->
+                    <div class="bg-white p-5 rounded-xl border border-slate-200/80 shadow-sm">
+                        <div class="flex items-center justify-between text-slate-500 mb-2">
+                            <span class="text-xs font-semibold uppercase tracking-wider">Nilai Total Pipeline</span>
+                            <div class="p-2 bg-blue-50 text-blue-600 rounded-lg"><i data-lucide="bar-chart-3" class="w-4 h-4"></i></div>
+                        </div>
+                        <div id="dash-total-pipeline" class="text-2xl font-bold text-slate-900 font-mono tracking-tight">Rp 0</div>
+                        <p class="text-xs text-slate-500 mt-2 flex items-center gap-1">
+                            <span class="text-emerald-600 font-medium font-mono">↑ 12.5%</span> dari bulan lalu
+                        </p>
+                    </div>
+
+                    <!-- Forecast Weighted -->
+                    <div class="bg-white p-5 rounded-xl border border-slate-200/80 shadow-sm">
+                        <div class="flex items-center justify-between text-slate-500 mb-2">
+                            <span class="text-xs font-semibold uppercase tracking-wider">Proyeksi Closing</span>
+                            <div class="p-2 bg-indigo-50 text-indigo-600 rounded-lg"><i data-lucide="trending-up" class="w-4 h-4"></i></div>
+                        </div>
+                        <div id="dash-forecast" class="text-2xl font-bold text-slate-900 font-mono tracking-tight">Rp 0</div>
+                        <p class="text-xs text-slate-500 mt-2">Disesuaikan dengan bobot probabilitas stage</p>
+                    </div>
+
+                    <!-- Total Active Deals -->
+                    <div class="bg-white p-5 rounded-xl border border-slate-200/80 shadow-sm">
+                        <div class="flex items-center justify-between text-slate-500 mb-2">
+                            <span class="text-xs font-semibold uppercase tracking-wider">Jumlah Deal Aktif</span>
+                            <div class="p-2 bg-amber-50 text-amber-600 rounded-lg"><i data-lucide="briefcase" class="w-4 h-4"></i></div>
+                        </div>
+                        <div id="dash-active-deals" class="text-2xl font-bold text-slate-900 font-mono tracking-tight">0</div>
+                        <p class="text-xs text-slate-500 mt-2">Terbagi dalam 4 tahapan evaluasi</p>
+                    </div>
+
+                    <!-- Win Rate -->
+                    <div class="bg-white p-5 rounded-xl border border-slate-200/80 shadow-sm">
+                        <div class="flex items-center justify-between text-slate-500 mb-2">
+                            <span class="text-xs font-semibold uppercase tracking-wider">Tingkat Kemenangan</span>
+                            <div class="p-2 bg-emerald-50 text-emerald-600 rounded-lg"><i data-lucide="trophy" class="w-4 h-4"></i></div>
+                        </div>
+                        <div id="dash-win-rate" class="text-2xl font-bold text-emerald-600 font-mono tracking-tight">0%</div>
+                        <p class="text-xs text-slate-500 mt-2">Berdasarkan siklus 6 bulan terakhir</p>
+                    </div>
+                </div>
+
+                <!-- STAGE SUMMARY & RECENT ACTIVITIES -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <!-- Distribution Breakdown -->
+                    <div class="lg:col-span-2 bg-white p-6 rounded-xl border border-slate-200/80 shadow-sm">
+                        <h3 class="text-base font-bold text-slate-800 mb-4 flex items-center gap-2">
+                            <i data-lucide="pie-chart" class="w-4 h-4 text-blue-600"></i> Distribusi Tahapan (Pipeline Breakdown)
+                        </h3>
+                        <div class="space-y-4" id="stage-breakdown-list">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Upcoming Follow-Ups -->
+                    <div class="bg-white p-6 rounded-xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-base font-bold text-slate-800 flex items-center gap-2">
+                                    <i data-lucide="clock" class="w-4 h-4 text-amber-600"></i> Follow-up Mendatang
+                                </h3>
+                                <span class="text-xs text-blue-600 font-medium">Lihat Semua</span>
+                            </div>
+                            <div class="space-y-3" id="dash-upcoming-activities">
+                                <!-- Dynamic List -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: PIPELINE (KANBAN BOARD) -->
+            <div id="tab-pipeline" class="hidden space-y-4">
+                <div class="flex items-center justify-between mb-2">
+                    <p class="text-sm text-slate-500">
+                        Geser status deal dengan mengubah dropdown stage pada card untuk memperbarui nilai pipeline secara langsung.
+                    </p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-4 overflow-x-auto pb-4">
+                    
+                    <!-- STAGE 1: QUALIFICATION -->
+                    <div class="bg-slate-100/80 p-3.5 rounded-xl border border-slate-200 flex flex-col min-w-[260px]">
+                        <div class="flex items-center justify-between mb-3 px-1">
+                            <div class="flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-slate-400"></span>
+                                <h4 class="font-bold text-slate-700 text-sm">Kualifikasi</h4>
+                            </div>
+                            <span id="count-qualification" class="text-xs bg-slate-200 font-semibold px-2 py-0.5 rounded-full text-slate-600">0</span>
+                        </div>
+                        <div id="stage-qualification" class="space-y-3 flex-1 min-h-[400px]">
+                            <!-- Cards inserted dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- STAGE 2: PROPOSAL -->
+                    <div class="bg-slate-100/80 p-3.5 rounded-xl border border-slate-200 flex flex-col min-w-[260px]">
+                        <div class="flex items-center justify-between mb-3 px-1">
+                            <div class="flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
+                                <h4 class="font-bold text-slate-700 text-sm">Proposal Penawaran</h4>
+                            </div>
+                            <span id="count-proposal" class="text-xs bg-blue-100 font-semibold px-2 py-0.5 rounded-full text-blue-700">0</span>
+                        </div>
+                        <div id="stage-proposal" class="space-y-3 flex-1 min-h-[400px]">
+                            <!-- Cards inserted dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- STAGE 3: NEGOTIATION -->
+                    <div class="bg-slate-100/80 p-3.5 rounded-xl border border-slate-200 flex flex-col min-w-[260px]">
+                        <div class="flex items-center justify-between mb-3 px-1">
+                            <div class="flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+                                <h4 class="font-bold text-slate-700 text-sm">Negosiasi</h4>
+                            </div>
+                            <span id="count-negotiation" class="text-xs bg-amber-100 font-semibold px-2 py-0.5 rounded-full text-amber-700">0</span>
+                        </div>
+                        <div id="stage-negotiation" class="space-y-3 flex-1 min-h-[400px]">
+                            <!-- Cards inserted dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- STAGE 4: CLOSED WON -->
+                    <div class="bg-emerald-50/50 p-3.5 rounded-xl border border-emerald-200/80 flex flex-col min-w-[260px]">
+                        <div class="flex items-center justify-between mb-3 px-1">
+                            <div class="flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                                <h4 class="font-bold text-emerald-800 text-sm">Closed Won</h4>
+                            </div>
+                            <span id="count-won" class="text-xs bg-emerald-200 font-semibold px-2 py-0.5 rounded-full text-emerald-800">0</span>
+                        </div>
+                        <div id="stage-won" class="space-y-3 flex-1 min-h-[400px]">
+                            <!-- Cards inserted dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- STAGE 5: CLOSED LOST -->
+                    <div class="bg-rose-50/40 p-3.5 rounded-xl border border-rose-200/60 flex flex-col min-w-[260px]">
+                        <div class="flex items-center justify-between mb-3 px-1">
+                            <div class="flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-rose-400"></span>
+                                <h4 class="font-bold text-rose-800 text-sm">Closed Lost</h4>
+                            </div>
+                            <span id="count-lost" class="text-xs bg-rose-100 font-semibold px-2 py-0.5 rounded-full text-rose-700">0</span>
+                        </div>
+                        <div id="stage-lost" class="space-y-3 flex-1 min-h-[400px]">
+                            <!-- Cards inserted dynamically -->
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- TAB 3: CLIENTS & CONTACTS -->
+            <div id="tab-clients" class="hidden space-y-8">
+                <!-- CLIENTS TABLE -->
+                <div class="bg-white rounded-xl border border-slate-200/80 shadow-sm overflow-hidden">
+                    <div class="p-5 border-b border-slate-100 flex items-center justify-between">
+                        <div>
+                            <h3 class="font-bold text-slate-800 text-lg">Daftar Perusahaan Client</h3>
+                            <p class="text-xs text-slate-500">Klien aktif dan histori proyek konsultasi</p>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm text-slate-600">
+                            <thead class="bg-slate-50 text-xs text-slate-500 font-semibold uppercase tracking-wider border-b border-slate-200">
+                                <tr>
+                                    <th class="py-3.5 px-6">Perusahaan</th>
+                                    <th class="py-3.5 px-6">Industri</th>
+                                    <th class="py-3.5 px-6">Lokasi</th>
+                                    <th class="py-3.5 px-6">Kontak Utama</th>
+                                    <th class="py-3.5 px-6 text-right">Total Deal Value</th>
+                                </tr>
+                            </thead>
+                            <tbody id="clients-table-body" class="divide-y divide-slate-100 font-normal">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- CONTACTS TABLE -->
+                <div class="bg-white rounded-xl border border-slate-200/80 shadow-sm overflow-hidden">
+                    <div class="p-5 border-b border-slate-100 flex items-center justify-between">
+                        <div>
+                            <h3 class="font-bold text-slate-800 text-lg">Kontak Person (Stakeholders)</h3>
+                            <p class="text-xs text-slate-500">Pengambil keputusan di pihak klien</p>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm text-slate-600">
+                            <thead class="bg-slate-50 text-xs text-slate-500 font-semibold uppercase tracking-wider border-b border-slate-200">
+                                <tr>
+                                    <th class="py-3.5 px-6">Nama</th>
+                                    <th class="py-3.5 px-6">Jabatan</th>
+                                    <th class="py-3.5 px-6">Perusahaan</th>
+                                    <th class="py-3.5 px-6">Email</th>
+                                    <th class="py-3.5 px-6">No. Telepon</th>
+                                </tr>
+                            </thead>
+                            <tbody id="contacts-table-body" class="divide-y divide-slate-100">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 4: ACTIVITIES TIMELINE -->
+            <div id="tab-activities" class="hidden space-y-6">
+                <div class="bg-white p-6 rounded-xl border border-slate-200/80 shadow-sm">
+                    <h3 class="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
+                        <i data-lucide="history" class="w-5 h-5 text-blue-600"></i> Riwayat Aktivitas & Timeline Interaksi
+                    </h3>
+                    
+                    <div class="relative border-l-2 border-slate-200 ml-4 space-y-8 pl-6" id="activity-timeline-list">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- MODAL: ADD DEAL -->
+    <div id="modal-deal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-100">
+            <div class="flex items-center justify-between mb-5">
+                <h3 class="text-lg font-bold text-slate-800">Tambah Deal Baru</h3>
+                <button onclick="closeModal('modal-deal')" class="text-slate-400 hover:text-slate-600">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <form id="form-deal" onsubmit="handleCreateDeal(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Deal / Proyek</label>
+                    <input type="text" id="deal-title" required placeholder="Contoh: Digital Transformation Audit" class="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-600 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Klien Perusahaan</label>
+                    <select id="deal-client" required class="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-600 focus:outline-none">
+                        <!-- Options generated dynamically -->
+                    </select>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Nilai Deal (IDR)</label>
+                        <input type="number" id="deal-value" required placeholder="450000000" class="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 font-mono focus:ring-2 focus:ring-blue-600 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Tahapan (Stage)</label>
+                        <select id="deal-stage" required class="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-600 focus:outline-none">
+                            <option value="qualification">Kualifikasi</option>
+                            <option value="proposal">Proposal</option>
+                            <option value="negotiation">Negosiasi</option>
+                            <option value="won">Closed Won</option>
+                            <option value="lost">Closed Lost</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Perkiraan Tanggal Closing</label>
+                    <input type="date" id="deal-date" required class="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-600 focus:outline-none">
+                </div>
+                <div class="flex justify-end gap-3 pt-4 border-t border-slate-100">
+                    <button type="button" onclick="closeModal('modal-deal')" class="px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 rounded-lg font-medium">Batal</button>
+                    <button type="submit" class="px-4 py-2 text-sm bg-blue-700 text-white hover:bg-blue-800 rounded-lg font-medium shadow-sm">Simpan Deal</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: ADD ACTIVITY -->
+    <div id="modal-activity" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-100">
+            <div class="flex items-center justify-between mb-5">
+                <h3 class="text-lg font-bold text-slate-800">Catat Aktivitas Baru</h3>
+                <button onclick="closeModal('modal-activity')" class="text-slate-400 hover:text-slate-600">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <form id="form-activity" onsubmit="handleCreateActivity(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Tipe Interaksi</label>
+                    <select id="act-type" required class="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-600 focus:outline-none">
+                        <option value="Meeting">Meeting / Diskusi</option>
+                        <option value="Proposal">Pengiriman Proposal</option>
+                        <option value="Catatan">Catatan / Call Log</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Terkait Deal</label>
+                    <select id="act-deal" required class="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-600 focus:outline-none">
+                        <!-- Options generated dynamically -->
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Deskripsi / Ringkasan</label>
+                    <textarea id="act-desc" rows="3" required placeholder="Hasil meeting atau rencana tindak lanjut..." class="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-600 focus:outline-none"></textarea>
+                </div>
+                <div class="flex justify-end gap-3 pt-4 border-t border-slate-100">
+                    <button type="button" onclick="closeModal('modal-activity')" class="px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 rounded-lg font-medium">Batal</button>
+                    <button type="submit" class="px-4 py-2 text-sm bg-blue-700 text-white hover:bg-blue-800 rounded-lg font-medium shadow-sm">Simpan Aktivitas</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- LOGIC SCRIPT -->
+    <script>
+        // SAMPLE DATA FIRMA KONSULTAN INDONESIA
+        let clients = [
+            { id: 1, name: "PT Bank Nusantara Tbk", industry: "Jasa Keuangan", location: "Jakarta Selatan", totalValue: 1850000000, contactName: "Bpk. Hendra Wijaya" },
+            { id: 2, name: "PT Agro Makmur Sejahtera", industry: "Agrikultur", location: "Surabaya", totalValue: 750000000, contactName: "Ibu Maya Pertiwi" },
+            { id: 3, name: "Logistik Bersama Group", industry: "Transportasi & Logistik", location: "Bandung", totalValue: 420000000, contactName: "Bpk. Rian Pratama" },
+            { id: 4, name: "Sinar Surya Energi", industry: "Energi Terbarukan", location: "Medan", totalValue: 1200000000, contactName: "Ibu Denisa Sitorus" }
+        ];
+
+        let contacts = [
+            { id: 1, clientId: 1, name: "Hendra Wijaya", title: "VP Digital Transformation", email: "hendra.w@banknusantara.co.id", phone: "+62 811-2345-6789" },
+            { id: 2, clientId: 2, name: "Maya Pertiwi", title: "Chief Operating Officer", email: "m.pertiwi@agromakmur.id", phone: "+62 812-9876-5432" },
+            { id: 3, clientId: 3, name: "Rian Pratama", title: "Head of Supply Chain", email: "rian@logistikbersama.com", phone: "+62 815-5551-234" },
+            { id: 4, clientId: 4, name: "Denisa Sitorus", title: "Director of Business Dev", email: "denisa@sinarsurya.co.id", phone: "+62 818-0099-8877" }
+        ];
+
+        let deals = [
+            { id: 101, title: "Enterprise ERP System Audit", clientId: 1, value: 850000000, stage: "negotiation", expectedClose: "2026-08-15" },
+            { id: 102, title: "Cybersecurity Framework Advisory", clientId: 1, value: 1000000000, stage: "won", expectedClose: "2026-06-30" },
+            { id: 103, title: "Supply Chain Restructuring Strategy", clientId: 2, value: 750000000, stage: "proposal", expectedClose: "2026-09-10" },
+            { id: 104, title: "Warehouse Management Optimization", clientId: 3, value: 420000000, stage: "qualification", expectedClose: "2026-10-01" },
+            { id: 105, title: "ESG & Sustainability Readiness", clientId: 4, value: 1200000000, stage: "negotiation", expectedClose: "2026-08-30" }
+        ];
+
+        let activities = [
+            { id: 1, dealId: 101, type: "Meeting", date: "2026-07-22", desc: "Finalisasi scope penawaran audit sistem ERP bersama tim VP IT Bank Nusantara." },
+            { id: 2, dealId: 103, type: "Proposal", date: "2026-07-20", desc: "Mengirimkan draft proposal revisi restrukturisasi pasokan ke Bu Maya." },
+            { id: 3, dealId: 105, type: "Catatan", date: "2026-07-18", desc: "Klien meminta penyesuaian milestone pembayaran menjadi 3 termin." },
+            { id: 4, dealId: 102, type: "Meeting", date: "2026-06-28", desc: "Penandatanganan kontrak kerja sama advisori keamanan siber." }
+        ];
+
+        // HELPER UTILITIES
+        function formatIDR(amount) {
+            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(amount);
+        }
+
+        function getClientName(clientId) {
+            const client = clients.find(c => c.id === clientId);
+            return client ? client.name : 'Unknown Client';
+        }
+
+        function getDealTitle(dealId) {
+            const deal = deals.find(d => d.id === dealId);
+            return deal ? deal.title : 'General';
+        }
+
+        // STAGE MAP & WEIGHTS FOR FORECASTING
+        const stageConfig = {
+            qualification: { label: 'Kualifikasi', weight: 0.2, color: 'border-slate-300', bg: 'bg-slate-50' },
+            proposal: { label: 'Proposal', weight: 0.5, color: 'border-blue-300', bg: 'bg-blue-50/30' },
+            negotiation: { label: 'Negosiasi', weight: 0.8, color: 'border-amber-300', bg: 'bg-amber-50/30' },
+            won: { label: 'Closed Won', weight: 1.0, color: 'border-emerald-400', bg: 'bg-emerald-50/40' },
+            lost: { label: 'Closed Lost', weight: 0.0, color: 'border-rose-300', bg: 'bg-rose-50/30' }
+        };
+
+        // RENDER FUNCTIONS
+        function renderDashboard() {
+            // Metrics Calculations
+            let totalPipeline = 0;
+            let weightedForecast = 0;
+            let activeDealsCount = 0;
+            let wonDealsCount = 0;
+            let totalEndedDeals = 0;
+
+            const stageCounts = { qualification: 0, proposal: 0, negotiation: 0, won: 0, lost: 0 };
+            const stageValues = { qualification: 0, proposal: 0, negotiation: 0, won: 0, lost: 0 };
+
+            deals.forEach(deal => {
+                stageCounts[deal.stage] = (stageCounts[deal.stage] || 0) + 1;
+                stageValues[deal.stage] = (stageValues[deal.stage] || 0) + deal.value;
+
+                if (deal.stage !== 'lost') {
+                    totalPipeline += deal.value;
+                    weightedForecast += deal.value * stageConfig[deal.stage].weight;
+                }
+
+                if (deal.stage !== 'won' && deal.stage !== 'lost') {
+                    activeDealsCount++;
+                }
+
+                if (deal.stage === 'won') wonDealsCount++;
+                if (deal.stage === 'won' || deal.stage === 'lost') totalEndedDeals++;
+            });
+
+            const winRate = totalEndedDeals > 0 ? Math.round((wonDealsCount / totalEndedDeals) * 100) : 0;
+
+            // Update Metric Text
+            document.getElementById('dash-total-pipeline').textContent = formatIDR(totalPipeline);
+            document.getElementById('dash-forecast').textContent = formatIDR(weightedForecast);
+            document.getElementById('dash-active-deals').textContent = activeDealsCount;
+            document.getElementById('dash-win-rate').textContent = winRate + '%';
+
+            // Render Breakdown Bars
+            const breakdownContainer = document.getElementById('stage-breakdown-list');
+            breakdownContainer.innerHTML = '';
+
+            Object.keys(stageConfig).forEach(stg => {
+                const count = stageCounts[stg] || 0;
+                const val = stageValues[stg] || 0;
+                const pct = totalPipeline > 0 ? Math.round((val / totalPipeline) * 100) : 0;
+
+                const row = document.createElement('div');
+                row.className = "space-y-1.5";
+                row.innerHTML = `
+                    <div class="flex justify-between text-xs font-medium text-slate-700">
+                        <span class="font-semibold">${stageConfig[stg].label} (${count})</span>
+                        <span class="font-mono text-slate-900">${formatIDR(val)} (${pct}%)</span>
+                    </div>
+                    <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+                        <div class="h-full ${stg === 'won' ? 'bg-emerald-500' : stg === 'lost' ? 'bg-rose-400' : 'bg-blue-600'}" style="width: ${pct}%"></div>
+                    </div>
+                `;
+                breakdownContainer.appendChild(row);
+            });
+
+            // Render Upcoming / Recent Activities on Dashboard
+            const dashActContainer = document.getElementById('dash-upcoming-activities');
+            dashActContainer.innerHTML = '';
+            
+            activities.slice(0, 3).forEach(act => {
+                const actEl = document.createElement('div');
+                actEl.className = "p-3 rounded-lg bg-slate-50 border border-slate-100 flex items-start gap-3";
+                actEl.innerHTML = `
+                    <div class="p-1.5 bg-blue-100 text-blue-700 rounded-md mt-0.5">
+                        <i data-lucide="${act.type === 'Meeting' ? 'users' : act.type === 'Proposal' ? 'file-text' : 'sticky-note'}" class="w-3.5 h-3.5"></i>
+                    </div>
+                    <div class="text-xs">
+                        <p class="font-bold text-slate-800">${act.type}: ${getDealTitle(act.dealId)}</p>
+                        <p class="text-slate-500 line-clamp-1">${act.desc}</p>
+                        <span class="text-[10px] text-slate-400 font-mono mt-1 block">${act.date}</span>
+                    </div>
+                `;
+                dashActContainer.appendChild(actEl);
+            });
+
+            lucide.createIcons();
+        }
+
+        function renderPipeline() {
+            const stages = ['qualification', 'proposal', 'negotiation', 'won', 'lost'];
+            
+            // Reset counts & containers
+            stages.forEach(stg => {
+                const el = document.getElementById(`stage-${stg}`);
+                el.innerHTML = '';
+            });
+
+            const counts = { qualification: 0, proposal: 0, negotiation: 0, won: 0, lost: 0 };
+
+            deals.forEach(deal => {
+                counts[deal.stage]++;
+                const card = document.createElement('div');
+                card.className = `bg-white p-4 rounded-xl border ${stageConfig[deal.stage].color} shadow-sm hover:shadow-md transition-shadow space-y-3`;
+                
+                card.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <h5 class="font-semibold text-slate-800 text-sm leading-snug">${deal.title}</h5>
+                    </div>
+                    <p class="text-xs font-medium text-slate-500 flex items-center gap-1">
+                        <i data-lucide="building" class="w-3.5 h-3.5 text-slate-400"></i> ${getClientName(deal.clientId)}
+                    </p>
+                    <div class="pt-2 border-t border-slate-100 flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-900 font-mono">${formatIDR(deal.value)}</span>
+                        <span class="text-[10px] font-mono text-slate-400">${deal.expectedClose}</span>
+                    </div>
+                    <!-- Stage Move Selector -->
+                    <div class="pt-1">
+                        <select onchange="updateDealStage(${deal.id}, this.value)" class="w-full text-xs bg-slate-50 border border-slate-200 rounded-md py-1 px-2 text-slate-600 focus:outline-none focus:ring-1 focus:ring-blue-600">
+                            <option value="qualification" ${deal.stage === 'qualification' ? 'selected' : ''}>Kualifikasi</option>
+                            <option value="proposal" ${deal.stage === 'proposal' ? 'selected' : ''}>Proposal</option>
+                            <option value="negotiation" ${deal.stage === 'negotiation' ? 'selected' : ''}>Negosiasi</option>
+                            <option value="won" ${deal.stage === 'won' ? 'selected' : ''}>Closed Won</option>
+                            <option value="lost" ${deal.stage === 'lost' ? 'selected' : ''}>Closed Lost</option>
+                        </select>
+                    </div>
+                `;
+
+                document.getElementById(`stage-${deal.stage}`).appendChild(card);
+            });
+
+            // Update Counts Pill
+            document.getElementById('count-qualification').textContent = counts.qualification;
+            document.getElementById('count-proposal').textContent = counts.proposal;
+            document.getElementById('count-negotiation').textContent = counts.negotiation;
+            document.getElementById('count-won').textContent = counts.won;
+            document.getElementById('count-lost').textContent = counts.lost;
+
+            lucide.createIcons();
+        }
+
+        function renderClientsAndContacts() {
+            // Clients
+            const clientsTable = document.getElementById('clients-table-body');
+            clientsTable.innerHTML = '';
+            
+            clients.forEach(c => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50/80 transition-colors";
+                tr.innerHTML = `
+                    <td class="py-3.5 px-6 font-semibold text-slate-800">${c.name}</td>
+                    <td class="py-3.5 px-6"><span class="bg-slate-100 text-slate-700 text-xs px-2.5 py-1 rounded-md border border-slate-200">${c.industry}</span></td>
+                    <td class="py-3.5 px-6">${c.location}</td>
+                    <td class="py-3.5 px-6 font-medium text-slate-700">${c.contactName}</td>
+                    <td class="py-3.5 px-6 text-right font-mono font-semibold text-slate-900">${formatIDR(c.totalValue)}</td>
+                `;
+                clientsTable.appendChild(tr);
+            });
+
+            // Contacts
+            const contactsTable = document.getElementById('contacts-table-body');
+            contactsTable.innerHTML = '';
+
+            contacts.forEach(cnt => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50/80 transition-colors";
+                tr.innerHTML = `
+                    <td class="py-3.5 px-6 font-semibold text-slate-800">${cnt.name}</td>
+                    <td class="py-3.5 px-6">${cnt.title}</td>
+                    <td class="py-3.5 px-6 text-slate-500">${getClientName(cnt.clientId)}</td>
+                    <td class="py-3.5 px-6 font-mono text-xs text-blue-600">${cnt.email}</td>
+                    <td class="py-3.5 px-6 font-mono text-xs text-slate-600">${cnt.phone}</td>
+                `;
+                contactsTable.appendChild(tr);
+            });
+        }
+
+        function renderActivities() {
+            const list = document.getElementById('activity-timeline-list');
+            list.innerHTML = '';
+
+            activities.forEach(act => {
+                const item = document.createElement('div');
+                item.className = "relative group";
+                
+                let icon = 'message-square';
+                let iconColor = 'bg-blue-600';
+                
+                if (act.type === 'Meeting') { icon = 'users'; iconColor = 'bg-amber-500'; }
+                if (act.type === 'Proposal') { icon = 'file-text'; iconColor = 'bg-indigo-600'; }
+
+                item.innerHTML = `
+                    <div class="absolute -left-[31px] top-0 w-6 h-6 rounded-full ${iconColor} text-white flex items-center justify-center text-xs shadow-md">
+                        <i data-lucide="${icon}" class="w-3.5 h-3.5"></i>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200/70 space-y-1">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold text-slate-700 uppercase tracking-wider">${act.type}</span>
+                            <span class="text-xs font-mono text-slate-400">${act.date}</span>
+                        </div>
+                        <h4 class="font-semibold text-slate-800 text-sm">${getDealTitle(act.dealId)}</h4>
+                        <p class="text-xs text-slate-600 leading-relaxed">${act.desc}</p>
+                    </div>
+                `;
+                list.appendChild(item);
+            });
+
+            lucide.createIcons();
+        }
+
+        // ACTIONS & INTERACTION HANDLERS
+        function updateDealStage(dealId, newStage) {
+            const deal = deals.find(d => d.id === dealId);
+            if (deal) {
+                deal.stage = newStage;
+                
+                // Re-render views
+                renderDashboard();
+                renderPipeline();
+
+                // Show Satisfying Toast Confirmation
+                showToast(`Stage Diperbarui`, `Deal "${deal.title}" dipindahkan ke stage ${stageConfig[newStage].label}. Nilai pipeline diperbarui.`);
+            }
+        }
+
+        function showToast(title, message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-title').textContent = title;
+            document.getElementById('toast-message').textContent = message;
+
+            toast.classList.remove('hidden');
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 3500);
+        }
+
+        function switchTab(tabName) {
+            const tabs = ['dashboard', 'pipeline', 'clients', 'activities'];
+            
+            tabs.forEach(t => {
+                document.getElementById(`tab-${t}`).classList.add('hidden');
+                const navBtn = document.getElementById(`nav-${t}`);
+                navBtn.className = "w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium transition-all text-slate-400 hover:text-slate-200 hover:bg-slate-800/60";
+            });
+
+            document.getElementById(`tab-${tabName}`).classList.remove('hidden');
+            const activeBtn = document.getElementById(`nav-${tabName}`);
+            activeBtn.className = "w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium transition-all text-white bg-blue-700/80 shadow-md";
+
+            const titles = {
+                dashboard: "Dashboard Overview Firma",
+                pipeline: "Pipeline Deals & Monitoring Stage",
+                clients: "Direktori Klien & Kontak Stakeholder",
+                activities: "Timeline Aktivitas & Interaksi"
+            };
+            document.getElementById('page-title').textContent = titles[tabName];
+        }
+
+        // MODAL MANAGEMENT & FORMS
+        function openDealModal() {
+            const select = document.getElementById('deal-client');
+            select.innerHTML = '';
+            clients.forEach(c => {
+                select.innerHTML += `<option value="${c.id}">${c.name}</option>`;
+            });
+            document.getElementById('modal-deal').classList.remove('hidden');
+        }
+
+        function openActivityModal() {
+            const select = document.getElementById('act-deal');
+            select.innerHTML = '';
+            deals.forEach(d => {
+                select.innerHTML += `<option value="${d.id}">${d.title}</option>`;
+            });
+            document.getElementById('modal-activity').classList.remove('hidden');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.add('hidden');
+        }
+
+        function handleCreateDeal(e) {
+            e.preventDefault();
+            const title = document.getElementById('deal-title').value;
+            const clientId = parseInt(document.getElementById('deal-client').value);
+            const value = parseFloat(document.getElementById('deal-value').value);
+            const stage = document.getElementById('deal-stage').value;
+            const expectedClose = document.getElementById('deal-date').value;
+
+            const newDeal = {
+                id: Date.now(),
+                title,
+                clientId,
+                value,
+                stage,
+                expectedClose
+            };
+
+            deals.push(newDeal);
+            closeModal('modal-deal');
+            
+            // Refresh Views
+            renderDashboard();
+            renderPipeline();
+            
+            // Reset Form
+            document.getElementById('form-deal').reset();
+            showToast('Deal Baru Ditambahkan', `Deal "${title}" berhasil disimpan ke dalam pipeline.`);
+        }
+
+        function handleCreateActivity(e) {
+            e.preventDefault();
+            const type = document.getElementById('act-type').value;
+            const dealId = parseInt(document.getElementById('act-deal').value);
+            const desc = document.getElementById('act-desc').value;
+
+            const newAct = {
+                id: Date.now(),
+                dealId,
+                type,
+                date: new Date().toISOString().split('T')[0],
+                desc
+            };
+
+            activities.unshift(newAct);
+            closeModal('modal-activity');
+
+            // Refresh Views
+            renderDashboard();
+            renderActivities();
+
+            document.getElementById('form-activity').reset();
+            showToast('Aktivitas Dicatat', `Aktivitas ${type} baru berhasil ditambahkan.`);
+        }
+
+        // INITIALIZATION
+        window.addEventListener('DOMContentLoaded', () => {
+            renderDashboard();
+            renderPipeline();
+            renderClientsAndContacts();
+            renderActivities();
+        });
+    </script>
+</body>
+</html>
