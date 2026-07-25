@@ -279,7 +279,7 @@
         </div>
     </footer>
 
-    <!-- LOGIKA JAVASCRIPT -->
+    <!-- LOGIKA JAVASCRIPT LENGKAP -->
     <script>
         const SUPABASE_URL = "https://lcpskriooezyxgrnarol.supabase.co"; 
         const SUPABASE_KEY = "sb_publishable_puy9U_93p-7_Q64oHrYUpg_iEF3nJ-c";
@@ -372,6 +372,78 @@
 
         function openAuthModal() { document.getElementById('authModal').classList.remove('hidden'); }
         function closeAuthModal() { document.getElementById('authModal').classList.add('hidden'); }
+
+        function toggleAuthMode() {
+            isRegisterMode = !isRegisterMode;
+            document.getElementById('modalTitle').textContent = isRegisterMode ? "Daftar Akun Baru" : "Masuk ke Akun";
+            document.getElementById('btnAuthSubmit').textContent = isRegisterMode ? "Daftar" : "Login";
+            document.getElementById('toggleAuthText').textContent = isRegisterMode ? "Sudah punya akun?" : "Belum punya akun?";
+            document.getElementById('btnToggleAuth').textContent = isRegisterMode ? "Login di sini" : "Daftar Sekarang";
+        }
+
+        // --- SISTEM AUTENTIKASI SUPABASE AUTH AMAN ---
+        document.getElementById('authForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('authEmail').value.trim();
+            const password = document.getElementById('authPassword').value.trim();
+            const authStatus = document.getElementById('authStatus');
+
+            authStatus.textContent = "Memproses...";
+            authStatus.className = "mt-3 text-center text-xs font-medium text-slate-400";
+            authStatus.classList.remove('hidden');
+
+            const endpoint = isRegisterMode 
+                ? `${SUPABASE_URL}/auth/v1/signup` 
+                : `${SUPABASE_URL}/auth/v1/token?grant_type=password`;
+
+            try {
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    if (isRegisterMode) {
+                        authStatus.textContent = "Pendaftaran berhasil! Silakan Login.";
+                        authStatus.className = "mt-3 text-center text-xs font-medium text-emerald-500";
+                        toggleAuthMode();
+                    } else {
+                        const sessionPayload = {
+                            access_token: data.access_token,
+                            refresh_token: data.refresh_token,
+                            user: data.user || data
+                        };
+                        currentUser = sessionPayload;
+                        localStorage.setItem('sb_user_session', JSON.stringify(sessionPayload));
+                        
+                        renderUserUI();
+                        closeAuthModal();
+                        document.getElementById('authForm').reset();
+                        authStatus.classList.add('hidden');
+                    }
+                } else {
+                    const errorMsg = data.error_description || data.msg || data.message || "Gagal Autentikasi";
+                    authStatus.textContent = errorMsg;
+                    authStatus.className = "mt-3 text-center text-xs font-medium text-rose-500";
+                }
+            } catch (err) {
+                authStatus.textContent = "Terjadi kesalahan koneksi jaringan.";
+                authStatus.className = "mt-3 text-center text-xs font-medium text-rose-500";
+            }
+        });
+
+        function handleLogout() {
+            localStorage.removeItem('sb_user_session');
+            currentUser = null;
+            renderUserUI();
+            window.location.reload();
+        }
 
         function openGuestModal(url) {
             const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(url)}`;
@@ -505,4 +577,3 @@
     </script>
 </body>
 </html>
-
