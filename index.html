@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Short Link & QR Code Generator - ahtris.my.id</title>
+    <title>Microsite Builder - ahtris.my.id</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -32,11 +32,11 @@
 </head>
 <body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 min-h-screen font-sans flex flex-col justify-between transition-colors duration-300">
 
-    <!-- Header / Navbar -->
-    <header class="w-full border-b border-slate-200 dark:border-emerald-900/40 bg-white/80 dark:bg-slate-900/90 backdrop-blur-md sticky top-0 z-40 transition-colors">
+    <!-- Header / Navbar Tanpa Tampilan Email -->
+    <header class="w-full border-b border-slate-200 dark:border-emerald-900/40 bg-white/80 dark:bg-slate-900/90 backdrop-blur-md sticky top-0 z-40">
         <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
             <a href="/" class="text-xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-2.5">
-                <div class="w-9 h-9 bg-emerald-600 rounded-lg flex items-center justify-center shadow-lg shadow-emerald-600/20 text-white dark:text-slate-950 font-black text-lg">
+                <div class="w-9 h-9 bg-emerald-600 rounded-lg flex items-center justify-center text-white font-black text-lg">
                     <i class="fa-solid fa-link"></i>
                 </div>
                 <span class="font-extrabold tracking-wider">AHTRIS<span class="text-emerald-600 dark:text-emerald-400">.MY.ID</span></span>
@@ -47,13 +47,14 @@
                     <i id="themeIcon" class="fa-solid fa-moon"></i>
                 </button>
 
+                <!-- Auth Area -->
                 <div id="authArea">
-                    <button id="btnOpenAuth" onclick="openAuthModal()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 dark:bg-slate-800 dark:hover:bg-emerald-900/30 border border-emerald-600 dark:border-emerald-800/40 rounded-xl text-xs font-bold text-white dark:text-emerald-400 transition flex items-center gap-2 shadow-md shadow-emerald-600/10">
+                    <button id="btnOpenAuth" onclick="openAuthModal()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 dark:bg-slate-800 dark:hover:bg-emerald-900/30 border border-emerald-600 dark:border-emerald-800/40 rounded-xl text-xs font-bold text-white dark:text-emerald-400 transition flex items-center gap-2">
                         <i class="fa-regular fa-user"></i> Login / Daftar
                     </button>
 
                     <div id="userProfile" class="hidden items-center gap-3">
-                        <button onclick="handleLogout()" class="px-3.5 py-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 dark:text-rose-400 border border-rose-500/20 rounded-xl text-xs font-semibold transition flex items-center gap-1.5">
+                        <button type="button" onclick="handleLogout()" class="px-3.5 py-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 dark:text-rose-400 border border-rose-500/20 rounded-xl text-xs font-semibold transition flex items-center gap-1.5">
                             <i class="fa-solid fa-arrow-right-from-bracket"></i> Keluar
                         </button>
                     </div>
@@ -62,169 +63,121 @@
         </div>
     </header>
 
-    <!-- Container Utama -->
-    <div class="max-w-4xl mx-auto px-4 py-12 sm:py-16 w-full flex-1">
-        <!-- Hero Header -->
-        <div class="text-center mb-10 max-w-2xl mx-auto">
-            <h1 class="text-4xl sm:text-6xl font-black text-slate-900 dark:text-white tracking-tight mb-4">
-                #Ahtris<span class="text-emerald-600 dark:text-emerald-400">MyId</span>
+    <!-- Content Utama Builder -->
+    <main id="mainContent" class="max-w-6xl mx-auto px-4 py-10 w-full flex-1">
+        <div class="text-center mb-8">
+            <span class="px-3 py-1 bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 text-xs font-semibold rounded-full uppercase tracking-wider">
+                Creator Bio Link & Mini Site
+            </span>
+            <h1 class="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tight mt-2">
+                Microsite Content Creator
             </h1>
-            <p class="text-slate-600 dark:text-slate-300 text-base sm:text-lg leading-relaxed font-normal">
-                Maksimalkan performa konten dan bisnismu. Buat link bio, shortlink, dan QR Code lengkap dengan analitik dalam hitungan detik. Cek sekarang di <span class="text-emerald-600 dark:text-emerald-400 font-semibold">ahtris.my.id</span>.
+            <p class="text-slate-600 dark:text-slate-400 text-xs sm:text-sm mt-1">
+                Kumpulkan seluruh link sosial media & portofoliomu dalam satu halaman eksklusif.
             </p>
         </div>
 
-        <!-- Tab Pills Options -->
-        <div class="flex justify-center gap-2 sm:gap-3 mb-6">
-            <button type="button" id="tabShortener" class="px-5 py-2.5 bg-emerald-600 text-white rounded-full text-xs font-bold shadow-md shadow-emerald-600/20 flex items-center gap-2 transition">
-                <i class="fa-solid fa-link"></i> Shortener
-            </button>
-            <button type="button" id="tabQr" onclick="showSampleQrModal()" class="px-5 py-2.5 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 rounded-full text-xs font-medium hover:border-emerald-500 transition flex items-center gap-2">
-                <i class="fa-solid fa-qrcode"></i> Kode QR
-            </button>
-            <a href="microsite.html" class="px-5 py-2.5 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 rounded-full text-xs font-medium hover:border-emerald-500 transition flex items-center gap-2">
-                <i class="fa-regular fa-newspaper"></i> Microsite
-            </a>
-        </div>
-
-        <!-- FORM PEMBUAT LINK & BARCODE -->
-        <div class="mb-6">
-            <form id="shortenForm" class="space-y-4">
-                <div class="relative bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-full p-2 pl-6 shadow-xl flex items-center justify-between focus-within:border-emerald-500 focus-within:ring-2 focus-within:ring-emerald-500/20 transition-all">
-                    <input type="url" id="originalUrl" required placeholder="Salin/Tempel tautan di sini" 
-                           class="w-full bg-transparent text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 text-sm sm:text-base focus:outline-none pr-4">
-                    
-                    <button type="submit" id="btnSubmit" 
-                            class="py-3 px-6 sm:px-8 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-full transition duration-200 flex items-center justify-center gap-2 text-xs sm:text-sm tracking-wide shrink-0 shadow-lg shadow-emerald-600/30">
-                        <i class="fa-solid fa-bolt"></i> Persingkat
-                    </button>
-                </div>
-
-                <!-- CUSTOM SLUG FIELD (KHUSUS MEMBER) -->
-                <div id="customSlugField" class="hidden max-w-xl mx-auto pt-2">
-                    <div class="flex justify-between items-center mb-1 px-2">
-                        <label class="block text-xs uppercase tracking-wider font-semibold text-slate-600 dark:text-slate-300">Custom Short Slug</label>
-                        <span class="text-xs text-emerald-600 dark:text-emerald-400 font-medium flex items-center gap-1">
-                            <i class="fa-solid fa-circle-check text-[10px]"></i> Akses Member
-                        </span>
-                    </div>
-                    <div class="flex items-center bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-full overflow-hidden focus-within:border-emerald-500 transition px-4">
-                        <span class="pr-2 text-slate-400 text-xs sm:text-sm font-mono" id="domainPrefix">.../</span>
-                        <input type="text" id="customSlug" placeholder="hasilshort" 
-                               class="w-full py-2.5 bg-transparent text-slate-900 dark:text-white focus:outline-none font-mono text-xs sm:text-sm">
-                    </div>
-                </div>
-            </form>
-
-            <p class="text-center text-xs text-slate-500 dark:text-slate-400 mt-4">
-                Dengan memproses form ini, anda telah setuju dengan semua 
-                <a href="privacy.html" class="text-emerald-600 dark:text-emerald-400 hover:underline font-medium">ketentuan layanan</a> kami
+        <!-- PERINGATAN JIKA BELUM LOGIN -->
+        <div id="loginWarning" class="max-w-md mx-auto bg-amber-500/10 border border-amber-500/30 rounded-2xl p-6 text-center mb-8">
+            <i class="fa-solid fa-lock text-3xl text-amber-500 mb-3"></i>
+            <h3 class="text-lg font-bold text-slate-900 dark:text-white">Pendaftaran Diperlukan</h3>
+            <p class="text-xs text-slate-600 dark:text-slate-400 mt-1 mb-4">
+                Silakan <b>Login</b> atau <b>Daftar Akun</b> terlebih dahulu untuk membuat dan mengelola halaman Microsite Anda.
             </p>
-            <div id="statusMessage" class="mt-4 text-center text-sm font-medium hidden"></div>
+            <button onclick="openAuthModal()" class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl transition">
+                Login / Daftar Sekarang
+            </button>
         </div>
 
-        <!-- TABEL DAFTAR LINK (KHUSUS MEMBER) -->
-        <div id="tableContainer" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-emerald-900/50 rounded-2xl p-6 sm:p-8 shadow-xl hidden">
-            <div class="flex justify-between items-center mb-6 border-b border-slate-100 dark:border-slate-800 pb-4">
-                <div>
-                    <h2 class="text-lg font-bold text-slate-900 dark:text-white">Daftar Link Saya</h2>
-                    <p class="text-xs text-slate-500 dark:text-slate-400">Riwayat tautan pendek yang telah Anda buat.</p>
+        <!-- BUILDER & PREVIEW CONTAINER -->
+        <div id="builderContainer" class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start opacity-50 pointer-events-none transition-all duration-300">
+            
+            <!-- FORM BUILDER (LEFT) -->
+            <div class="lg:col-span-7 bg-white dark:bg-slate-900 border border-slate-200 dark:border-emerald-900/40 rounded-2xl p-6 shadow-xl space-y-6">
+                <h2 class="text-lg font-bold text-slate-900 dark:text-white border-b border-slate-100 dark:border-slate-800 pb-3 flex items-center gap-2">
+                    <i class="fa-solid fa-sliders text-emerald-600 dark:text-emerald-400"></i> Pengaturan Profil Creator
+                </h2>
+
+                <div class="space-y-4">
+                    <!-- UPLOAD FOTO PROFIL -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-2">Foto Profil (Supabase Storage)</label>
+                        <div class="flex items-center gap-4">
+                            <div class="relative w-16 h-16 rounded-full overflow-hidden bg-slate-100 dark:bg-slate-800 border-2 border-emerald-500 flex items-center justify-center shrink-0">
+                                <img id="avatarPreview" src="" alt="" class="w-full h-full object-cover hidden">
+                                <i id="avatarPlaceholderIcon" class="fa-solid fa-user text-2xl text-slate-400"></i>
+                            </div>
+                            <div class="flex-1">
+                                <input type="file" id="inputAvatar" accept="image/*" onchange="handleAvatarSelection(event)" class="hidden">
+                                <button type="button" onclick="document.getElementById('inputAvatar').click()" class="px-4 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-emerald-50 dark:hover:bg-emerald-950 border border-slate-300 dark:border-slate-700 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 transition flex items-center gap-2">
+                                    <i class="fa-solid fa-cloud-arrow-up text-emerald-500"></i> Pilih Foto
+                                </button>
+                                <p class="text-[10px] text-slate-400 mt-1">Foto otomatis tersimpan di Supabase Storage.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Nama Creator / Judul</label>
+                        <input type="text" id="inputName" oninput="updatePreview()" placeholder="Contoh: AHTRIS" class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-sm focus:outline-none focus:border-emerald-500 font-bold uppercase">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Bio / Profesi</label>
+                        <input type="text" id="inputBio" oninput="updatePreview()" placeholder="Contoh: CONTENT CREATOR" class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-sm focus:outline-none focus:border-emerald-500 uppercase">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Custom Slug URL</label>
+                        <div class="flex items-center bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl px-4 py-2.5">
+                            <span class="text-slate-400 text-xs font-mono mr-1" id="slugPrefix">ahtris.my.id/</span>
+                            <input type="text" id="inputSlug" placeholder="ahtris" class="w-full bg-transparent focus:outline-none font-mono text-xs text-emerald-600 dark:text-emerald-400 font-bold">
+                        </div>
+                    </div>
                 </div>
-                <button onclick="loadUrls()" class="text-xs text-emerald-600 dark:text-emerald-400 hover:underline transition flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-950 border border-emerald-200 dark:border-emerald-800/40 rounded-lg">
-                    <i class="fa-solid fa-rotate-right"></i> Refresh
+
+                <div class="pt-4 border-t border-slate-100 dark:border-slate-800">
+                    <div class="flex justify-between items-center mb-3">
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase">Daftar Link Sosial Media</label>
+                        <button type="button" onclick="addLinkInput()" class="px-3 py-1.5 bg-emerald-50 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/40 rounded-lg text-xs font-bold hover:bg-emerald-100 transition flex items-center gap-1">
+                            <i class="fa-solid fa-plus"></i> Tambah Link
+                        </button>
+                    </div>
+
+                    <div id="linkInputsContainer" class="space-y-3"></div>
+                </div>
+
+                <button type="button" onclick="saveDirectToSupabase()" id="btnSaveMicrosite" class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl transition shadow-lg shadow-emerald-600/20 text-sm flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-floppy-disk"></i> Simpan & Publiskan Langsung
                 </button>
             </div>
-            <div class="overflow-x-auto">
-                <table class="w-full text-left text-sm text-slate-700 dark:text-slate-300">
-                    <thead class="text-xs uppercase tracking-wider bg-slate-50 dark:bg-slate-950 text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-800">
-                        <tr>
-                            <th class="p-3.5 rounded-l-lg">Short Link</th>
-                            <th class="p-3.5">URL Asli</th>
-                            <th class="p-3.5 text-center">Total Klik</th>
-                            <th class="p-3.5 text-right rounded-r-lg">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody id="urlTableBody" class="divide-y divide-slate-100 dark:divide-slate-800/60">
-                        <!-- Data URL dimuat di sini -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
 
-    <!-- MODAL SAMPLE QR CODE (DENGAN BADGE AH) -->
-    <div id="sampleQrModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl w-full max-w-sm p-6 shadow-2xl relative text-center">
-            <button onclick="closeSampleQrModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-white text-lg">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-1">Contoh Barcode / QR Code</h3>
-            <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">
-                QR Code resmi lengkap dengan logo badge AHTRIS.
-            </p>
-            <div class="bg-white p-3 rounded-xl inline-block mb-4 shadow-md border border-slate-200">
-                <img id="sampleQrImg" src="" alt="Contoh Barcode QR AH" class="w-48 h-48 object-contain mx-auto">
-            </div>
-            <button onclick="closeSampleQrModal()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs transition">
-                Tutup & Mulai Buat QR Code
-            </button>
-        </div>
-    </div>
+            <!-- LIVE PREVIEW HP (RIGHT) -->
+            <div class="lg:col-span-5 flex justify-center sticky top-24">
+                <div class="w-full max-w-[320px] bg-white border-8 border-slate-800 rounded-[40px] shadow-2xl overflow-hidden p-6 flex flex-col items-center text-center relative min-h-[520px]">
+                    <div class="w-28 h-4 bg-slate-800 absolute top-0 rounded-b-xl mb-6"></div>
 
-    <!-- MODAL HASIL SHORT LINK / QR CODE (DENGAN BADGE AH) -->
-    <div id="guestResultModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-emerald-700/50 rounded-2xl w-full max-w-sm p-6 shadow-2xl relative text-center">
-            <button onclick="closeGuestModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-white text-lg">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-            
-            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-1">Barcode / QR Code Hasil</h3>
-            <p class="text-xs text-emerald-600 dark:text-emerald-400 font-semibold mb-4">
-                QR Code Berhasil Dibuat
-            </p>
+                    <!-- Avatar Profile Preview -->
+                    <div class="w-24 h-24 rounded-full mt-6 mb-3 overflow-hidden border-2 border-emerald-500 shadow-md flex items-center justify-center bg-emerald-500 text-white shrink-0">
+                        <img id="prevAvatarImg" src="" alt="" class="w-full h-full object-cover hidden">
+                        <i id="prevAvatarIcon" class="fa-solid fa-user text-4xl"></i>
+                    </div>
 
-            <div class="bg-white p-3 rounded-xl inline-block mb-4 shadow-md border border-slate-200">
-                <img id="guestQrCodeImg" src="" alt="QR Code" class="w-48 h-48 object-contain mx-auto">
-            </div>
+                    <h3 id="prevName" class="font-extrabold text-lg text-slate-900 tracking-wide uppercase">AHTRIS</h3>
+                    <p id="prevBio" class="text-xs text-slate-500 font-medium tracking-wider uppercase mt-0.5 mb-6">CONTENT CREATOR</p>
 
-            <div class="space-y-3">
-                <input type="text" id="guestShortUrlInput" readonly class="w-full bg-slate-50 dark:bg-slate-950 text-emerald-600 dark:text-emerald-300 px-4 py-2.5 rounded-xl text-xs font-mono border border-slate-200 dark:border-slate-800 text-center focus:outline-none">
-                <div class="grid grid-cols-2 gap-2">
-                    <button onclick="copyGuestLink()" class="py-2.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-white font-bold rounded-xl text-xs transition flex items-center justify-center gap-1.5">
-                        <i class="fa-regular fa-copy"></i> Salin Link
-                    </button>
-                    <a id="downloadQrBtn" href="" download="qrcode-ahtris.png" target="_blank" class="py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs transition flex items-center justify-center gap-1.5">
-                        <i class="fa-solid fa-download"></i> Unduh QR
-                    </a>
+                    <div id="prevLinksContainer" class="w-full space-y-3 overflow-y-auto max-h-[300px] pr-1"></div>
                 </div>
             </div>
         </div>
-    </div>
+    </main>
 
-    <!-- MODAL LOADING PEMBUATAN LINK -->
-    <div id="loadingModal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-emerald-800/60 rounded-2xl w-full max-w-sm p-6 shadow-2xl text-center">
-            <i class="fa-solid fa-gear fa-spin text-4xl text-emerald-600 dark:text-emerald-400 mb-4"></i>
-            <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-1">Memproses Barcode QR...</h3>
-            <p id="loadingTextNotice" class="text-xs text-slate-500 dark:text-slate-400 mb-4">Harap tunggu sebentar.</p>
-            
-            <div class="w-full bg-slate-100 dark:bg-slate-950 h-2 rounded-full overflow-hidden mb-2 border border-slate-200 dark:border-slate-800">
-                <div id="genProgressBar" class="bg-emerald-600 dark:bg-emerald-500 h-full w-0 transition-all duration-1000 ease-linear"></div>
-            </div>
-            <p class="text-xs font-mono text-emerald-600 dark:text-emerald-400 font-semibold">
-                <span id="genCountdown">0</span> Detik
-            </p>
-        </div>
-    </div>
-
-    <!-- MODAL AUTH (LOGIN / REGISTER) -->
+    <!-- MODAL AUTH -->
     <div id="authModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-emerald-900/50 rounded-2xl w-full max-w-md p-6 shadow-2xl relative">
             <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-white text-lg">
                 <i class="fa-solid fa-xmark"></i>
             </button>
             <h3 id="modalTitle" class="text-2xl font-bold text-slate-900 dark:text-white mb-1">Masuk ke Akun</h3>
-            <p class="text-xs text-slate-500 dark:text-slate-400 mb-6">Akses fitur custom slug & penyimpanan riwayat link.</p>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mb-6">Login untuk mulai membuat halaman Microsite milik Anda.</p>
 
             <form id="authForm" class="space-y-4">
                 <div>
@@ -246,46 +199,21 @@
         </div>
     </div>
 
-    <!-- FOOTER CORPORATE -->
-    <footer class="border-t border-slate-200 dark:border-emerald-950 bg-white dark:bg-slate-950 pt-10 pb-6 text-center text-xs text-slate-500 dark:text-slate-400 transition-colors">
-        <div class="max-w-5xl mx-auto px-4 space-y-8">
-            <div class="bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-emerald-900/30 rounded-2xl p-6">
-                <p class="text-[11px] uppercase tracking-widest font-bold text-emerald-600 dark:text-emerald-500 mb-4">Supported By System Ecosystem</p>
-                <div class="flex flex-wrap items-center justify-center gap-6 sm:gap-12">
-                    <div class="flex items-center gap-2 text-slate-700 dark:text-slate-200 hover:text-emerald-600 transition">
-                        <i class="fa-solid fa-building text-emerald-600 dark:text-emerald-500 text-lg"></i>
-                        <span class="font-bold text-xs tracking-tight">PT. BINAYASA PUTRABATARA</span>
-                    </div>
-                    <div class="flex items-center gap-2 text-slate-700 dark:text-slate-200 hover:text-emerald-600 transition">
-                        <i class="fa-solid fa-network-wired text-emerald-600 dark:text-emerald-500 text-lg"></i>
-                        <span class="font-bold text-xs tracking-tight">BMIS <span class="text-slate-400 font-normal">(Building Management Info System)</span></span>
-                    </div>
-                    <div class="flex items-center gap-2 text-slate-700 dark:text-slate-200 hover:text-emerald-600 transition">
-                        <i class="fa-solid fa-mobile-screen-button text-emerald-600 dark:text-emerald-500 text-lg"></i>
-                        <span class="font-bold text-xs tracking-tight">BPB MOBILE</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="flex justify-center items-center space-x-6 font-medium text-slate-600 dark:text-slate-300">
-                <a href="/" class="hover:text-emerald-600 dark:hover:text-emerald-400 transition">Beranda</a>
-                <span class="text-slate-300 dark:text-slate-800">•</span>
-                <a href="privacy.html" class="hover:text-emerald-600 dark:hover:text-emerald-400 transition">Privacy Policy</a>
-                <span class="text-slate-300 dark:text-slate-800">•</span>
-                <a href="kontak.html" class="hover:text-emerald-600 dark:hover:text-emerald-400 transition">Kontak Kami</a>
-            </div>
-
-            <p class="text-slate-400 dark:text-slate-600 text-[11px]">© 2026 Short Link Manager. Database Powered by Supabase & Hosted on GitHub Pages</p>
-        </div>
+    <!-- Footer -->
+    <footer class="border-t border-slate-200 dark:border-emerald-950 bg-white dark:bg-slate-950 py-6 text-center text-xs text-slate-500">
+        © 2026 Short Link & Microsite Manager — Supported by PT. Binayasa Putrabatara
     </footer>
 
-    <!-- LOGIKA JAVASCRIPT & QR CODE CANVAS GENERATOR -->
+    <!-- LOGIKA JAVASCRIPT LENGKAP -->
     <script>
         const SUPABASE_URL = "https://lcpskriooezyxgrnarol.supabase.co"; 
         const SUPABASE_KEY = "sb_publishable_puy9U_93p-7_Q64oHrYUpg_iEF3nJ-c";
 
         let currentUser = null;
         let isRegisterMode = false;
+        let linkCount = 0;
+        let selectedAvatarFile = null;
+        let currentUploadedAvatarUrl = "";
 
         function initTheme() {
             const savedTheme = localStorage.getItem('theme') || 'dark';
@@ -310,61 +238,6 @@
             }
         }
 
-        // --- FUNGSI PROSESSING CANVAS KUSTOM LOGO "AH" DI TENGAH QR ---
-        function generateQrWithCenterText(targetUrl, callback) {
-            const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(targetUrl)}`;
-            const img = new Image();
-            img.crossOrigin = "Anonymous";
-            img.src = qrApiUrl;
-
-            img.onload = function() {
-                const canvas = document.createElement('canvas');
-                canvas.width = 300;
-                canvas.height = 300;
-                const ctx = canvas.getContext('2d');
-
-                // 1. Gambar QR Code Dasar
-                ctx.drawImage(img, 0, 0, 300, 300);
-
-                // 2. Lingkaran Dasar Putih di Tengah
-                const centerX = 150;
-                const centerY = 150;
-                const boxSize = 54;
-
-                ctx.fillStyle = "#ffffff";
-                ctx.beginPath();
-                ctx.arc(centerX, centerY, boxSize / 2 + 4, 0, 2 * Math.PI);
-                ctx.fill();
-
-                // 3. Badge Lingkaran Hijau Emerald
-                ctx.fillStyle = "#059669"; 
-                ctx.beginPath();
-                ctx.arc(centerX, centerY, boxSize / 2, 0, 2 * Math.PI);
-                ctx.fill();
-
-                // 4. Teks "AH"
-                ctx.fillStyle = "#ffffff";
-                ctx.font = "bold 22px 'Plus Jakarta Sans', sans-serif";
-                ctx.textAlign = "center";
-                ctx.textBaseline = "middle";
-                ctx.fillText("AH", centerX, centerY + 1);
-
-                const finalImageDataUrl = canvas.toDataURL("image/png");
-                if (callback) callback(finalImageDataUrl);
-            };
-        }
-
-        function showSampleQrModal() {
-            generateQrWithCenterText("https://ahtris.my.id", (finalImage) => {
-                document.getElementById('sampleQrImg').src = finalImage;
-                document.getElementById('sampleQrModal').classList.remove('hidden');
-            });
-        }
-
-        function closeSampleQrModal() {
-            document.getElementById('sampleQrModal').classList.add('hidden');
-        }
-
         function getHeaders(token = null) {
             return {
                 'apikey': SUPABASE_KEY,
@@ -374,25 +247,17 @@
             };
         }
 
-        const form = document.getElementById('shortenForm');
-        const originalUrlInput = document.getElementById('originalUrl');
-        const customSlugInput = document.getElementById('customSlug');
-        const customSlugField = document.getElementById('customSlugField');
-        const statusMessage = document.getElementById('statusMessage');
-        const tableContainer = document.getElementById('tableContainer');
-        const urlTableBody = document.getElementById('urlTableBody');
-
-        const currentOrigin = window.location.origin;
-        document.getElementById('domainPrefix').textContent = `${window.location.host}/`;
-
         function checkSession() {
             const sessionData = localStorage.getItem('sb_user_session');
             if (sessionData) {
                 try {
                     currentUser = JSON.parse(sessionData);
                     renderUserUI();
+                    loadUserExistingProfile();
                 } catch (e) {
                     localStorage.removeItem('sb_user_session');
+                    currentUser = null;
+                    renderUserUI();
                 }
             } else {
                 renderUserUI();
@@ -400,20 +265,25 @@
         }
 
         function renderUserUI() {
+            const btnOpenAuth = document.getElementById('btnOpenAuth');
+            const userProfile = document.getElementById('userProfile');
+            const loginWarning = document.getElementById('loginWarning');
+            const builderContainer = document.getElementById('builderContainer');
+
             if (currentUser && currentUser.access_token) {
-                document.getElementById('btnOpenAuth').classList.add('hidden');
-                document.getElementById('userProfile').classList.remove('hidden');
-                document.getElementById('userProfile').classList.add('flex');
-                customSlugField.classList.remove('hidden');
-                tableContainer.classList.remove('hidden');
-                loadUrls();
+                btnOpenAuth.classList.add('hidden');
+                userProfile.classList.remove('hidden');
+                userProfile.classList.add('flex');
+
+                loginWarning.classList.add('hidden');
+                builderContainer.classList.remove('opacity-50', 'pointer-events-none');
             } else {
-                document.getElementById('btnOpenAuth').classList.remove('hidden');
-                document.getElementById('userProfile').classList.add('hidden');
-                document.getElementById('userProfile').classList.remove('flex');
-                customSlugField.classList.add('hidden');
-                customSlugInput.value = '';
-                tableContainer.classList.add('hidden');
+                btnOpenAuth.classList.remove('hidden');
+                userProfile.classList.add('hidden');
+                userProfile.classList.remove('flex');
+
+                loginWarning.classList.remove('hidden');
+                builderContainer.classList.add('opacity-50', 'pointer-events-none');
             }
         }
 
@@ -470,6 +340,7 @@
                         localStorage.setItem('sb_user_session', JSON.stringify(sessionPayload));
                         
                         renderUserUI();
+                        loadUserExistingProfile();
                         closeAuthModal();
                         document.getElementById('authForm').reset();
                         authStatus.classList.add('hidden');
@@ -492,136 +363,342 @@
             window.location.reload();
         }
 
-        function openGuestModal(url) {
-            document.getElementById('guestShortUrlInput').value = url;
-            generateQrWithCenterText(url, (finalImage) => {
-                document.getElementById('guestQrCodeImg').src = finalImage;
-                document.getElementById('downloadQrBtn').href = finalImage;
-                document.getElementById('guestResultModal').classList.remove('hidden');
-            });
-        }
+        function handleAvatarSelection(event) {
+            const file = event.target.files[0];
+            if (!file) return;
 
-        function closeGuestModal() { document.getElementById('guestResultModal').classList.add('hidden'); }
-
-        function copyGuestLink() {
-            const input = document.getElementById('guestShortUrlInput');
-            navigator.clipboard.writeText(input.value);
-            alert("Short URL berhasil disalin!");
-        }
-
-        function generateRandomSlug(length = 5) {
-            const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-            let result = '';
-            for (let i = 0; i < length; i++) {
-                result += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
-            return result;
-        }
-
-        function startGenerateDelay(durationSeconds) {
-            return new Promise((resolve) => {
-                const loadingModal = document.getElementById('loadingModal');
-                const genCountdown = document.getElementById('genCountdown');
-                const genProgressBar = document.getElementById('genProgressBar');
-
-                genCountdown.textContent = durationSeconds;
-                genProgressBar.style.width = '0%';
-                loadingModal.classList.remove('hidden');
-
-                let currentLeft = durationSeconds;
-                const timer = setInterval(() => {
-                    currentLeft--;
-                    genCountdown.textContent = currentLeft;
-                    genProgressBar.style.width = `${((durationSeconds - currentLeft) / durationSeconds) * 100}%`;
-
-                    if (currentLeft <= 0) {
-                        clearInterval(timer);
-                        loadingModal.classList.add('hidden');
-                        resolve();
-                    }
-                }, 1000);
-            });
-        }
-
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const original_url = originalUrlInput.value.trim();
-
-            if (!currentUser) {
-                const slug = generateRandomSlug(5);
-                await startGenerateDelay(5);
-
-                try {
-                    const response = await fetch(`${SUPABASE_URL}/rest/v1/urls`, {
-                        method: 'POST',
-                        headers: getHeaders(),
-                        body: JSON.stringify({ original_url, slug, user_id: null })
-                    });
-
-                    if (response.ok) {
-                        const generatedUrl = `${currentOrigin}/${slug}`;
-                        openGuestModal(generatedUrl);
-                        form.reset();
-                    }
-                } catch (err) {}
+            if (file.size > 5 * 1024 * 1024) {
+                alert("Ukuran file gambar maksimal 5MB!");
                 return;
             }
 
-            let slug = customSlugInput.value.trim().replace(/^\/|\/$/g, '');
-            if (!slug) slug = generateRandomSlug(5);
+            selectedAvatarFile = file;
+            const tempUrl = URL.createObjectURL(file);
+            setAvatarPreviewImage(tempUrl);
+        }
 
-            await startGenerateDelay(3);
+        function setAvatarPreviewImage(imgUrl) {
+            const avatarPreview = document.getElementById('avatarPreview');
+            const avatarPlaceholderIcon = document.getElementById('avatarPlaceholderIcon');
+            const prevAvatarImg = document.getElementById('prevAvatarImg');
+            const prevAvatarIcon = document.getElementById('prevAvatarIcon');
 
-            try {
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/urls`, {
-                    method: 'POST',
-                    headers: getHeaders(currentUser.access_token),
-                    body: JSON.stringify({ original_url, slug, user_id: currentUser.user.id })
-                });
+            if (imgUrl) {
+                avatarPreview.src = imgUrl;
+                avatarPreview.classList.remove('hidden');
+                avatarPlaceholderIcon.classList.add('hidden');
 
-                if (response.ok) {
-                    const generatedUrl = `${currentOrigin}/${slug}`;
-                    openGuestModal(generatedUrl);
-                    form.reset();
-                    loadUrls();
-                }
-            } catch (err) {}
-        });
+                prevAvatarImg.src = imgUrl;
+                prevAvatarImg.classList.remove('hidden');
+                prevAvatarIcon.classList.add('hidden');
+            } else {
+                avatarPreview.classList.add('hidden');
+                avatarPlaceholderIcon.classList.remove('hidden');
 
-        async function loadUrls() {
-            urlTableBody.innerHTML = '';
+                prevAvatarImg.classList.add('hidden');
+                prevAvatarIcon.classList.remove('hidden');
+            }
+        }
+
+        async function uploadAvatarToSupabaseStorage() {
+            if (!selectedAvatarFile || !currentUser) return currentUploadedAvatarUrl;
+
+            const fileExt = selectedAvatarFile.name.split('.').pop();
+            const fileName = `${currentUser.user.id}_avatar_${Date.now()}.${fileExt}`;
+
+            const uploadHeaders = {
+                'apikey': SUPABASE_KEY,
+                'Authorization': `Bearer ${currentUser.access_token}`,
+                'Content-Type': selectedAvatarFile.type,
+                'x-upsert': 'true'
+            };
+
+            const uploadRes = await fetch(`${SUPABASE_URL}/storage/v1/object/avatars/${fileName}`, {
+                method: 'POST',
+                headers: uploadHeaders,
+                body: selectedAvatarFile
+            });
+
+            if (!uploadRes.ok) {
+                const errJson = await uploadRes.json();
+                throw new Error("Gagal unggah foto ke Storage: " + (errJson.message || "Pastikan Bucket 'avatars' sudah dibuat"));
+            }
+
+            return `${SUPABASE_URL}/storage/v1/object/public/avatars/${fileName}`;
+        }
+
+        function detectSocialIcon(url) {
+            const lowerUrl = url.toLowerCase();
+            if (lowerUrl.includes('youtube.com') || lowerUrl.includes('youtu.be')) {
+                return { icon: 'fa-brands fa-youtube', color: 'text-red-500', name: 'YouTube' };
+            } else if (lowerUrl.includes('facebook.com') || lowerUrl.includes('fb.watch')) {
+                return { icon: 'fa-brands fa-facebook', color: 'text-blue-600', name: 'Facebook' };
+            } else if (lowerUrl.includes('instagram.com')) {
+                return { icon: 'fa-brands fa-instagram', color: 'text-pink-500', name: 'Instagram' };
+            } else if (lowerUrl.includes('twitter.com') || lowerUrl.includes('x.com')) {
+                return { icon: 'fa-brands fa-x-twitter', color: 'text-slate-800', name: 'Twitter / X' };
+            } else if (lowerUrl.includes('tiktok.com')) {
+                return { icon: 'fa-brands fa-tiktok', color: 'text-slate-900', name: 'TikTok' };
+            } else if (lowerUrl.includes('wa.me') || lowerUrl.includes('whatsapp.com')) {
+                return { icon: 'fa-brands fa-whatsapp', color: 'text-emerald-500', name: 'WhatsApp' };
+            } else if (lowerUrl.includes('linkedin.com')) {
+                return { icon: 'fa-brands fa-linkedin', color: 'text-blue-500', name: 'LinkedIn' };
+            }
+            return { icon: 'fa-solid fa-globe', color: 'text-emerald-500', name: 'Website' };
+        }
+
+        function addLinkInput(title = '', url = '') {
+            linkCount++;
+            const container = document.getElementById('linkInputsContainer');
+            const id = `link_item_${linkCount}`;
+
+            const itemHtml = `
+                <div id="${id}" class="p-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl space-y-2 relative">
+                    <button type="button" onclick="removeLinkInput('${id}')" class="absolute top-2 right-2 text-slate-400 hover:text-rose-500 text-xs">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                    <div class="flex items-center gap-2">
+                        <span id="icon_${id}" class="text-lg text-emerald-500"><i class="fa-solid fa-globe"></i></span>
+                        <input type="text" id="title_${id}" oninput="updatePreview()" value="${title}" placeholder="Judul Tautan" class="w-full bg-transparent text-xs font-semibold focus:outline-none text-slate-900 dark:text-white">
+                    </div>
+                    <input type="url" id="url_${id}" oninput="onUrlChange('${id}')" value="${url}" placeholder="https://..." class="w-full bg-transparent text-xs font-mono text-slate-500 focus:outline-none border-t border-slate-200 dark:border-slate-800/60 pt-1.5">
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', itemHtml);
+            updatePreview();
+        }
+
+        function removeLinkInput(id) {
+            const el = document.getElementById(id);
+            if (el) el.remove();
+            updatePreview();
+        }
+
+        function onUrlChange(id) {
+            const urlValue = document.getElementById(`url_${id}`).value;
+            const detected = detectSocialIcon(urlValue);
+            
+            const titleInput = document.getElementById(`title_${id}`);
+            if (!titleInput.value) titleInput.value = detected.name;
+
+            const iconSpan = document.getElementById(`icon_${id}`);
+            iconSpan.innerHTML = `<i class="${detected.icon} ${detected.color}"></i>`;
+
+            updatePreview();
+        }
+
+        function updatePreview() {
+            const name = document.getElementById('inputName').value || 'AHTRIS';
+            const bio = document.getElementById('inputBio').value || 'CONTENT CREATOR';
+
+            document.getElementById('prevName').textContent = name;
+            document.getElementById('prevBio').textContent = bio;
+
+            const prevLinksContainer = document.getElementById('prevLinksContainer');
+            prevLinksContainer.innerHTML = '';
+
+            const container = document.getElementById('linkInputsContainer');
+            const items = container.querySelectorAll('[id^="link_item_"]');
+
+            items.forEach(item => {
+                const id = item.id;
+                const title = document.getElementById(`title_${id}`).value || 'Kunjungi Link';
+                const url = document.getElementById(`url_${id}`).value || '#';
+                const detected = detectSocialIcon(url);
+
+                const linkBtnHtml = `
+                    <a href="${url}" target="_blank" class="w-full py-3.5 px-5 bg-slate-50 hover:bg-slate-100 rounded-2xl text-sm font-bold text-slate-800 transition flex items-center justify-between border border-slate-200 shadow-sm">
+                        <i class="${detected.icon} ${detected.color} text-xl"></i>
+                        <span class="truncate px-2 font-bold">${title}</span>
+                        <i class="fa-solid fa-chevron-right text-xs text-slate-400"></i>
+                    </a>
+                `;
+                prevLinksContainer.insertAdjacentHTML('beforeend', linkBtnHtml);
+            });
+        }
+
+        async function loadUserExistingProfile() {
             if (!currentUser) return;
 
             try {
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/urls?user_id=eq.${currentUser.user.id}&select=*&order=created_at.desc`, {
+                const res = await fetch(`${SUPABASE_URL}/rest/v1/microsite_profiles?user_id=eq.${currentUser.user.id}&select=*`, {
                     method: 'GET',
                     headers: getHeaders(currentUser.access_token)
                 });
-                const data = await response.json();
+                const data = await res.json();
 
                 if (data && data.length > 0) {
-                    data.forEach(item => {
-                        const fullShortUrl = `${currentOrigin}/${item.slug}`;
-                        const row = document.createElement('tr');
-                        row.className = "hover:bg-slate-50 dark:hover:bg-slate-800/40 transition";
-                        row.innerHTML = `
-                            <td class="p-3.5 font-mono text-emerald-600 dark:text-emerald-400 font-medium">/${item.slug}</td>
-                            <td class="p-3.5 truncate max-w-xs text-slate-500 dark:text-slate-400">${item.original_url}</td>
-                            <td class="p-3.5 text-center font-bold">${item.click_count || 0}</td>
-                            <td class="p-3.5 text-right">
-                                <button onclick="openGuestModal('${fullShortUrl}')" class="px-2.5 py-1.5 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30 text-xs rounded-lg transition">
-                                    <i class="fa-solid fa-qrcode"></i> Lihat QR
-                                </button>
-                            </td>
-                        `;
-                        urlTableBody.appendChild(row);
+                    const prof = data[0];
+                    document.getElementById('inputName').value = prof.display_name || '';
+                    document.getElementById('inputBio').value = prof.bio || '';
+                    document.getElementById('inputSlug').value = prof.slug || '';
+
+                    if (prof.avatar_url) {
+                        currentUploadedAvatarUrl = prof.avatar_url;
+                        setAvatarPreviewImage(currentUploadedAvatarUrl);
+                    }
+
+                    const linksRes = await fetch(`${SUPABASE_URL}/rest/v1/microsite_links?profile_id=eq.${prof.id}&select=*&order=sort_order.asc`, {
+                        method: 'GET',
+                        headers: getHeaders(currentUser.access_token)
+                    });
+                    const linksData = await linksRes.json();
+
+                    if (linksData && linksData.length > 0) {
+                        document.getElementById('linkInputsContainer').innerHTML = '';
+                        linksData.forEach(item => {
+                            addLinkInput(item.title, item.url);
+                        });
+                    }
+                    updatePreview();
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        // --- SIMPAN MICROSITE & OTOMATIS MASUK KE TABEL URLS (DAFTAR LINK SAYA) ---
+        async function saveDirectToSupabase() {
+            if (!currentUser) {
+                alert("Silakan login terlebih dahulu!");
+                return;
+            }
+
+            const name = document.getElementById('inputName').value.trim();
+            const bio = document.getElementById('inputBio').value.trim();
+            const slug = document.getElementById('inputSlug').value.trim().replace(/^\/|\/$/g, '');
+
+            if (!name || !slug) {
+                alert("Harap isi Nama Creator dan Custom Slug URL!");
+                return;
+            }
+
+            const btn = document.getElementById('btnSaveMicrosite');
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Mempublikasikan ke Supabase...`;
+
+            try {
+                let finalAvatarUrl = currentUploadedAvatarUrl;
+                if (selectedAvatarFile) {
+                    finalAvatarUrl = await uploadAvatarToSupabaseStorage();
+                }
+
+                // 1. Simpan/Update Profil Microsite
+                const checkRes = await fetch(`${SUPABASE_URL}/rest/v1/microsite_profiles?user_id=eq.${currentUser.user.id}&select=id`, {
+                    method: 'GET',
+                    headers: getHeaders(currentUser.access_token)
+                });
+                const existingData = await checkRes.json();
+
+                let profileId = null;
+
+                if (existingData && existingData.length > 0) {
+                    profileId = existingData[0].id;
+                    const updateRes = await fetch(`${SUPABASE_URL}/rest/v1/microsite_profiles?id=eq.${profileId}`, {
+                        method: 'PATCH',
+                        headers: getHeaders(currentUser.access_token),
+                        body: JSON.stringify({
+                            display_name: name,
+                            bio: bio,
+                            slug: slug,
+                            avatar_url: finalAvatarUrl,
+                            updated_at: new Date().toISOString()
+                        })
+                    });
+
+                    if (!updateRes.ok) {
+                        const errJson = await updateRes.json();
+                        throw new Error(errJson.message || "Gagal memperbarui profil.");
+                    }
+                } else {
+                    const insertRes = await fetch(`${SUPABASE_URL}/rest/v1/microsite_profiles`, {
+                        method: 'POST',
+                        headers: getHeaders(currentUser.access_token),
+                        body: JSON.stringify({
+                            user_id: currentUser.user.id,
+                            display_name: name,
+                            bio: bio,
+                            slug: slug,
+                            avatar_url: finalAvatarUrl
+                        })
+                    });
+
+                    if (!insertRes.ok) {
+                        const errJson = await insertRes.json();
+                        throw new Error(errJson.message || "Gagal membuat profil (Slug mungkin sudah dipakai).");
+                    }
+
+                    const newProfData = await insertRes.json();
+                    profileId = newProfData[0].id;
+                }
+
+                // 2. Simpan Tautan Sosial Media Microsite
+                const container = document.getElementById('linkInputsContainer');
+                const items = container.querySelectorAll('[id^="link_item_"]');
+                const linksToSave = [];
+
+                items.forEach((item, index) => {
+                    const id = item.id;
+                    const title = document.getElementById(`title_${id}`).value;
+                    const url = document.getElementById(`url_${id}`).value;
+
+                    if (title && url) {
+                        linksToSave.push({
+                            profile_id: profileId,
+                            title: title,
+                            url: url,
+                            sort_order: index
+                        });
+                    }
+                });
+
+                await fetch(`${SUPABASE_URL}/rest/v1/microsite_links?profile_id=eq.${profileId}`, {
+                    method: 'DELETE',
+                    headers: getHeaders(currentUser.access_token)
+                });
+
+                if (linksToSave.length > 0) {
+                    await fetch(`${SUPABASE_URL}/rest/v1/microsite_links`, {
+                        method: 'POST',
+                        headers: getHeaders(currentUser.access_token),
+                        body: JSON.stringify(linksToSave)
                     });
                 }
-            } catch (err) {}
+
+                // 3. OTOMATIS CATAT LINK MICROSITE KE TABEL URLS (AGAR MUNCUL DI DAFTAR LINK SAYA)
+                const fullMicrositeUrl = `${window.location.origin}/${slug}`;
+                
+                const checkUrlRes = await fetch(`${SUPABASE_URL}/rest/v1/urls?slug=eq.${slug}&select=id`, {
+                    method: 'GET',
+                    headers: getHeaders(currentUser.access_token)
+                });
+                const existingUrlData = await checkUrlRes.json();
+
+                if (!existingUrlData || existingUrlData.length === 0) {
+                    await fetch(`${SUPABASE_URL}/rest/v1/urls`, {
+                        method: 'POST',
+                        headers: getHeaders(currentUser.access_token),
+                        body: JSON.stringify({
+                            original_url: fullMicrositeUrl,
+                            slug: slug,
+                            user_id: currentUser.user.id
+                        })
+                    });
+                }
+
+                alert(`Microsite Berhasil Dipublikasikan!\n\nTautan Anda: ${fullMicrositeUrl}\n(Link ini juga telah ditambahkan ke Daftar Link Saya).`);
+                window.location.href = fullMicrositeUrl;
+
+            } catch (err) {
+                alert("Error: " + err.message);
+            } finally {
+                btn.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Simpan & Publiskan Langsung`;
+            }
         }
 
         initTheme();
         checkSession();
+        addLinkInput('Channel YouTube', 'https://youtube.com');
+        addLinkInput('Instagram Resmi', 'https://instagram.com');
     </script>
 </body>
 </html>
