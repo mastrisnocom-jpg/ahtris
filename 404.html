@@ -2,13 +2,175 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Redirecting...</title>
-    <script>
-        // Simpan path URL yang dituju ke sessionStorage sebelum dilempar ke index.html
-        sessionStorage.setItem('redirect_path', window.location.pathname);
-        window.location.href = '/';
-    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Microsite - ahtris.my.id</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>body { font-family: 'Plus Jakarta Sans', sans-serif; }</style>
 </head>
-<body style="background-color: #0f172a;">
+<body class="bg-white text-slate-900 min-h-screen flex items-center justify-center p-4">
+
+    <!-- CONTAINER MICROSITE AUTOMATIS SUPABASE -->
+    <div id="micrositeContainer" class="w-full max-w-sm text-center hidden">
+        <!-- Foto Profil Avatar -->
+        <div class="w-28 h-28 rounded-full mx-auto mb-4 overflow-hidden border-2 border-emerald-500 shadow-lg flex items-center justify-center bg-emerald-500 text-white shrink-0">
+            <img id="userAvatar" src="" class="w-full h-full object-cover hidden">
+            <i id="userAvatarIcon" class="fa-solid fa-user text-4xl"></i>
+        </div>
+
+        <!-- Nama Profil -->
+        <h1 id="userName" class="text-2xl font-black text-slate-900 tracking-wide uppercase">--</h1>
+        <!-- Bio / Profesi -->
+        <p id="userBio" class="text-xs text-slate-500 font-semibold tracking-widest uppercase mt-1 mb-8">--</p>
+
+        <!-- Daftar Tautan Sosial Media -->
+        <div id="userLinks" class="space-y-3.5 w-full">
+            <!-- Link otomatis di-render di sini -->
+        </div>
+
+        <div class="mt-10 pt-4 border-t border-slate-100">
+            <a href="https://ahtris.my.id" class="text-[11px] font-bold text-emerald-600 hover:underline">
+                Powered by ahtris.my.id
+            </a>
+        </div>
+    </div>
+
+    <!-- TAMPILAN LOADING SEMENTARA -->
+    <div id="loadingState" class="text-center text-slate-400">
+        <i class="fa-solid fa-spinner fa-spin text-3xl text-emerald-500 mb-2"></i>
+        <p class="text-xs font-semibold">Memuat Halaman...</p>
+    </div>
+
+    <!-- TAMPILAN 404 (JIKA LINK TIDAK ADA DI SUPABASE) -->
+    <div id="notFoundState" class="text-center hidden max-w-xs">
+        <i class="fa-solid fa-circle-exclamation text-4xl text-rose-500 mb-3"></i>
+        <h2 class="text-xl font-bold text-slate-800 mb-1">Halaman Tidak Ditemukan</h2>
+        <p class="text-xs text-slate-500 mb-6">Link microsite atau shortlink ini belum terdaftar.</p>
+        <a href="https://ahtris.my.id" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl transition">
+            Kembali ke Beranda
+        </a>
+    </div>
+
+    <script>
+        const SUPABASE_URL = "https://lcpskriooezyxgrnarol.supabase.co"; 
+        const SUPABASE_KEY = "sb_publishable_puy9U_93p-7_Q64oHrYUpg_iEF3nJ-c";
+
+        function getHeaders() {
+            return {
+                'apikey': SUPABASE_KEY,
+                'Authorization': `Bearer ${SUPABASE_KEY}`,
+                'Content-Type': 'application/json'
+            };
+        }
+
+        function detectSocialIcon(url) {
+            const lowerUrl = url.toLowerCase();
+            if (lowerUrl.includes('youtube.com') || lowerUrl.includes('youtu.be')) {
+                return { icon: 'fa-brands fa-youtube', color: 'text-red-500' };
+            } else if (lowerUrl.includes('facebook.com') || lowerUrl.includes('fb.watch')) {
+                return { icon: 'fa-brands fa-facebook', color: 'text-blue-600' };
+            } else if (lowerUrl.includes('instagram.com')) {
+                return { icon: 'fa-brands fa-instagram', color: 'text-pink-500' };
+            } else if (lowerUrl.includes('twitter.com') || lowerUrl.includes('x.com')) {
+                return { icon: 'fa-brands fa-x-twitter', color: 'text-slate-800' };
+            } else if (lowerUrl.includes('tiktok.com')) {
+                return { icon: 'fa-brands fa-tiktok', color: 'text-slate-900' };
+            } else if (lowerUrl.includes('wa.me') || lowerUrl.includes('whatsapp.com')) {
+                return { icon: 'fa-brands fa-whatsapp', color: 'text-emerald-500' };
+            } else if (lowerUrl.includes('linkedin.com')) {
+                return { icon: 'fa-brands fa-linkedin', color: 'text-blue-500' };
+            }
+            return { icon: 'fa-solid fa-globe', color: 'text-emerald-500' };
+        }
+
+        async function initDynamicRouter() {
+            // Ambil slug dari URL path (contoh: ahtris.my.id/ahtris -> slug = 'ahtris')
+            const pathSlug = window.location.pathname.replace(/^\/|\/$/g, '');
+
+            if (!pathSlug || pathSlug === 'index.html' || pathSlug === 'microsite.html') {
+                window.location.replace('/');
+                return;
+            }
+
+            try {
+                // 1. CEK APAKAH INI LINK MICROSITE DULU
+                const resProf = await fetch(`${SUPABASE_URL}/rest/v1/microsite_profiles?slug=eq.${encodeURIComponent(pathSlug)}&select=id,display_name,bio,avatar_url`, {
+                    headers: getHeaders()
+                });
+                const profData = await resProf.json();
+
+                if (profData && profData.length > 0) {
+                    const prof = profData[0];
+
+                    // Tampilkan Profil
+                    document.getElementById('userName').textContent = prof.display_name;
+                    document.getElementById('userBio').textContent = prof.bio;
+
+                    if (prof.avatar_url) {
+                        const img = document.getElementById('userAvatar');
+                        img.src = prof.avatar_url;
+                        img.classList.remove('hidden');
+                        document.getElementById('userAvatarIcon').classList.add('hidden');
+                    }
+
+                    // Ambil Tautan Sosial Media
+                    const resLinks = await fetch(`${SUPABASE_URL}/rest/v1/microsite_links?profile_id=eq.${prof.id}&select=title,url&order=sort_order.asc`, {
+                        headers: getHeaders()
+                    });
+                    const linksData = await resLinks.json();
+
+                    const linksContainer = document.getElementById('userLinks');
+                    linksContainer.innerHTML = '';
+
+                    linksData.forEach(item => {
+                        const detected = detectSocialIcon(item.url);
+                        linksContainer.innerHTML += `
+                            <a href="${item.url}" target="_blank" class="w-full py-3.5 px-5 bg-slate-50 hover:bg-slate-100 rounded-2xl text-sm font-bold text-slate-800 transition flex items-center justify-between border border-slate-200 shadow-sm">
+                                <i class="${detected.icon} ${detected.color} text-xl"></i>
+                                <span class="truncate px-2 font-bold">${item.title}</span>
+                                <i class="fa-solid fa-chevron-right text-xs text-slate-400"></i>
+                            </a>
+                        `;
+                    });
+
+                    // Sembunyikan Loading & Tampilkan Microsite
+                    document.getElementById('loadingState').classList.add('hidden');
+                    document.getElementById('micrositeContainer').classList.remove('hidden');
+                    document.title = `${prof.display_name} - Official Links`;
+                    return;
+                }
+
+                // 2. JIKA BUKAN MICROSITE, CEK SHORTLINK URL
+                const resUrl = await fetch(`${SUPABASE_URL}/rest/v1/urls?slug=eq.${encodeURIComponent(pathSlug)}&select=original_url`, {
+                    headers: getHeaders()
+                });
+                const urlData = await resUrl.json();
+
+                if (urlData && urlData.length > 0 && urlData[0].original_url) {
+                    // Redirect langsung ke URL Asli
+                    window.location.replace(urlData[0].original_url);
+                    return;
+                }
+
+                // 3. JIKA TIDAK DITEMUKAN DUA-DUANYA
+                document.getElementById('loadingState').classList.add('hidden');
+                document.getElementById('notFoundState').classList.remove('hidden');
+
+            } catch (err) {
+                document.getElementById('loadingState').classList.add('hidden');
+                document.getElementById('notFoundState').classList.remove('hidden');
+            }
+        }
+
+        initRouter();
+        async function initRouter() {
+            // Jalankan pencarian rute otomatis
+            await initDynamicRouter();
+        }
+    </script>
 </body>
 </html>
