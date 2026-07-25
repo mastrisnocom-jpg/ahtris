@@ -67,7 +67,7 @@
     </header>
 
     <!-- Content Utama -->
-    <main class="max-w-6xl mx-auto px-4 py-10 w-full flex-1">
+    <main id="mainContent" class="max-w-6xl mx-auto px-4 py-10 w-full flex-1">
         <div class="text-center mb-8">
             <span class="px-3 py-1 bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 text-xs font-semibold rounded-full uppercase tracking-wider">
                 Creator Bio Link & Mini Site
@@ -92,7 +92,7 @@
             </button>
         </div>
 
-        <!-- BUILDER & PREVIEW CONTAINER (LOCKED IF NOT LOGGED IN) -->
+        <!-- BUILDER & PREVIEW CONTAINER -->
         <div id="builderContainer" class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start opacity-50 pointer-events-none transition-all duration-300">
             
             <!-- FORM BUILDER (LEFT) -->
@@ -101,7 +101,6 @@
                     <i class="fa-solid fa-sliders text-emerald-600 dark:text-emerald-400"></i> Pengaturan Profil Creator
                 </h2>
 
-                <!-- Profile Info -->
                 <div class="space-y-4">
                     <div>
                         <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Nama Creator / Judul</label>
@@ -114,13 +113,12 @@
                     <div>
                         <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Custom Slug URL</label>
                         <div class="flex items-center bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl px-4 py-2.5">
-                            <span class="text-slate-400 text-xs font-mono mr-1">ahtris.my.id/</span>
-                            <input type="text" id="inputSlug" placeholder="adnan-official" class="w-full bg-transparent focus:outline-none font-mono text-xs">
+                            <span class="text-slate-400 text-xs font-mono mr-1" id="slugPrefix">ahtris.my.id/microsite.html?page=</span>
+                            <input type="text" id="inputSlug" placeholder="adnan-official" class="w-full bg-transparent focus:outline-none font-mono text-xs text-emerald-600 dark:text-emerald-400 font-bold">
                         </div>
                     </div>
                 </div>
 
-                <!-- Link Items Manager -->
                 <div class="pt-4 border-t border-slate-100 dark:border-slate-800">
                     <div class="flex justify-between items-center mb-3">
                         <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase">Daftar Link Sosial Media</label>
@@ -129,12 +127,10 @@
                         </button>
                     </div>
 
-                    <div id="linkInputsContainer" class="space-y-3">
-                        <!-- Input Link Dynamic akan muncul di sini -->
-                    </div>
+                    <div id="linkInputsContainer" class="space-y-3"></div>
                 </div>
 
-                <button type="button" onclick="saveMicrosite()" class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl transition shadow-lg shadow-emerald-600/20 text-sm flex items-center justify-center gap-2">
+                <button type="button" onclick="saveMicrosite()" id="btnSaveMicrosite" class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl transition shadow-lg shadow-emerald-600/20 text-sm flex items-center justify-center gap-2">
                     <i class="fa-solid fa-floppy-disk"></i> Simpan & Publiskan Microsite
                 </button>
             </div>
@@ -142,10 +138,8 @@
             <!-- LIVE PREVIEW HP (RIGHT) -->
             <div class="lg:col-span-5 flex justify-center sticky top-24">
                 <div class="w-full max-w-[320px] bg-white dark:bg-slate-900 border-8 border-slate-800 dark:border-slate-800 rounded-[40px] shadow-2xl overflow-hidden p-6 flex flex-col items-center text-center relative min-h-[520px]">
-                    <!-- Notch HP -->
                     <div class="w-28 h-4 bg-slate-800 absolute top-0 rounded-b-xl mb-6"></div>
 
-                    <!-- Avatar Profile -->
                     <div class="w-20 h-20 bg-emerald-500 rounded-full mt-6 mb-3 flex items-center justify-center text-white text-3xl font-black shadow-md border-2 border-white dark:border-slate-800">
                         <i class="fa-solid fa-user-astronaut"></i>
                     </div>
@@ -153,14 +147,30 @@
                     <h3 id="prevName" class="font-bold text-base text-slate-900 dark:text-white">Nama Creator</h3>
                     <p id="prevBio" class="text-xs text-slate-500 dark:text-slate-400 mt-0.5 mb-6">Tech Reviewer & Digital Creator</p>
 
-                    <!-- Dynamic Links Display -->
-                    <div id="prevLinksContainer" class="w-full space-y-2.5 overflow-y-auto max-h-[300px] pr-1">
-                        <!-- Preview link dengan icon otomatis muncul di sini -->
-                    </div>
+                    <div id="prevLinksContainer" class="w-full space-y-2.5 overflow-y-auto max-h-[300px] pr-1"></div>
                 </div>
             </div>
         </div>
     </main>
+
+    <!-- CONTAINER UNTUK TAMPILAN PUBLIK MICROSITE (JIKA DIBUKA LEWAT LINK) -->
+    <div id="publicMicrositeView" class="hidden min-h-[80vh] flex flex-col items-center justify-center p-4">
+        <div class="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-2xl p-8 text-center relative">
+            <div class="w-24 h-24 bg-emerald-500 rounded-full mx-auto mb-4 flex items-center justify-center text-white text-4xl font-black shadow-lg">
+                <i class="fa-solid fa-user-astronaut"></i>
+            </div>
+            <h1 id="pubName" class="text-2xl font-bold text-slate-900 dark:text-white">--</h1>
+            <p id="pubBio" class="text-xs text-slate-500 dark:text-slate-400 mt-1 mb-8">--</p>
+
+            <div id="pubLinksContainer" class="space-y-3 w-full"></div>
+
+            <div class="mt-10 pt-4 border-t border-slate-100 dark:border-slate-800">
+                <a href="/" class="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 hover:underline">
+                    Powered by ahtris.my.id
+                </a>
+            </div>
+        </div>
+    </div>
 
     <!-- MODAL AUTH (LOGIN / REGISTER) -->
     <div id="authModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
@@ -196,7 +206,7 @@
         © 2026 Short Link & Microsite Manager — Supported by PT. Binayasa Putrabatara
     </footer>
 
-    <!-- LOGIKA JAVASCRIPT AUTO-DETECT ICON SOCIAL MEDIA -->
+    <!-- LOGIKA JAVASCRIPT AKSI SUPABASE & AUTO-RENDER PUBLIK -->
     <script>
         const SUPABASE_URL = "https://lcpskriooezyxgrnarol.supabase.co"; 
         const SUPABASE_KEY = "sb_publishable_puy9U_93p-7_Q64oHrYUpg_iEF3nJ-c";
@@ -267,7 +277,6 @@
                 
                 userEmailDisplay.textContent = currentUser.user?.email || currentUser.email || 'Member';
 
-                // UNLOCK BUILDER JIKA USER SUDAH LOGIN
                 loginWarning.classList.add('hidden');
                 builderContainer.classList.remove('opacity-50', 'pointer-events-none');
             } else {
@@ -275,7 +284,6 @@
                 userProfile.classList.add('hidden');
                 userProfile.classList.remove('flex');
                 
-                // LOCK BUILDER JIKA BELUM LOGIN
                 loginWarning.classList.remove('hidden');
                 builderContainer.classList.add('opacity-50', 'pointer-events-none');
             }
@@ -341,7 +349,6 @@
             window.location.reload();
         }
 
-        // --- DETEKSI AUTOMATIS ICON BERDASARKAN URL ---
         function detectSocialIcon(url) {
             const lowerUrl = url.toLowerCase();
             if (lowerUrl.includes('youtube.com') || lowerUrl.includes('youtu.be')) {
@@ -378,9 +385,9 @@
                     </button>
                     <div class="flex items-center gap-2">
                         <span id="icon_${id}" class="text-lg text-emerald-500"><i class="fa-solid fa-globe"></i></span>
-                        <input type="text" id="title_${id}" oninput="updatePreview()" value="${title}" placeholder="Judul Tautan (misal: Subcribe YouTube)" class="w-full bg-transparent text-xs font-semibold focus:outline-none text-slate-900 dark:text-white">
+                        <input type="text" id="title_${id}" oninput="updatePreview()" value="${title}" placeholder="Judul Tautan" class="w-full bg-transparent text-xs font-semibold focus:outline-none text-slate-900 dark:text-white">
                     </div>
-                    <input type="url" id="url_${id}" oninput="onUrlChange('${id}')" value="${url}" placeholder="https://youtube.com/@namatarget" class="w-full bg-transparent text-xs font-mono text-slate-500 focus:outline-none border-t border-slate-200 dark:border-slate-800/60 pt-1.5">
+                    <input type="url" id="url_${id}" oninput="onUrlChange('${id}')" value="${url}" placeholder="https://..." class="w-full bg-transparent text-xs font-mono text-slate-500 focus:outline-none border-t border-slate-200 dark:border-slate-800/60 pt-1.5">
                 </div>
             `;
             container.insertAdjacentHTML('beforeend', itemHtml);
@@ -397,13 +404,9 @@
             const urlValue = document.getElementById(`url_${id}`).value;
             const detected = detectSocialIcon(urlValue);
             
-            // Auto fill judul jika masih kosong
             const titleInput = document.getElementById(`title_${id}`);
-            if (!titleInput.value) {
-                titleInput.value = detected.name;
-            }
+            if (!titleInput.value) titleInput.value = detected.name;
 
-            // Change Icon Status in Input
             const iconSpan = document.getElementById(`icon_${id}`);
             iconSpan.innerHTML = `<i class="${detected.icon} ${detected.color}"></i>`;
 
@@ -420,7 +423,6 @@
             const prevLinksContainer = document.getElementById('prevLinksContainer');
             prevLinksContainer.innerHTML = '';
 
-            // Loop semua dynamic link input
             const container = document.getElementById('linkInputsContainer');
             const items = container.querySelectorAll('[id^="link_item_"]');
 
@@ -441,19 +443,152 @@
             });
         }
 
-        function saveMicrosite() {
+        // --- FUNGSI SIMPAN MICROSITE KE DATABASE SUPABASE ---
+        async function saveMicrosite() {
             if (!currentUser) {
                 alert("Silakan login terlebih dahulu!");
                 return;
             }
-            alert("Microsite berhasil disimpan dan siap dipublikasikan!");
+
+            const name = document.getElementById('inputName').value.trim();
+            const bio = document.getElementById('inputBio').value.trim();
+            const slug = document.getElementById('inputSlug').value.trim().replace(/^\/|\/$/g, '');
+
+            if (!name || !slug) {
+                alert("Harap isi Nama Creator dan Custom Slug URL!");
+                return;
+            }
+
+            const btn = document.getElementById('btnSaveMicrosite');
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Mempublikasikan...`;
+
+            try {
+                // 1. Simpan/Update Profil Creator
+                const profRes = await fetch(`${SUPABASE_URL}/rest/v1/microsite_profiles`, {
+                    method: 'POST',
+                    headers: {
+                        ...getHeaders(currentUser.access_token),
+                        'Prefer': 'resolution=merge-duplicates'
+                    },
+                    body: JSON.stringify({
+                        user_id: currentUser.user.id,
+                        display_name: name,
+                        bio: bio,
+                        slug: slug
+                    })
+                });
+
+                if (!profRes.ok) throw new Error("Gagal menyimpan profil (Slug mungkin sudah dipakai).");
+
+                const profData = await profRes.json();
+                const profileId = profData[0].id;
+
+                // 2. Kumpulkan Semua Tautan
+                const container = document.getElementById('linkInputsContainer');
+                const items = container.querySelectorAll('[id^="link_item_"]');
+                const linksToSave = [];
+
+                items.forEach((item, index) => {
+                    const id = item.id;
+                    const title = document.getElementById(`title_${id}`).value;
+                    const url = document.getElementById(`url_${id}`).value;
+
+                    if (title && url) {
+                        linksToSave.push({
+                            profile_id: profileId,
+                            title: title,
+                            url: url,
+                            sort_order: index
+                        });
+                    }
+                });
+
+                // Hapus tautan lama lalu simpan yang baru
+                await fetch(`${SUPABASE_URL}/rest/v1/microsite_links?profile_id=eq.${profileId}`, {
+                    method: 'DELETE',
+                    headers: getHeaders(currentUser.access_token)
+                });
+
+                if (linksToSave.length > 0) {
+                    await fetch(`${SUPABASE_URL}/rest/v1/microsite_links`, {
+                        method: 'POST',
+                        headers: getHeaders(currentUser.access_token),
+                        body: JSON.stringify(linksToSave)
+                    });
+                }
+
+                const fullUrl = `${window.location.origin}/microsite.html?page=${slug}`;
+                alert(`Microsite Berhasil Dipublikasikan!\nTautan Anda: ${fullUrl}`);
+                window.location.href = fullUrl;
+
+            } catch (err) {
+                alert("Error: " + err.message);
+            } finally {
+                btn.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Simpan & Publiskan Microsite`;
+            }
         }
 
-        // Init Default Dynamic Links
+        // --- FUNGSI MENCEK & TAMPILKAN MICROSITE PUBLIK ---
+        async function checkPublicPage() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const pageSlug = urlParams.get('page');
+
+            if (pageSlug) {
+                document.getElementById('mainContent').classList.add('hidden');
+                document.getElementById('publicMicrositeView').classList.remove('hidden');
+
+                try {
+                    const res = await fetch(`${SUPABASE_URL}/rest/v1/microsite_profiles?slug=eq.${encodeURIComponent(pageSlug)}&select=id,display_name,bio`, {
+                        method: 'GET',
+                        headers: getHeaders()
+                    });
+                    const data = await res.json();
+
+                    if (data && data.length > 0) {
+                        const prof = data[0];
+                        document.getElementById('pubName').textContent = prof.display_name;
+                        document.getElementById('pubBio').textContent = prof.bio;
+
+                        // Fetch Links
+                        const linksRes = await fetch(`${SUPABASE_URL}/rest/v1/microsite_links?profile_id=eq.${prof.id}&select=title,url&order=sort_order.asc`, {
+                            method: 'GET',
+                            headers: getHeaders()
+                        });
+                        const linksData = await linksRes.json();
+
+                        const container = document.getElementById('pubLinksContainer');
+                        container.innerHTML = '';
+
+                        linksData.forEach(item => {
+                            const detected = detectSocialIcon(item.url);
+                            container.innerHTML += `
+                                <a href="${item.url}" target="_blank" class="w-full py-3.5 px-5 bg-slate-50 dark:bg-slate-800 hover:bg-emerald-600 hover:text-white rounded-2xl text-sm font-bold text-slate-800 dark:text-slate-100 transition flex items-center justify-between border border-slate-200 dark:border-slate-700/60 shadow-sm">
+                                    <i class="${detected.icon} ${detected.color} text-xl"></i>
+                                    <span class="truncate px-2">${item.title}</span>
+                                    <i class="fa-solid fa-arrow-up-right-from-square text-xs opacity-50"></i>
+                                </a>
+                            `;
+                        });
+                    } else {
+                        document.getElementById('publicMicrositeView').innerHTML = `
+                            <div class="text-center">
+                                <h1 class="text-3xl font-bold text-rose-500">404 - Microsite Tidak Ditemukan</h1>
+                                <p class="text-xs text-slate-400 mt-2 mb-4">Halaman microsite ini belum terdaftar.</p>
+                                <a href="microsite.html" class="px-4 py-2 bg-emerald-600 text-white rounded-xl text-xs font-bold">Buat Microsite Anda</a>
+                            </div>
+                        `;
+                    }
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+
         initTheme();
         checkSession();
         addLinkInput('Channel YouTube', 'https://youtube.com');
         addLinkInput('Instagram Resmi', 'https://instagram.com');
+        checkPublicPage();
     </script>
 </body>
 </html>
