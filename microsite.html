@@ -102,6 +102,24 @@
                 </h2>
 
                 <div class="space-y-4">
+                    <!-- UPLOAD FOTO PROFIL (SUPABASE STORAGE) -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-2">Foto Profil (Supabase Storage)</label>
+                        <div class="flex items-center gap-4">
+                            <div class="relative w-16 h-16 rounded-full overflow-hidden bg-slate-100 dark:bg-slate-800 border-2 border-emerald-500 flex items-center justify-center shrink-0">
+                                <img id="avatarPreview" src="" alt="" class="w-full h-full object-cover hidden">
+                                <i id="avatarPlaceholderIcon" class="fa-solid fa-user text-2xl text-slate-400"></i>
+                            </div>
+                            <div class="flex-1">
+                                <input type="file" id="inputAvatar" accept="image/*" onchange="handleAvatarSelection(event)" class="hidden">
+                                <button type="button" onclick="document.getElementById('inputAvatar').click()" class="px-4 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-emerald-50 dark:hover:bg-emerald-950 border border-slate-300 dark:border-slate-700 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 transition flex items-center gap-2">
+                                    <i class="fa-solid fa-cloud-arrow-up text-emerald-500"></i> Pilih Foto
+                                </button>
+                                <p class="text-[10px] text-slate-400 mt-1">Disimpan otomatis di Supabase Storage. Maksimal 5MB.</p>
+                            </div>
+                        </div>
+                    </div>
+
                     <div>
                         <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Nama Creator / Judul</label>
                         <input type="text" id="inputName" oninput="updatePreview()" placeholder="Contoh: Adnan Content Creator" class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-sm focus:outline-none focus:border-emerald-500">
@@ -140,8 +158,10 @@
                 <div class="w-full max-w-[320px] bg-white dark:bg-slate-900 border-8 border-slate-800 dark:border-slate-800 rounded-[40px] shadow-2xl overflow-hidden p-6 flex flex-col items-center text-center relative min-h-[520px]">
                     <div class="w-28 h-4 bg-slate-800 absolute top-0 rounded-b-xl mb-6"></div>
 
-                    <div class="w-20 h-20 bg-emerald-500 rounded-full mt-6 mb-3 flex items-center justify-center text-white text-3xl font-black shadow-md border-2 border-white dark:border-slate-800">
-                        <i class="fa-solid fa-user-astronaut"></i>
+                    <!-- Avatar Profile Preview -->
+                    <div class="w-20 h-20 rounded-full mt-6 mb-3 overflow-hidden border-2 border-emerald-500 shadow-md flex items-center justify-center bg-emerald-500 text-white shrink-0">
+                        <img id="prevAvatarImg" src="" alt="" class="w-full h-full object-cover hidden">
+                        <i id="prevAvatarIcon" class="fa-solid fa-user-astronaut text-3xl"></i>
                     </div>
 
                     <h3 id="prevName" class="font-bold text-base text-slate-900 dark:text-white">Nama Creator</h3>
@@ -153,11 +173,12 @@
         </div>
     </main>
 
-    <!-- CONTAINER TAMPILAN PUBLIK MICROSITE HASIL AKHIR -->
+    <!-- CONTAINER TAMPILAN PUBLIK MICROSITE -->
     <div id="publicMicrositeView" class="hidden min-h-[80vh] flex flex-col items-center justify-center p-4">
         <div class="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-2xl p-8 text-center relative">
-            <div class="w-24 h-24 bg-emerald-500 rounded-full mx-auto mb-4 flex items-center justify-center text-white text-4xl font-black shadow-lg">
-                <i class="fa-solid fa-user-astronaut"></i>
+            <div class="w-24 h-24 rounded-full mx-auto mb-4 overflow-hidden border-4 border-emerald-500 shadow-lg flex items-center justify-center bg-emerald-500 text-white shrink-0">
+                <img id="pubAvatarImg" src="" alt="" class="w-full h-full object-cover hidden">
+                <i id="pubAvatarIcon" class="fa-solid fa-user-astronaut text-4xl"></i>
             </div>
             <h1 id="pubName" class="text-2xl font-bold text-slate-900 dark:text-white">--</h1>
             <p id="pubBio" class="text-xs text-slate-500 dark:text-slate-400 mt-1 mb-8">--</p>
@@ -172,7 +193,7 @@
         </div>
     </div>
 
-    <!-- MODAL AUTH (LOGIN / REGISTER) -->
+    <!-- MODAL AUTH -->
     <div id="authModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-emerald-900/50 rounded-2xl w-full max-w-md p-6 shadow-2xl relative">
             <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-white text-lg">
@@ -206,7 +227,7 @@
         © 2026 Short Link & Microsite Manager — Supported by PT. Binayasa Putrabatara
     </footer>
 
-    <!-- LOGIKA JAVASCRIPT AKSI SUPABASE & PATH ROUTING -->
+    <!-- LOGIKA JAVASCRIPT LOGIKA STORAGE SUPABASE -->
     <script>
         const SUPABASE_URL = "https://lcpskriooezyxgrnarol.supabase.co"; 
         const SUPABASE_KEY = "sb_publishable_puy9U_93p-7_Q64oHrYUpg_iEF3nJ-c";
@@ -214,6 +235,8 @@
         let currentUser = null;
         let isRegisterMode = false;
         let linkCount = 0;
+        let selectedAvatarFile = null;
+        let currentUploadedAvatarUrl = "";
 
         function initTheme() {
             const savedTheme = localStorage.getItem('theme') || 'dark';
@@ -253,6 +276,7 @@
                 try {
                     currentUser = JSON.parse(sessionData);
                     renderUserUI();
+                    loadUserExistingProfile();
                 } catch (e) {
                     localStorage.removeItem('sb_user_session');
                     currentUser = null;
@@ -274,7 +298,6 @@
                 btnOpenAuth.classList.add('hidden');
                 userProfile.classList.remove('hidden');
                 userProfile.classList.add('flex');
-                
                 userEmailDisplay.textContent = currentUser.user?.email || currentUser.email || 'Member';
 
                 loginWarning.classList.add('hidden');
@@ -283,7 +306,7 @@
                 btnOpenAuth.classList.remove('hidden');
                 userProfile.classList.add('hidden');
                 userProfile.classList.remove('flex');
-                
+
                 loginWarning.classList.remove('hidden');
                 builderContainer.classList.add('opacity-50', 'pointer-events-none');
             }
@@ -330,6 +353,7 @@
                         currentUser = data;
                         localStorage.setItem('sb_user_session', JSON.stringify(data));
                         renderUserUI();
+                        loadUserExistingProfile();
                         closeAuthModal();
                         document.getElementById('authForm').reset();
                     }
@@ -347,6 +371,77 @@
             currentUser = null;
             renderUserUI();
             window.location.reload();
+        }
+
+        // --- HANDLER PILIH FOTO LOKAL (PREVIEW) ---
+        function handleAvatarSelection(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            if (file.size > 5 * 1024 * 1024) {
+                alert("Ukuran file gambar maksimal 5MB!");
+                return;
+            }
+
+            selectedAvatarFile = file;
+
+            // Tampilkan Local Preview sementara
+            const tempUrl = URL.createObjectURL(file);
+            setAvatarPreviewImage(tempUrl);
+        }
+
+        function setAvatarPreviewImage(imgUrl) {
+            const avatarPreview = document.getElementById('avatarPreview');
+            const avatarPlaceholderIcon = document.getElementById('avatarPlaceholderIcon');
+            const prevAvatarImg = document.getElementById('prevAvatarImg');
+            const prevAvatarIcon = document.getElementById('prevAvatarIcon');
+
+            if (imgUrl) {
+                avatarPreview.src = imgUrl;
+                avatarPreview.classList.remove('hidden');
+                avatarPlaceholderIcon.classList.add('hidden');
+
+                prevAvatarImg.src = imgUrl;
+                prevAvatarImg.classList.remove('hidden');
+                prevAvatarIcon.classList.add('hidden');
+            } else {
+                avatarPreview.classList.add('hidden');
+                avatarPlaceholderIcon.classList.remove('hidden');
+
+                prevAvatarImg.classList.add('hidden');
+                prevAvatarIcon.classList.remove('hidden');
+            }
+        }
+
+        // --- FUNGSI UPLOAD FOTO LANGSUNG KE SUPABASE STORAGE BUCKET 'avatars' ---
+        async function uploadAvatarToSupabaseStorage() {
+            if (!selectedAvatarFile || !currentUser) return currentUploadedAvatarUrl;
+
+            const fileExt = selectedAvatarFile.name.split('.').pop();
+            const fileName = `${currentUser.user.id}_avatar_${Date.now()}.${fileExt}`;
+            const filePath = `${fileName}`;
+
+            const uploadHeaders = {
+                'apikey': SUPABASE_KEY,
+                'Authorization': `Bearer ${currentUser.access_token}`,
+                'Content-Type': selectedAvatarFile.type,
+                'x-upsert': 'true'
+            };
+
+            const uploadRes = await fetch(`${SUPABASE_URL}/storage/v1/object/avatars/${filePath}`, {
+                method: 'POST',
+                headers: uploadHeaders,
+                body: selectedAvatarFile
+            });
+
+            if (!uploadRes.ok) {
+                const errJson = await uploadRes.json();
+                throw new Error("Gagal unggah foto ke Storage: " + (errJson.message || "Pastikan Bucket 'avatars' sudah dibuat"));
+            }
+
+            // Kembalikan Public URL dari Storage Supabase
+            const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/avatars/${filePath}`;
+            return publicUrl;
         }
 
         function detectSocialIcon(url) {
@@ -443,7 +538,48 @@
             });
         }
 
-        // --- SIMPAN MICROSITE KE DATABASE ---
+        // --- AMBIL DATA PROFIL USER ---
+        async function loadUserExistingProfile() {
+            if (!currentUser) return;
+
+            try {
+                const res = await fetch(`${SUPABASE_URL}/rest/v1/microsite_profiles?user_id=eq.${currentUser.user.id}&select=*`, {
+                    method: 'GET',
+                    headers: getHeaders(currentUser.access_token)
+                });
+                const data = await res.json();
+
+                if (data && data.length > 0) {
+                    const prof = data[0];
+                    document.getElementById('inputName').value = prof.display_name || '';
+                    document.getElementById('inputBio').value = prof.bio || '';
+                    document.getElementById('inputSlug').value = prof.slug || '';
+
+                    if (prof.avatar_url) {
+                        currentUploadedAvatarUrl = prof.avatar_url;
+                        setAvatarPreviewImage(currentUploadedAvatarUrl);
+                    }
+
+                    const linksRes = await fetch(`${SUPABASE_URL}/rest/v1/microsite_links?profile_id=eq.${prof.id}&select=*&order=sort_order.asc`, {
+                        method: 'GET',
+                        headers: getHeaders(currentUser.access_token)
+                    });
+                    const linksData = await linksRes.json();
+
+                    if (linksData && linksData.length > 0) {
+                        document.getElementById('linkInputsContainer').innerHTML = '';
+                        linksData.forEach(item => {
+                            addLinkInput(item.title, item.url);
+                        });
+                    }
+                    updatePreview();
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        // --- SIMPAN MICROSITE DENGAN FOTO STORAGE SUPABASE ---
         async function saveMicrosite() {
             if (!currentUser) {
                 alert("Silakan login terlebih dahulu!");
@@ -460,28 +596,67 @@
             }
 
             const btn = document.getElementById('btnSaveMicrosite');
-            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Mempublikasikan...`;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Mengunggah Foto & Mempublikasikan...`;
 
             try {
-                const profRes = await fetch(`${SUPABASE_URL}/rest/v1/microsite_profiles`, {
-                    method: 'POST',
-                    headers: {
-                        ...getHeaders(currentUser.access_token),
-                        'Prefer': 'resolution=merge-duplicates'
-                    },
-                    body: JSON.stringify({
-                        user_id: currentUser.user.id,
-                        display_name: name,
-                        bio: bio,
-                        slug: slug
-                    })
+                // 1. Unggah Foto ke Storage Supabase jika ada file baru yang dipilih
+                let finalAvatarUrl = currentUploadedAvatarUrl;
+                if (selectedAvatarFile) {
+                    finalAvatarUrl = await uploadAvatarToSupabaseStorage();
+                }
+
+                // 2. Cek Apakah Profil User Sudah Ada
+                const checkRes = await fetch(`${SUPABASE_URL}/rest/v1/microsite_profiles?user_id=eq.${currentUser.user.id}&select=id`, {
+                    method: 'GET',
+                    headers: getHeaders(currentUser.access_token)
                 });
+                const existingData = await checkRes.json();
 
-                if (!profRes.ok) throw new Error("Gagal menyimpan profil (Slug mungkin sudah dipakai).");
+                let profileId = null;
 
-                const profData = await profRes.json();
-                const profileId = profData[0].id;
+                if (existingData && existingData.length > 0) {
+                    // UPDATE
+                    profileId = existingData[0].id;
+                    const updateRes = await fetch(`${SUPABASE_URL}/rest/v1/microsite_profiles?id=eq.${profileId}`, {
+                        method: 'PATCH',
+                        headers: getHeaders(currentUser.access_token),
+                        body: JSON.stringify({
+                            display_name: name,
+                            bio: bio,
+                            slug: slug,
+                            avatar_url: finalAvatarUrl,
+                            updated_at: new Date().toISOString()
+                        })
+                    });
 
+                    if (!updateRes.ok) {
+                        const errJson = await updateRes.json();
+                        throw new Error(errJson.message || "Gagal memperbarui profil.");
+                    }
+                } else {
+                    // INSERT
+                    const insertRes = await fetch(`${SUPABASE_URL}/rest/v1/microsite_profiles`, {
+                        method: 'POST',
+                        headers: getHeaders(currentUser.access_token),
+                        body: JSON.stringify({
+                            user_id: currentUser.user.id,
+                            display_name: name,
+                            bio: bio,
+                            slug: slug,
+                            avatar_url: finalAvatarUrl
+                        })
+                    });
+
+                    if (!insertRes.ok) {
+                        const errJson = await insertRes.json();
+                        throw new Error(errJson.message || "Gagal membuat profil (Slug mungkin sudah dipakai).");
+                    }
+
+                    const newProfData = await insertRes.json();
+                    profileId = newProfData[0].id;
+                }
+
+                // 3. Simpan Tautan
                 const container = document.getElementById('linkInputsContainer');
                 const items = container.querySelectorAll('[id^="link_item_"]');
                 const linksToSave = [];
@@ -525,23 +700,21 @@
             }
         }
 
-        // --- CEK & TAMPILKAN HASIL MICROSITE DENGAN LINK BERSIH ---
+        // --- CHECK PUBLIK MICROSITE ---
         async function checkPublicPage() {
-            // Mengambil pathname URL (contoh: ahtris.my.id/adnan-official -> slug = 'adnan-official')
             let pageSlug = window.location.pathname.replace(/^\/|\/$/g, '');
-
-            // Mencek parameter URL cadangan jika di-pass via query ?page=
             const urlParams = new URLSearchParams(window.location.search);
+            
             if (!pageSlug || pageSlug === 'microsite.html') {
                 pageSlug = urlParams.get('page');
             }
 
-            if (pageSlug && pageSlug !== 'microsite.html' && pageSlug !== 'index.html') {
+            if (pageSlug && pageSlug !== 'microsite.html' && pageSlug !== 'index.html' && pageSlug !== 'privacy.html' && pageSlug !== 'kontak.html') {
                 document.getElementById('mainContent').classList.add('hidden');
                 document.getElementById('publicMicrositeView').classList.remove('hidden');
 
                 try {
-                    const res = await fetch(`${SUPABASE_URL}/rest/v1/microsite_profiles?slug=eq.${encodeURIComponent(pageSlug)}&select=id,display_name,bio`, {
+                    const res = await fetch(`${SUPABASE_URL}/rest/v1/microsite_profiles?slug=eq.${encodeURIComponent(pageSlug)}&select=id,display_name,bio,avatar_url`, {
                         method: 'GET',
                         headers: getHeaders()
                     });
@@ -551,6 +724,18 @@
                         const prof = data[0];
                         document.getElementById('pubName').textContent = prof.display_name;
                         document.getElementById('pubBio').textContent = prof.bio;
+
+                        const pubAvatarImg = document.getElementById('pubAvatarImg');
+                        const pubAvatarIcon = document.getElementById('pubAvatarIcon');
+
+                        if (prof.avatar_url) {
+                            pubAvatarImg.src = prof.avatar_url;
+                            pubAvatarImg.classList.remove('hidden');
+                            pubAvatarIcon.classList.add('hidden');
+                        } else {
+                            pubAvatarImg.classList.add('hidden');
+                            pubAvatarIcon.classList.remove('hidden');
+                        }
 
                         const linksRes = await fetch(`${SUPABASE_URL}/rest/v1/microsite_links?profile_id=eq.${prof.id}&select=title,url&order=sort_order.asc`, {
                             method: 'GET',
