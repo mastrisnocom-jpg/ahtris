@@ -79,19 +79,6 @@
                 </button>
             </form>
             <div id="statusMessage" class="mt-4 text-center text-sm font-medium hidden"></div>
-
-            <!-- HASIL TEMPORARY UNTUK GUEST -->
-            <div id="guestResultBox" class="mt-6 p-4 bg-slate-900/90 border border-teal-500/30 rounded-xl hidden">
-                <p class="text-xs text-amber-400 mb-2 flex items-center gap-1">
-                    <i class="fa-solid fa-triangle-exclamation"></i> Link ini hanya tayang sementara. Login jika ingin menyimpan permanen.
-                </p>
-                <div class="flex items-center justify-between gap-2">
-                    <input type="text" id="guestShortUrlInput" readonly class="w-full bg-slate-800 text-teal-300 px-3 py-2 rounded-lg text-sm font-mono border border-slate-700">
-                    <button onclick="copyGuestLink()" class="px-4 py-2 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs rounded-lg transition shrink-0">
-                        Salin
-                    </button>
-                </div>
-            </div>
         </div>
 
         <!-- Tabel Daftar Link -->
@@ -120,7 +107,29 @@
         </div>
     </div>
 
-    <!-- MODAL AUTH -->
+    <!-- MODAL POPUP HASIL SHORT LINK GUEST -->
+    <div id="guestResultModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-800 border border-teal-500/40 rounded-2xl w-full max-w-md p-6 shadow-2xl relative text-center">
+            <button onclick="closeGuestModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="w-12 h-12 bg-teal-500/10 text-teal-400 rounded-full flex items-center justify-center mx-auto mb-4 text-xl border border-teal-500/20">
+                <i class="fa-solid fa-check"></i>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-1">Short Link Berhasil Dibuat!</h3>
+            <p class="text-xs text-amber-400 mb-6 flex items-center justify-center gap-1">
+                <i class="fa-solid fa-triangle-exclamation"></i> Link ini sementara & tidak tersimpan di database.
+            </p>
+            <div class="space-y-3">
+                <input type="text" id="guestShortUrlInput" readonly class="w-full bg-slate-900 text-teal-300 px-4 py-3 rounded-xl text-sm font-mono border border-slate-700 text-center focus:outline-none">
+                <button onclick="copyGuestLink()" class="w-full py-3 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold rounded-xl text-sm transition flex items-center justify-center gap-2">
+                    <i class="fa-regular fa-copy"></i> Salin Short Link
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL AUTH (LOGIN / REGISTER) -->
     <div id="authModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-slate-800 border border-slate-700 rounded-2xl w-full max-w-md p-6 shadow-2xl relative">
             <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">
@@ -178,8 +187,6 @@
         const slugNotice = document.getElementById('slugNotice');
         const statusMessage = document.getElementById('statusMessage');
         const urlTableBody = document.getElementById('urlTableBody');
-        const guestResultBox = document.getElementById('guestResultBox');
-        const guestShortUrlInput = document.getElementById('guestShortUrlInput');
 
         const currentOrigin = window.location.origin;
         document.getElementById('domainPrefix').textContent = `${window.location.host}/`;
@@ -229,6 +236,21 @@
 
         function openAuthModal() { document.getElementById('authModal').classList.remove('hidden'); }
         function closeAuthModal() { document.getElementById('authModal').classList.add('hidden'); }
+
+        function openGuestModal(url) {
+            document.getElementById('guestShortUrlInput').value = url;
+            document.getElementById('guestResultModal').classList.remove('hidden');
+        }
+
+        function closeGuestModal() {
+            document.getElementById('guestResultModal').classList.add('hidden');
+        }
+
+        function copyGuestLink() {
+            const input = document.getElementById('guestShortUrlInput');
+            navigator.clipboard.writeText(input.value);
+            alert("Short URL berhasil disalin!");
+        }
 
         function toggleAuthMode() {
             isRegisterMode = !isRegisterMode;
@@ -287,7 +309,7 @@
         }
 
         // ----------------------------------------------------
-        // 2. LOGIKA REDIRECT (DENGAN DELAY 5 DETIK & INTERSTITIAL NDELET.COM)
+        // 2. LOGIKA REDIRECT (DELAY 5 DETIK & INTERSTITIAL)
         // ----------------------------------------------------
         async function handleRedirect() {
             let redirectPath = sessionStorage.getItem('redirect_path');
@@ -309,7 +331,6 @@
                         const targetUrl = data[0].original_url;
                         const isOwnerUser = data[0].user_id !== null;
 
-                        // Increment hit click
                         fetch(`${SUPABASE_URL}/rest/v1/rpc/increment_click_count`, {
                             method: 'POST',
                             headers: getHeaders(),
@@ -319,7 +340,7 @@
                         let timeLeft = 5;
 
                         if (isOwnerUser) {
-                            // User yang buat = Member/Login -> Langsung halaman redirect biasa + countdown 5 detik
+                            // User Member -> Redirect biasa + countdown 5s
                             document.body.innerHTML = `
                                 <div class="min-h-screen flex items-center justify-center bg-slate-900 text-white p-4">
                                     <div class="text-center max-w-md">
@@ -344,7 +365,7 @@
                             }, 1000);
 
                         } else {
-                            // Guest / Non-Login -> Alihkan ke ndelet.com selama 5 detik terlebih dahulu
+                            // Guest -> Sponsor ndelet.com 5s
                             document.body.innerHTML = `
                                 <div class="min-h-screen flex flex-col items-center justify-center bg-slate-900 text-white p-4">
                                     <div class="text-center max-w-md w-full mb-4">
@@ -414,7 +435,6 @@
             let slug = customSlugInput.value.trim().replace(/^\/|\/$/g, '');
 
             showStatus("Memproses...", "text-slate-400");
-            guestResultBox.classList.add('hidden');
 
             // GUEST (TANPA LOGIN)
             if (!currentUser) {
@@ -429,10 +449,10 @@
 
                     if (response.ok) {
                         const generatedUrl = `${currentOrigin}/${slug}`;
-                        showStatus("Short link instan berhasil dibuat!", "text-teal-400");
+                        statusMessage.classList.add('hidden');
                         
-                        guestShortUrlInput.value = generatedUrl;
-                        guestResultBox.classList.remove('hidden');
+                        // Buka Pop-up
+                        openGuestModal(generatedUrl);
                         form.reset();
                     } else {
                         showStatus("Gagal membuat link, silakan coba lagi.", "text-red-400");
@@ -465,11 +485,6 @@
                 showStatus("Gagal terhubung ke database.", "text-red-400");
             }
         });
-
-        function copyGuestLink() {
-            navigator.clipboard.writeText(guestShortUrlInput.value);
-            alert("Short URL berhasil disalin!");
-        }
 
         function showStatus(msg, colorClass) {
             statusMessage.textContent = msg;
@@ -551,7 +566,7 @@
             alert("Short URL berhasil disalin!");
         }
 
-        // Initial Exec
+        // Exec
         checkSession();
         handleRedirect();
     </script>
