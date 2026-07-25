@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Short Link Manager - QR Code Edition</title>
+    <title>Short Link Manager - QR Code & AdSense Ready</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome Icons -->
@@ -16,17 +16,25 @@
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-screen font-sans flex flex-col justify-between selection:bg-teal-300 selection:text-teal-900">
 
-    <!-- Header / Navbar -->
+    <!-- Header / Navbar dengan Menu Legal AdSense -->
     <header class="w-full border-b border-slate-800 bg-slate-900/80 backdrop-blur-md sticky top-0 z-40">
-        <div class="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
+        <div class="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
+            <!-- Logo -->
             <a href="/" class="text-xl font-bold tracking-wider text-teal-400 flex items-center gap-2">
                 <i class="fa-solid fa-link text-lg"></i>
                 <span>SHORT<span class="text-white">LINK</span></span>
             </a>
 
+            <!-- Menu Navigasi AdSense -->
+            <nav class="hidden md:flex items-center space-x-6 text-xs font-medium text-slate-300">
+                <a href="/" class="text-teal-400 font-semibold">Beranda</a>
+                <a href="privacy.html" class="hover:text-teal-400 transition">Privacy Policy</a>
+                <a href="kontak.html" class="hover:text-teal-400 transition">Kontak Kami</a>
+            </nav>
+
             <!-- Area Auth -->
             <div id="authArea">
-                <button id="btnOpenAuth" onclick="openAuthModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl text-sm font-semibold text-teal-400 transition flex items-center gap-2">
+                <button id="btnOpenAuth" onclick="openAuthModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl text-xs font-semibold text-teal-400 transition flex items-center gap-2">
                     <i class="fa-regular fa-user"></i> Login / Daftar
                 </button>
 
@@ -43,7 +51,7 @@
     </header>
 
     <!-- Container Utama -->
-    <div class="max-w-3xl mx-auto px-4 py-10 w-full">
+    <div class="max-w-3xl mx-auto px-4 py-10 w-full flex-1">
         <!-- Header Title -->
         <div class="text-center mb-8">
             <h1 class="text-3xl sm:text-4xl font-extrabold text-teal-400 tracking-tight">Short Link Database</h1>
@@ -107,6 +115,22 @@
         </div>
     </div>
 
+    <!-- MODAL LOADING PEMBUATAN LINK -->
+    <div id="loadingModal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-800 border border-slate-700 rounded-2xl w-full max-w-sm p-6 shadow-2xl text-center">
+            <i class="fa-solid fa-gear fa-spin text-4xl text-teal-400 mb-4"></i>
+            <h3 class="text-lg font-bold text-white mb-1">Memproses Short Link...</h3>
+            <p id="loadingTextNotice" class="text-xs text-slate-400 mb-4">Harap tunggu sebentar.</p>
+            
+            <div class="w-full bg-slate-900 h-2 rounded-full overflow-hidden mb-2 border border-slate-700">
+                <div id="genProgressBar" class="bg-teal-400 h-full w-0 transition-all duration-1000 ease-linear"></div>
+            </div>
+            <p class="text-xs font-mono text-teal-400 font-semibold">
+                <span id="genCountdown">0</span> Detik
+            </p>
+        </div>
+    </div>
+
     <!-- MODAL POPUP HASIL SHORT LINK + BARCODE/QR CODE GUEST -->
     <div id="guestResultModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-slate-800 border border-teal-500/40 rounded-2xl w-full max-w-md p-6 shadow-2xl relative text-center">
@@ -119,12 +143,10 @@
                 <i class="fa-solid fa-triangle-exclamation"></i> Link sementara & tidak tersimpan di database.
             </p>
 
-            <!-- Display Gambar QR Code / Barcode -->
             <div class="bg-white p-3 rounded-xl inline-block mb-4 shadow-lg border border-slate-200">
                 <img id="guestQrCodeImg" src="" alt="QR Code" class="w-40 h-40 object-contain mx-auto">
             </div>
 
-            <!-- Area Link & Button Copy -->
             <div class="space-y-3">
                 <input type="text" id="guestShortUrlInput" readonly class="w-full bg-slate-900 text-teal-300 px-4 py-3 rounded-xl text-sm font-mono border border-slate-700 text-center focus:outline-none">
                 <div class="grid grid-cols-2 gap-2">
@@ -184,9 +206,16 @@
         </div>
     </div>
 
-    <!-- Footer -->
-    <footer class="py-6 text-center text-xs text-slate-500 border-t border-slate-800">
-        Database Powered by Supabase & Hosted on GitHub Pages
+    <!-- Footer dengan Menu Footer AdSense -->
+    <footer class="py-6 border-t border-slate-800 text-center text-xs text-slate-500 space-y-2">
+        <div class="flex justify-center space-x-4 text-slate-400">
+            <a href="/" class="hover:text-teal-400 transition">Beranda</a>
+            <span>•</span>
+            <a href="privacy.html" class="hover:text-teal-400 transition">Privacy Policy</a>
+            <span>•</span>
+            <a href="kontak.html" class="hover:text-teal-400 transition">Kontak Kami</a>
+        </div>
+        <p>© 2026 Short Link Manager. Database Powered by Supabase & Hosted on GitHub Pages</p>
     </footer>
 
     <!-- LOGIKA JAVASCRIPT -->
@@ -266,7 +295,6 @@
         function openAuthModal() { document.getElementById('authModal').classList.remove('hidden'); }
         function closeAuthModal() { document.getElementById('authModal').classList.add('hidden'); }
 
-        // Modal QR Guest
         function openGuestModal(url) {
             const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(url)}`;
             document.getElementById('guestShortUrlInput').value = url;
@@ -279,7 +307,6 @@
             document.getElementById('guestResultModal').classList.add('hidden');
         }
 
-        // Modal QR Member
         function openMemberQrModal(url) {
             const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(url)}`;
             document.getElementById('memberQrCodeImg').src = qrApiUrl;
@@ -362,7 +389,7 @@
 
             let pathSlug = redirectPath ? redirectPath.replace(/^\/|\/$/g, '') : window.location.pathname.replace(/^\/|\/$/g, '');
 
-            if (pathSlug && pathSlug !== 'index.html' && pathSlug !== '404.html') {
+            if (pathSlug && pathSlug !== 'index.html' && pathSlug !== '404.html' && pathSlug !== 'kontak.html' && pathSlug !== 'privacy.html') {
                 window.history.replaceState(null, null, '/' + pathSlug);
 
                 try {
@@ -453,7 +480,7 @@
         }
 
         // ----------------------------------------------------
-        // 3. LOGIKA MEMBUAT LINK
+        // 3. LOGIKA MEMBUAT LINK + DELAY LOADING GENERATOR
         // ----------------------------------------------------
         function generateRandomSlug(length = 5) {
             const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -464,17 +491,49 @@
             return result;
         }
 
+        function startGenerateDelay(durationSeconds, isMember) {
+            return new Promise((resolve) => {
+                const loadingModal = document.getElementById('loadingModal');
+                const genCountdown = document.getElementById('genCountdown');
+                const genProgressBar = document.getElementById('genProgressBar');
+                const loadingNotice = document.getElementById('loadingTextNotice');
+
+                loadingNotice.textContent = isMember ? "Memproses short link (Akses Member)..." : "Memproses short link (Akses Guest)...";
+                genCountdown.textContent = durationSeconds;
+                genProgressBar.style.width = '0%';
+                loadingModal.classList.remove('hidden');
+
+                let currentLeft = durationSeconds;
+
+                const timer = setInterval(() => {
+                    currentLeft--;
+                    genCountdown.textContent = currentLeft;
+                    const progressPercent = ((durationSeconds - currentLeft) / durationSeconds) * 100;
+                    genProgressBar.style.width = `${progressPercent}%`;
+
+                    if (currentLeft <= 0) {
+                        clearInterval(timer);
+                        loadingModal.classList.add('hidden');
+                        resolve();
+                    }
+                }, 1000);
+            });
+        }
+
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             
             const original_url = originalUrlInput.value.trim();
             let slug = customSlugInput.value.trim().replace(/^\/|\/$/g, '');
 
-            showStatus("Memproses...", "text-slate-400");
+            showStatus("", "");
+            statusMessage.classList.add('hidden');
 
-            // GUEST (TANPA LOGIN)
+            // GUEST (TANPA LOGIN) -> DELAY 10 DETIK
             if (!currentUser) {
                 slug = generateRandomSlug(5);
+
+                await startGenerateDelay(10, false);
 
                 try {
                     const response = await fetch(`${SUPABASE_URL}/rest/v1/urls`, {
@@ -485,8 +544,6 @@
 
                     if (response.ok) {
                         const generatedUrl = `${currentOrigin}/${slug}`;
-                        statusMessage.classList.add('hidden');
-                        
                         openGuestModal(generatedUrl);
                         form.reset();
                     } else {
@@ -498,8 +555,10 @@
                 return;
             }
 
-            // USER LOGIN
+            // USER LOGIN (MEMBER) -> DELAY 5 DETIK
             if (!slug) slug = generateRandomSlug(5);
+
+            await startGenerateDelay(5, true);
 
             try {
                 const response = await fetch(`${SUPABASE_URL}/rest/v1/urls`, {
