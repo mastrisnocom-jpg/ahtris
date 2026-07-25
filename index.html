@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Short Link Manager - Supabase REST</title>
+    <title>Short Link Manager - Supabase Auth</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome Icons -->
@@ -16,12 +16,42 @@
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-screen font-sans flex flex-col justify-between selection:bg-teal-300 selection:text-teal-900">
 
+    <!-- Header / Navbar -->
+    <header class="w-full border-b border-slate-800 bg-slate-900/80 backdrop-blur-md sticky top-0 z-40">
+        <div class="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
+            <a href="/" class="text-xl font-bold tracking-wider text-teal-400 flex items-center gap-2">
+                <i class="fa-solid fa-link text-lg"></i>
+                <span>SHORT<span class="text-white">LINK</span></span>
+            </a>
+
+            <!-- Area Login / User Status di Pojok Kanan Atas -->
+            <div id="authArea">
+                <!-- Tampilan saat Belum Login -->
+                <button id="btnOpenAuth" onclick="openAuthModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl text-sm font-semibold text-teal-400 transition flex items-center gap-2">
+                    <i class="fa-regular fa-user"></i> Login / Daftar
+                </button>
+
+                <!-- Tampilan saat Sudah Login (Hidden by default) -->
+                <div id="userProfile" class="hidden items-center gap-3">
+                    <span id="userEmailDisplay" class="text-xs font-mono text-slate-300 bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700">
+                        user@example.com
+                    </span>
+                    <button onclick="handleLogout()" class="px-3 py-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 rounded-lg text-xs font-semibold transition flex items-center gap-1">
+                        <i class="fa-solid fa-arrow-right-from-bracket"></i> Keluar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
     <!-- Container Utama -->
-    <div class="max-w-3xl mx-auto px-4 py-12 w-full">
-        <!-- Header -->
-        <div class="text-center mb-10">
-            <h1 class="text-4xl font-extrabold text-teal-400 tracking-tight">Short Link Database</h1>
-            <p class="text-slate-400 mt-2">Buat link pendek kustom dengan domain <span class="text-teal-300 font-semibold" id="displayDomain">...</span></p>
+    <div class="max-w-3xl mx-auto px-4 py-10 w-full">
+        <!-- Header Title -->
+        <div class="text-center mb-8">
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-teal-400 tracking-tight">Short Link Database</h1>
+            <p class="text-slate-400 mt-2 text-sm sm:text-base">
+                Buat link pendek kustom dengan domain <span class="text-teal-300 font-semibold" id="displayDomain">...</span>
+            </p>
         </div>
 
         <!-- Form Pembuat Link -->
@@ -33,11 +63,16 @@
                            class="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-slate-100 focus:outline-none focus:border-teal-400 transition">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-slate-300 mb-1">Custom Slug (Opsional)</label>
-                    <div class="flex items-center bg-slate-900 border border-slate-700 rounded-xl overflow-hidden focus-within:border-teal-400 transition">
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="block text-sm font-medium text-slate-300">Custom Slug</label>
+                        <span id="slugNotice" class="text-xs text-amber-400 font-medium">
+                            <i class="fa-solid fa-lock text-[10px]"></i> Login untuk custom slug
+                        </span>
+                    </div>
+                    <div class="flex items-center bg-slate-900 border border-slate-700 rounded-xl overflow-hidden focus-within:border-teal-400 transition" id="slugInputWrapper">
                         <span class="pl-4 pr-1 text-slate-500 text-sm font-mono" id="domainPrefix">.../</span>
-                        <input type="text" id="customSlug" placeholder="hasilshort" 
-                               class="w-full py-3 pr-4 bg-transparent text-slate-100 focus:outline-none font-mono text-sm">
+                        <input type="text" id="customSlug" disabled placeholder="Otomatis 5 karakter (Login untuk ganti)" 
+                               class="w-full py-3 pr-4 bg-transparent text-slate-100 focus:outline-none font-mono text-sm disabled:opacity-50 disabled:cursor-not-allowed">
                     </div>
                 </div>
                 <button type="submit" id="btnSubmit" 
@@ -74,28 +109,72 @@
         </div>
     </div>
 
+    <!-- MODAL POPUP LOGIN / REGISTER -->
+    <div id="authModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-800 border border-slate-700 rounded-2xl w-full max-w-md p-6 shadow-2xl relative">
+            <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            
+            <h3 id="modalTitle" class="text-2xl font-bold text-white mb-2">Masuk ke Akun</h3>
+            <p class="text-xs text-slate-400 mb-6">Login untuk mengaktifkan fitur Custom Short Slug milik Anda sendiri.</p>
+
+            <form id="authForm" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1">Email</label>
+                    <input type="email" id="authEmail" required placeholder="nama@email.com"
+                           class="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-slate-100 text-sm focus:outline-none focus:border-teal-400">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1">Password</label>
+                    <input type="password" id="authPassword" required placeholder="••••••••"
+                           class="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-slate-100 text-sm focus:outline-none focus:border-teal-400">
+                </div>
+                <button type="submit" id="btnAuthSubmit" class="w-full py-3 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold rounded-xl text-sm transition">
+                    Login
+                </button>
+            </form>
+
+            <div id="authStatus" class="mt-3 text-center text-xs font-medium hidden"></div>
+
+            <div class="mt-6 pt-4 border-t border-slate-700 text-center text-xs text-slate-400">
+                <span id="toggleAuthText">Belum punya akun?</span>
+                <button onclick="toggleAuthMode()" id="btnToggleAuth" class="text-teal-400 hover:underline font-semibold ml-1">
+                    Daftar Sekarang
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Footer -->
     <footer class="py-6 text-center text-xs text-slate-500 border-t border-slate-800">
         Database Powered by Supabase & Hosted on GitHub Pages
     </footer>
 
-    <!-- Script Logika HTTP Fetch Direct ke Supabase -->
+    <!-- LOGIKA JAVASCRIPT DIRECT REST API SUPABASE -->
     <script>
-        // KREDENSIAL SUPABASE ANDA
         const SUPABASE_URL = "https://lcpskriooezyxgrnarol.supabase.co"; 
         const SUPABASE_KEY = "sb_publishable_puy9U_93p-7_Q64oHrYUpg_iEF3nJ-c";
 
-        // Header wajib untuk memanggil REST API Supabase
-        const API_HEADERS = {
-            'apikey': SUPABASE_KEY,
-            'Authorization': `Bearer ${SUPABASE_KEY}`,
-            'Content-Type': 'application/json',
-            'Prefer': 'return=representation'
-        };
+        let currentUser = null; // Menyimpan data session user
+        let isRegisterMode = false; // Mode login/register
 
+        // Header standar
+        function getHeaders(token = null) {
+            const headers = {
+                'apikey': SUPABASE_KEY,
+                'Content-Type': 'application/json',
+                'Prefer': 'return=representation'
+            };
+            headers['Authorization'] = `Bearer ${token || SUPABASE_KEY}`;
+            return headers;
+        }
+
+        // DOM Elements
         const form = document.getElementById('shortenForm');
         const originalUrlInput = document.getElementById('originalUrl');
         const customSlugInput = document.getElementById('customSlug');
+        const slugNotice = document.getElementById('slugNotice');
         const statusMessage = document.getElementById('statusMessage');
         const urlTableBody = document.getElementById('urlTableBody');
 
@@ -104,7 +183,109 @@
         document.getElementById('displayDomain').textContent = window.location.host;
 
         // ----------------------------------------------------
-        // 1. LOGIKA REDIRECT PENGUNJUNG
+        // 1. MANAGEMENT SESSI AKUN / AUTHENTICATION
+        // ----------------------------------------------------
+        function checkSession() {
+            const sessionData = localStorage.getItem('sb_user_session');
+            if (sessionData) {
+                try {
+                    currentUser = JSON.parse(sessionData);
+                    renderUserUI();
+                } catch (e) {
+                    localStorage.removeItem('sb_user_session');
+                }
+            }
+        }
+
+        function renderUserUI() {
+            if (currentUser && currentUser.access_token) {
+                document.getElementById('btnOpenAuth').classList.add('hidden');
+                document.getElementById('userProfile').classList.remove('hidden');
+                document.getElementById('userProfile').classList.add('flex');
+                document.getElementById('userEmailDisplay').textContent = currentUser.user.email;
+
+                // Enable Custom Slug jika sudah Login
+                customSlugInput.disabled = false;
+                customSlugInput.placeholder = "hasilshort";
+                slugNotice.innerHTML = `<span class="text-teal-400"><i class="fa-solid fa-check text-[10px]"></i> Custom Slug Aktif</span>`;
+            } else {
+                document.getElementById('btnOpenAuth').classList.remove('hidden');
+                document.getElementById('userProfile').classList.add('hidden');
+                document.getElementById('userProfile').classList.remove('flex');
+
+                // Disable Custom Slug untuk Guest
+                customSlugInput.disabled = true;
+                customSlugInput.value = '';
+                customSlugInput.placeholder = "Otomatis 5 karakter (Login untuk ganti)";
+                slugNotice.innerHTML = `<i class="fa-solid fa-lock text-[10px]"></i> Login untuk custom slug`;
+            }
+        }
+
+        // Modal Handler
+        function openAuthModal() { document.getElementById('authModal').classList.remove('hidden'); }
+        function closeAuthModal() { document.getElementById('authModal').classList.add('hidden'); }
+
+        function toggleAuthMode() {
+            isRegisterMode = !isRegisterMode;
+            document.getElementById('modalTitle').textContent = isRegisterMode ? "Daftar Akun Baru" : "Masuk ke Akun";
+            document.getElementById('btnAuthSubmit').textContent = isRegisterMode ? "Daftar" : "Login";
+            document.getElementById('toggleAuthText').textContent = isRegisterMode ? "Sudah punya akun?" : "Belum punya akun?";
+            document.getElementById('btnToggleAuth').textContent = isRegisterMode ? "Login di sini" : "Daftar Sekarang";
+            document.getElementById('authStatus').classList.add('hidden');
+        }
+
+        // Submit Auth Form
+        document.getElementById('authForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('authEmail').value.trim();
+            const password = document.getElementById('authPassword').value.trim();
+            const authStatus = document.getElementById('authStatus');
+
+            authStatus.textContent = "Memproses...";
+            authStatus.className = "mt-3 text-center text-xs font-medium text-slate-400";
+            authStatus.classList.remove('hidden');
+
+            const endpoint = isRegisterMode ? `${SUPABASE_URL}/auth/v1/signup` : `${SUPABASE_URL}/auth/v1/token?grant_type=password`;
+
+            try {
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: getHeaders(),
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    if (isRegisterMode) {
+                        authStatus.textContent = "Pendaftaran berhasil! Silakan Login.";
+                        authStatus.className = "mt-3 text-center text-xs font-medium text-teal-400";
+                        toggleAuthMode();
+                    } else {
+                        currentUser = data;
+                        localStorage.setItem('sb_user_session', JSON.stringify(data));
+                        renderUserUI();
+                        closeAuthModal();
+                        document.getElementById('authForm').reset();
+                    }
+                } else {
+                    authStatus.textContent = data.error_description || data.msg || "Gagal Autentikasi";
+                    authStatus.className = "mt-3 text-center text-xs font-medium text-red-400";
+                }
+            } catch (err) {
+                authStatus.textContent = "Terjadi kesalahan koneksi.";
+                authStatus.className = "mt-3 text-center text-xs font-medium text-red-400";
+            }
+        });
+
+        function handleLogout() {
+            currentUser = null;
+            localStorage.removeItem('sb_user_session');
+            renderUserUI();
+        }
+
+        // ----------------------------------------------------
+        // 2. LOGIKA REDIRECT PENGUNJUNG
         // ----------------------------------------------------
         async function handleRedirect() {
             let redirectPath = sessionStorage.getItem('redirect_path');
@@ -126,22 +307,19 @@
                 `;
 
                 try {
-                    // Cari slug via Direct REST API
                     const response = await fetch(`${SUPABASE_URL}/rest/v1/urls?slug=eq.${encodeURIComponent(pathSlug)}&select=original_url`, {
                         method: 'GET',
-                        headers: API_HEADERS
+                        headers: getHeaders()
                     });
                     const data = await response.json();
 
                     if (data && data.length > 0 && data[0].original_url) {
-                        // Tambah statistik klik via RPC
                         fetch(`${SUPABASE_URL}/rest/v1/rpc/increment_click_count`, {
                             method: 'POST',
-                            headers: API_HEADERS,
+                            headers: getHeaders(),
                             body: JSON.stringify({ target_slug: pathSlug })
                         }).catch(() => {});
 
-                        // Redirect ke URL asal
                         window.location.href = data[0].original_url;
                     } else {
                         throw new Error('Link tidak ditemukan');
@@ -166,9 +344,9 @@
         }
 
         // ----------------------------------------------------
-        // 2. FUNGSI MEMBUAT SHORT LINK BARU
+        // 3. FUNGSI MEMBUAT SHORT LINK (FLEKSIBEL)
         // ----------------------------------------------------
-        function generateRandomSlug(length = 6) {
+        function generateRandomSlug(length = 5) {
             const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
             let result = '';
             for (let i = 0; i < length; i++) {
@@ -183,27 +361,35 @@
             const original_url = originalUrlInput.value.trim();
             let slug = customSlugInput.value.trim().replace(/^\/|\/$/g, '');
 
-            if (!slug) {
-                slug = generateRandomSlug();
+            // Logika Aturan Slug:
+            // Jika User Login & mengisi Custom Slug -> Pakai Custom Slug
+            // Jika Guest ATAU Custom Slug kosong -> Generate otomatis 5 Karakter Acak
+            if (!currentUser || !slug) {
+                slug = generateRandomSlug(5);
             }
 
             showStatus("Memproses...", "text-slate-400");
 
+            const payload = { original_url, slug };
+            if (currentUser && currentUser.user) {
+                payload.user_id = currentUser.user.id;
+            }
+
             try {
                 const response = await fetch(`${SUPABASE_URL}/rest/v1/urls`, {
                     method: 'POST',
-                    headers: API_HEADERS,
-                    body: JSON.stringify({ original_url, slug })
+                    headers: getHeaders(currentUser ? currentUser.access_token : null),
+                    body: JSON.stringify(payload)
                 });
 
                 if (response.ok) {
-                    showStatus("Short link berhasil dibuat!", "text-teal-400");
+                    showStatus(`Short link berhasil dibuat: /${slug}`, "text-teal-400");
                     form.reset();
                     loadUrls();
                 } else {
                     const errData = await response.json();
                     if (response.status === 409 || (errData.message && errData.message.includes('unique'))) {
-                        showStatus("Slug/kode tersebut sudah digunakan! Silakan pilih nama lain.", "text-red-400");
+                        showStatus("Slug tersebut sudah digunakan! Coba klik tombol lagi.", "text-red-400");
                     } else {
                         showStatus("Gagal: " + (errData.message || "Terjadi kesalahan"), "text-red-400");
                     }
@@ -220,13 +406,13 @@
         }
 
         // ----------------------------------------------------
-        // 3. FUNGSI MEMUAT DAFTAR LINK
+        // 4. MEMUAT DAFTAR SHORT LINK
         // ----------------------------------------------------
         async function loadUrls() {
             try {
                 const response = await fetch(`${SUPABASE_URL}/rest/v1/urls?select=*&order=created_at.desc`, {
                     method: 'GET',
-                    headers: API_HEADERS
+                    headers: getHeaders()
                 });
 
                 if (!response.ok) throw new Error();
@@ -269,7 +455,7 @@
             } catch (err) {
                 urlTableBody.innerHTML = `
                     <tr>
-                        <td colspan="4" class="p-4 text-center text-red-400">Gagal memuat data dari Supabase. Pastikan RLS / SQL Policy sudah aktif.</td>
+                        <td colspan="4" class="p-4 text-center text-red-400">Gagal memuat data dari Supabase.</td>
                     </tr>
                 `;
             }
@@ -280,7 +466,8 @@
             alert("Short URL berhasil disalin!");
         }
 
-        // Jalankan saat pertama kali dimuat
+        // Inisialisasi awal
+        checkSession();
         handleRedirect().then((isRedirecting) => {
             if (!isRedirecting) {
                 loadUrls();
