@@ -1,323 +1,276 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Sistem Keuangan | Dashboard AdminLTE</title>
-
-  <!-- Google Font: Source Sans Pro & Poppins -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700&display=fallback">
-  <!-- Font Awesome Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- Theme style AdminLTE -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
-  <!-- FullCalendar CSS -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css">
-
-  <style>
-    :root {
-      --gold-main: #d4af37;
-      --gold-dark: #aa771c;
-      --bg-dark: #121212;
-    }
-    body.dark-mode {
-      background-color: var(--bg-dark);
-    }
-    .main-header, .main-sidebar {
-      border-bottom: 1px solid rgba(212, 175, 55, 0.2) !important;
-    }
-    .brand-link {
-      border-bottom: 1px solid rgba(212, 175, 55, 0.2) !important;
-    }
-    .brand-text {
-      color: var(--gold-main) !important;
-      font-weight: 600;
-    }
-    .sidebar-dark-primary .nav-sidebar>.nav-item>.nav-link.active {
-      background-color: var(--gold-main);
-      color: #000 !important;
-      font-weight: 600;
-    }
-    .small-box.bg-gold {
-      background: linear-gradient(135deg, #d4af37 0%, #aa771c 100%);
-      color: #000;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Short Link Manager - Supabase</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Supabase JS Client v2 -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
 </head>
-<body class="hold-transition sidebar-mini layout-fixed dark-mode">
-<div class="wrapper">
+<body class="bg-slate-900 text-slate-100 min-h-screen font-sans flex flex-col justify-between selection:bg-teal-300 selection:text-teal-900">
 
-  <!-- Navbar -->
-  <nav class="main-header navbar navbar-expand navbar-dark navbar-black">
-    <!-- Left navbar links -->
-    <ul class="navbar-nav">
-      <li class="nav-item">
-        <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
-      </li>
-      <li class="nav-item d-none d-sm-inline-block">
-        <a href="index.html" class="nav-link">Dashboard</a>
-      </li>
-    </ul>
-
-    <!-- Right navbar links -->
-    <ul class="navbar-nav ml-auto">
-      <li class="nav-item dropdown">
-        <a class="nav-link" data-toggle="dropdown" href="#">
-          <img id="userAvatar" src="https://via.placeholder.com/150" class="img-circle elevation-1" alt="User Image" style="width: 30px; height: 30px; object-fit: cover;">
-          <span id="userName" class="ml-2 d-none d-md-inline">Loading...</span>
-        </a>
-        <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-          <span class="dropdown-item dropdown-header" id="userRoleBadge">Role: -</span>
-          <div class="dropdown-divider"></div>
-          <a href="#" class="dropdown-item" data-toggle="modal" data-target="#modalProfile">
-            <i class="fas fa-user-cog mr-2"></i> Profil & Foto
-          </a>
-          <a href="#" class="dropdown-item" data-toggle="modal" data-target="#modalPassword">
-            <i class="fas fa-key mr-2"></i> Ganti Password
-          </a>
-          <div class="dropdown-divider"></div>
-          <a href="#" class="dropdown-item dropdown-footer text-danger" id="logoutBtn">
-            <i class="fas fa-sign-out-alt mr-2"></i> Logout
-          </a>
+    <!-- Container Utama -->
+    <div class="max-w-3xl mx-auto px-4 py-12 w-full">
+        <!-- Header -->
+        <div class="text-center mb-10">
+            <h1 class="text-4xl font-extrabold text-teal-400 tracking-tight">Short Link Database</h1>
+            <p class="text-slate-400 mt-2">Buat link pendek kustom dengan domain <span class="text-teal-300 font-semibold" id="displayDomain">...</span></p>
         </div>
-      </li>
-    </ul>
-  </nav>
 
-  <!-- Main Sidebar Container -->
-  <aside class="main-sidebar sidebar-dark-primary elevation-4">
-    <a href="index.html" class="brand-link text-center">
-      <span class="brand-text font-weight-bold"><i class="fas fa-wallet mr-2"></i>FINANCE APP</span>
-    </a>
-
-    <div class="sidebar">
-      <!-- Sidebar Menu -->
-      <nav class="mt-2">
-        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu">
-          <li class="nav-item">
-            <a href="index.html" class="nav-link active">
-              <i class="nav-icon fas fa-tachometer-alt"></i>
-              <p>Dashboard</p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="#" class="nav-link">
-              <i class="nav-icon fas fa-exchange-alt"></i>
-              <p>Transaksi</p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="#" class="nav-link">
-              <i class="nav-icon fas fa-tags"></i>
-              <p>Kategori</p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="#" class="nav-link">
-              <i class="nav-icon fas fa-university"></i>
-              <p>Rekening Bank</p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="#" class="nav-link">
-              <i class="nav-icon fas fa-hand-holding-usd"></i>
-              <p>Hutang & Piutang</p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="#" class="nav-link">
-              <i class="nav-icon fas fa-chart-line"></i>
-              <p>Laporan Keuangan</p>
-            </a>
-          </li>
-
-          <!-- Khusus Administrator -->
-          <li class="nav-header admin-only d-none">ADMINISTRATOR</li>
-          <li class="nav-item admin-only d-none">
-            <a href="#" class="nav-link">
-              <i class="nav-icon fas fa-users-cog"></i>
-              <p>Kelola Pengguna</p>
-            </a>
-          </li>
-        </ul>
-      </nav>
-    </div>
-  </aside>
-
-  <!-- Content Wrapper -->
-  <div class="content-wrapper">
-    <!-- Content Header -->
-    <div class="content-header">
-      <div class="container-fluid">
-        <div class="row mb-2">
-          <div class="col-sm-6">
-            <h1 class="m-0 text-gold">Ringkasan Keuangan</h1>
-          </div>
+        <!-- Form Pembuat Link -->
+        <div class="bg-slate-800 border border-slate-700/80 rounded-2xl p-6 shadow-xl mb-10">
+            <form id="shortenForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-300 mb-1">URL Original</label>
+                    <input type="url" id="originalUrl" required placeholder="https://example.com/halaman-sangat-panjang" 
+                           class="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-slate-100 focus:outline-none focus:border-teal-400 transition">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-300 mb-1">Custom Slug (Opsional)</label>
+                    <div class="flex items-center bg-slate-900 border border-slate-700 rounded-xl overflow-hidden focus-within:border-teal-400 transition">
+                        <span class="pl-4 pr-1 text-slate-500 text-sm font-mono" id="domainPrefix">.../</span>
+                        <input type="text" id="customSlug" placeholder="hasilshort" 
+                               class="w-full py-3 pr-4 bg-transparent text-slate-100 focus:outline-none font-mono text-sm">
+                    </div>
+                </div>
+                <button type="submit" id="btnSubmit" 
+                        class="w-full py-3 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold rounded-xl transition duration-200 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-link"></i> Pendekkan URL
+                </button>
+            </form>
+            <div id="statusMessage" class="mt-4 text-center text-sm font-medium hidden"></div>
         </div>
-      </div>
+
+        <!-- Tabel Daftar Link -->
+        <div class="bg-slate-800 border border-slate-700/80 rounded-2xl p-6 shadow-xl">
+            <div class="flex justify-between items-center mb-4 border-b border-slate-700 pb-3">
+                <h2 class="text-xl font-bold text-white">Daftar Short Link</h2>
+                <button onclick="loadUrls()" class="text-xs text-slate-400 hover:text-teal-400 transition flex items-center gap-1">
+                    <i class="fa-solid fa-rotate-right"></i> Refresh
+                </button>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm text-slate-300">
+                    <thead class="text-xs uppercase bg-slate-900/50 text-slate-400">
+                        <tr>
+                            <th class="p-3 rounded-l-lg">Short Link</th>
+                            <th class="p-3">URL Asli</th>
+                            <th class="p-3 text-center">Klik</th>
+                            <th class="p-3 text-right rounded-r-lg">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="urlTableBody" class="divide-y divide-slate-700/50">
+                        <!-- Data URL muncul di sini -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
-    <!-- Main Content -->
-    <section class="content">
-      <div class="container-fluid">
+    <!-- Footer -->
+    <footer class="py-6 text-center text-xs text-slate-500 border-t border-slate-800">
+        Database Powered by Supabase & Hosted on GitHub Pages
+    </footer>
 
-        <!-- Ringkasan Pemasukan & Pengeluaran -->
-        <div class="row">
-          <!-- Pemasukan Cards -->
-          <div class="col-lg-3 col-6">
-            <div class="small-box bg-success">
-              <div class="inner">
-                <h3 id="inToday">Rp 0</h3>
-                <p>Pemasukan Hari Ini</p>
-              </div>
-              <div class="icon"><i class="fas fa-arrow-down"></i></div>
-            </div>
-          </div>
-          <div class="col-lg-3 col-6">
-            <div class="small-box bg-success">
-              <div class="inner">
-                <h3 id="inMonth">Rp 0</h3>
-                <p>Pemasukan Bulan Ini</p>
-              </div>
-              <div class="icon"><i class="fas fa-calendar-alt"></i></div>
-            </div>
-          </div>
+    <!-- Script Logika -->
+    <script>
+        // Konfigurasi Supabase
+        const SUPABASE_URL = "https://lcpskriooezyxgrnarol.supabase.co"; 
+        const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_puy9U_93p-7_Q64oHrYUpg_iEF3nJ-c";
+        
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
-          <!-- Pengeluaran Cards -->
-          <div class="col-lg-3 col-6">
-            <div class="small-box bg-danger">
-              <div class="inner">
-                <h3 id="outToday">Rp 0</h3>
-                <p>Pengeluaran Hari Ini</p>
-              </div>
-              <div class="icon"><i class="fas fa-arrow-up"></i></div>
-            </div>
-          </div>
-          <div class="col-lg-3 col-6">
-            <div class="small-box bg-danger">
-              <div class="inner">
-                <h3 id="outMonth">Rp 0</h3>
-                <p>Pengeluaran Bulan Ini</p>
-              </div>
-              <div class="icon"><i class="fas fa-calendar-times"></i></div>
-            </div>
-          </div>
-        </div>
+        const form = document.getElementById('shortenForm');
+        const originalUrlInput = document.getElementById('originalUrl');
+        const customSlugInput = document.getElementById('customSlug');
+        const statusMessage = document.getElementById('statusMessage');
+        const urlTableBody = document.getElementById('urlTableBody');
 
-        <!-- Row Grafik & Kalender -->
-        <div class="row">
-          <!-- Grafik -->
-          <div class="col-md-8">
-            <div class="card card-dark">
-              <div class="card-header border-0">
-                <h3 class="card-title"><i class="fas fa-chart-bar mr-1"></i> Grafik Pemasukan & Pengeluaran</h3>
-              </div>
-              <div class="card-body">
-                <canvas id="financeChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
-              </div>
-            </div>
-          </div>
+        const currentOrigin = window.location.origin;
+        document.getElementById('domainPrefix').textContent = `${window.location.host}/`;
+        document.getElementById('displayDomain').textContent = window.location.host;
 
-          <!-- Kalender -->
-          <div class="col-md-4">
-            <div class="card card-dark">
-              <div class="card-header border-0">
-                <h3 class="card-title"><i class="fas fa-calendar-day mr-1"></i> Kalender Transaksi</h3>
-              </div>
-              <div class="card-body p-2">
-                <div id="calendar"></div>
-              </div>
-            </div>
-          </div>
-        </div>
+        // ----------------------------------------------------
+        // 1. LOGIKA REDIRECT BERBASIS PATH (GITHUB PAGES READY)
+        // ----------------------------------------------------
+        async function handleRedirect() {
+            // Cek path dari 404.html atau dari URL langsung
+            let redirectPath = sessionStorage.getItem('redirect_path');
+            sessionStorage.removeItem('redirect_path'); // Hapus memori sementara
 
-      </div>
-    </section>
-  </div>
+            let pathSlug = '';
 
-  <footer class="main-footer text-sm">
-    <strong>Copyright &copy; 2026 Finance App.</strong> All rights reserved.
-  </footer>
-</div>
+            if (redirectPath) {
+                pathSlug = redirectPath.replace(/^\/|\/$/g, '');
+            } else {
+                pathSlug = window.location.pathname.replace(/^\/|\/$/g, '');
+            }
 
-<!-- REQUIRED SCRIPTS -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
-<!-- Chart.js & FullCalendar -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+            // Jika ada slug dan bukan file index.html
+            if (pathSlug && pathSlug !== 'index.html') {
+                // Tampilkan URL bersih di browser tanpa reload
+                window.history.replaceState(null, null, '/' + pathSlug);
 
-<!-- Supabase SDK -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+                document.body.innerHTML = `
+                    <div class="min-h-screen flex items-center justify-center bg-slate-900 text-white">
+                        <div class="text-center">
+                            <i class="fa-solid fa-spinner fa-spin text-4xl text-teal-400 mb-4"></i>
+                            <h1 class="text-2xl font-bold mb-2">Mengalihkan Halaman...</h1>
+                            <p class="text-slate-400">Harap tunggu sebentar.</p>
+                        </div>
+                    </div>
+                `;
 
-<script>
-  document.addEventListener('DOMContentLoaded', async () => {
-    // 1. Inisialisasi Supabase Client
-    const SUPABASE_URL = "https://lcpskriooezyxgrnarol.supabase.co"; 
-    const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_puy9U_93p-7_Q64oHrYUpg_iEF3nJ-c";
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+                // Cari URL Asli di Supabase
+                const { data, error } = await supabase
+                    .from('urls')
+                    .select('original_url')
+                    .eq('slug', pathSlug)
+                    .single();
 
-    // 2. Cek Sesi Auth
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
-      // Redirect ke login jika belum terautentikasi
-      window.location.href = 'login.html';
-      return;
-    }
+                if (data && data.original_url) {
+                    // Update jumlah klik di database
+                    await supabase.rpc('increment_click_count', { target_slug: pathSlug });
+                    
+                    // Alihkan ke link tujuan
+                    window.location.href = data.original_url;
+                } else {
+                    document.body.innerHTML = `
+                        <div class="min-h-screen flex items-center justify-center bg-slate-900 text-white p-4">
+                            <div class="text-center max-w-md">
+                                <i class="fa-solid fa-circle-exclamation text-5xl text-red-400 mb-4"></i>
+                                <h1 class="text-3xl font-bold text-white mb-2">404 - Tidak Ditemukan</h1>
+                                <p class="text-slate-400 mb-6">Short link <span class="text-teal-400 font-mono">/${pathSlug}</span> tidak terdaftar di database.</p>
+                                <a href="${currentOrigin}" class="px-5 py-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl text-sm text-teal-400 font-semibold transition">
+                                    Kembali ke Beranda
+                                </a>
+                            </div>
+                        </div>
+                    `;
+                }
+                return true;
+            }
+            return false;
+        }
 
-    const userId = session.user.id;
+        // ----------------------------------------------------
+        // 2. FUNGSI MEMBUAT SHORT LINK BARU
+        // ----------------------------------------------------
+        function generateRandomSlug(length = 6) {
+            const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let result = '';
+            for (let i = 0; i < length; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return result;
+        }
 
-    // 3. Load Profile & Hak Akses (Role)
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', userId)
-      .single();
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const original_url = originalUrlInput.value.trim();
+            let slug = customSlugInput.value.trim().replace(/^\/|\/$/g, '');
 
-    if (profile) {
-      document.getElementById('userName').textContent = profile.full_name || session.user.email;
-      document.getElementById('userRoleBadge').textContent = `Role: ${profile.role}`;
-      if (profile.avatar_url) {
-        document.getElementById('userAvatar').src = profile.avatar_url;
-      }
+            if (!slug) {
+                slug = generateRandomSlug();
+            }
 
-      // Tampilkan Menu Khusus Administrator
-      if (profile.role === 'Administrator') {
-        document.querySelectorAll('.admin-only').forEach(el => el.classList.remove('d-none'));
-      }
-    }
+            showStatus("Memproses...", "text-slate-400");
 
-    // Logout Handler
-    document.getElementById('logoutBtn').addEventListener('click', async (e) => {
-      e.preventDefault();
-      await supabase.auth.signOut();
-      window.location.href = 'login.html';
-    });
+            const { data, error } = await supabase
+                .from('urls')
+                .insert([{ original_url, slug }])
+                .select();
 
-    // 4. Inisialisasi Grafik
-    const ctx = document.getElementById('financeChart').getContext('2d');
-    new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
-        datasets: [
-          { label: 'Pemasukan', backgroundColor: '#28a745', data: [12, 19, 15, 25, 22, 30, 28, 0, 0, 0, 0, 0] },
-          { label: 'Pengeluaran', backgroundColor: '#dc3545', data: [8, 12, 10, 15, 18, 20, 15, 0, 0, 0, 0, 0] }
-        ]
-      },
-      options: { responsive: true, maintainAspectRatio: false }
-    });
+            if (error) {
+                if (error.code === '23505') {
+                    showStatus("Slug/kode tersebut sudah digunakan! Silakan pilih kode lain.", "text-red-400");
+                } else {
+                    showStatus("Gagal membuat link: " + error.message, "text-red-400");
+                }
+            } else {
+                showStatus("Short link berhasil dibuat!", "text-teal-400");
+                form.reset();
+                loadUrls();
+            }
+        });
 
-    // 5. Inisialisasi Kalender
-    const calendarEl = document.getElementById('calendar');
-    const calendar = new FullCalendar.Calendar(calendarEl, {
-      initialView: 'dayGridMonth',
-      height: 'auto',
-      headerToolbar: { left: 'prev,next', center: 'title', right: '' }
-    });
-    calendar.render();
-  });
-</script>
+        function showStatus(msg, colorClass) {
+            statusMessage.textContent = msg;
+            statusMessage.className = `mt-4 text-center text-sm font-medium ${colorClass}`;
+            statusMessage.classList.remove('hidden');
+        }
+
+        // ----------------------------------------------------
+        // 3. FUNGSI MEMUAT DAFTAR LINK
+        // ----------------------------------------------------
+        async function loadUrls() {
+            const { data, error } = await supabase
+                .from('urls')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (error) {
+                console.error("Error loading URLs:", error);
+                return;
+            }
+
+            urlTableBody.innerHTML = '';
+
+            if (data.length === 0) {
+                urlTableBody.innerHTML = `
+                    <tr>
+                        <td colspan="4" class="p-4 text-center text-slate-500">Belum ada short link yang dibuat.</td>
+                    </tr>
+                `;
+                return;
+            }
+
+            data.forEach(item => {
+                const fullShortUrl = `${currentOrigin}/${item.slug}`;
+                const row = document.createElement('tr');
+                row.className = "hover:bg-slate-700/30 transition";
+
+                row.innerHTML = `
+                    <td class="p-3 font-mono text-teal-400 font-medium">
+                        <a href="${fullShortUrl}" target="_blank" class="hover:underline">/${item.slug}</a>
+                    </td>
+                    <td class="p-3 truncate max-w-xs text-slate-400" title="${item.original_url}">
+                        ${item.original_url}
+                    </td>
+                    <td class="p-3 text-center font-bold text-slate-200">
+                        ${item.click_count}
+                    </td>
+                    <td class="p-3 text-right">
+                        <button onclick="copyToClipboard('${fullShortUrl}')" class="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-xs text-slate-200 rounded-lg transition inline-flex items-center gap-1">
+                            <i class="fa-regular fa-copy"></i> Salin
+                        </button>
+                    </td>
+                `;
+                urlTableBody.appendChild(row);
+            });
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text);
+            alert("Short URL berhasil disalin!");
+        }
+
+        // Jalankan pengecekan redirect saat halaman pertama dimuat
+        handleRedirect().then((isRedirecting) => {
+            if (!isRedirecting) {
+                loadUrls();
+            }
+        });
+    </script>
 </body>
 </html>
