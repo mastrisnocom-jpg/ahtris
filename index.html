@@ -26,6 +26,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- hCaptcha SDK -->
+    <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
     </style>
@@ -47,7 +49,7 @@
                     <i id="themeIcon" class="fa-solid fa-moon"></i>
                 </button>
 
-                <!-- Tombol Khusus Superadmin (Sembunyi secara default) -->
+                <!-- Tombol Superadmin Panel -->
                 <button id="btnSuperadmin" onclick="openAdminModal()" class="hidden px-3 py-2 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold rounded-xl text-xs transition items-center gap-1.5 shadow-md">
                     <i class="fa-solid fa-user-shield"></i> <span class="hidden sm:inline">Panel Superadmin</span>
                 </button>
@@ -67,7 +69,7 @@
         </div>
     </header>
 
-    <!-- SLOT IKLAN 1: HEADER AD -->
+    <!-- SLOT IKLAN 1: HEADER BANNER -->
     <div id="adHeaderSlot" class="max-w-4xl mx-auto w-full px-4 pt-4 text-center empty:hidden"></div>
 
     <!-- Container Utama -->
@@ -125,7 +127,7 @@
             </form>
         </div>
 
-        <!-- SLOT IKLAN 2: MIDDLE AD -->
+        <!-- SLOT IKLAN 2: MIDDLE BANNER -->
         <div id="adMiddleSlot" class="my-6 text-center empty:hidden"></div>
 
         <!-- TABEL DAFTAR LINK (KHUSUS MEMBER) -->
@@ -155,10 +157,28 @@
         </div>
     </div>
 
-    <!-- SLOT IKLAN 3: FOOTER AD -->
+    <!-- SLOT IKLAN 3: FOOTER BANNER -->
     <div id="adFooterSlot" class="max-w-4xl mx-auto w-full px-4 mb-4 text-center empty:hidden"></div>
 
-    <!-- MODAL KHUSUS SUPERADMIN: PENGATURAN IKLAN -->
+    <!-- MODAL POPUP CAPTCHA VERIFIKASI -->
+    <div id="captchaModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl w-full max-w-sm p-6 shadow-2xl relative text-center">
+            <button onclick="closeCaptchaModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-white text-lg">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <h3 class="text-xl font-extrabold text-slate-900 dark:text-white mb-1">Selesaikan Captcha</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mb-6">Bip Bop! verifikasi captcha di bawah ini</p>
+
+            <div class="bg-slate-50 dark:bg-slate-950 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 flex justify-center items-center min-h-[120px] mb-4">
+                <div class="h-captcha" data-sitekey="10000000-ffff-ffff-ffff-ffffffffffff" data-callback="onCaptchaSuccess"></div>
+            </div>
+
+            <p id="captchaNotice" class="text-[11px] text-slate-400">Centang kotak di atas untuk melanjutkan.</p>
+        </div>
+    </div>
+
+    <!-- MODAL KHUSUS SUPERADMIN: PENGATURAN IKLAN & MITRA KERJASAMA -->
     <div id="adminModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white dark:bg-slate-900 border border-amber-500/40 rounded-2xl w-full max-w-2xl p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
             <button onclick="closeAdminModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-white text-lg">
@@ -168,29 +188,29 @@
                 <i class="fa-solid fa-rectangle-ad text-amber-500"></i> Panel Manajemen Iklan Superadmin
             </h3>
             <p class="text-xs text-slate-500 dark:text-slate-400 mb-6">
-                Masukkan script HTML/JavaScript iklan Adsense atau banner gambar kustom pada setiap posisi yang tersedia.
+                Masukkan URL website mitra (seperti https://ndelet.com) atau script iklan HTML/JavaScript.
             </p>
 
             <form id="adminAdsForm" class="space-y-4 text-left">
                 <div>
                     <label class="block text-xs font-bold text-amber-500 uppercase mb-1">1. Iklan Atas / Header Banner</label>
-                    <textarea id="adHeaderInput" rows="2" placeholder="<!-- Tempel script iklan header di sini -->" class="w-full p-3 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl font-mono text-xs focus:outline-none focus:border-amber-500"></textarea>
+                    <textarea id="adHeaderInput" rows="2" placeholder="<!-- Script iklan header di sini -->" class="w-full p-3 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl font-mono text-xs focus:outline-none focus:border-amber-500"></textarea>
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-amber-500 uppercase mb-1">2. Iklan Tengah / Middle Banner</label>
-                    <textarea id="adMiddleInput" rows="2" placeholder="<!-- Tempel script iklan tengah di sini -->" class="w-full p-3 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl font-mono text-xs focus:outline-none focus:border-amber-500"></textarea>
+                    <textarea id="adMiddleInput" rows="2" placeholder="<!-- Script iklan tengah di sini -->" class="w-full p-3 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl font-mono text-xs focus:outline-none focus:border-amber-500"></textarea>
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-amber-500 uppercase mb-1">3. Iklan Bawah / Footer Banner</label>
-                    <textarea id="adFooterInput" rows="2" placeholder="<!-- Tempel script iklan footer di sini -->" class="w-full p-3 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl font-mono text-xs focus:outline-none focus:border-amber-500"></textarea>
+                    <textarea id="adFooterInput" rows="2" placeholder="<!-- Script iklan footer di sini -->" class="w-full p-3 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl font-mono text-xs focus:outline-none focus:border-amber-500"></textarea>
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-amber-500 uppercase mb-1">4. Iklan Interstitial (Tampil Sebelum User Melihat Link)</label>
-                    <textarea id="adInterstitialInput" rows="2" placeholder="<!-- Script iklan popup / jeda 5 detik -->" class="w-full p-3 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl font-mono text-xs focus:outline-none focus:border-amber-500"></textarea>
+                    <label class="block text-xs font-bold text-amber-500 uppercase mb-1">4. Iklan Interstitial / Website Kerjasama (Tampil di Bridge Page 10 Detik)</label>
+                    <textarea id="adInterstitialInput" rows="2" placeholder="Tempelkan URL website mitra (contoh: https://ndelet.com) atau script iklan" class="w-full p-3 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl font-mono text-xs focus:outline-none focus:border-amber-500"></textarea>
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-amber-500 uppercase mb-1">5. Iklan Top Frame (Tampil di Atas Website Asli / Shortlink Preview)</label>
-                    <textarea id="adTopFrameInput" rows="2" placeholder="<!-- Script iklan banner di bagian top frame web asli -->" class="w-full p-3 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl font-mono text-xs focus:outline-none focus:border-amber-500"></textarea>
+                    <label class="block text-xs font-bold text-amber-500 uppercase mb-1">5. Iklan Top Frame</label>
+                    <textarea id="adTopFrameInput" rows="2" placeholder="<!-- Script iklan top frame -->" class="w-full p-3 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl font-mono text-xs focus:outline-none focus:border-amber-500"></textarea>
                 </div>
 
                 <button type="submit" id="btnSaveAds" class="w-full py-3 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-xl text-xs transition shadow-lg flex items-center justify-center gap-2">
@@ -265,7 +285,7 @@
         </div>
     </div>
 
-    <!-- MODAL AUTH -->
+    <!-- MODAL AUTH (LOGIN / REGISTER) -->
     <div id="authModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-emerald-900/50 rounded-2xl w-full max-w-md p-6 shadow-2xl relative">
             <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-white text-lg">
@@ -294,7 +314,7 @@
         </div>
     </div>
 
-    <!-- FOOTER -->
+    <!-- FOOTER CORPORATE -->
     <footer class="border-t border-slate-200 dark:border-emerald-950 bg-white dark:bg-slate-950 pt-10 pb-6 text-center text-xs text-slate-500 dark:text-slate-400 transition-colors">
         <div class="max-w-5xl mx-auto px-4 space-y-8">
             <div class="bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-emerald-900/30 rounded-2xl p-6">
@@ -311,16 +331,17 @@
         </div>
     </footer>
 
-    <!-- LOGIKA JAVASCRIPT MASTER UTUH -->
+    <!-- LOGIKA JAVASCRIPT MASTER FULL SYSTEM -->
     <script>
         const SUPABASE_URL = "https://lcpskriooezyxgrnarol.supabase.co"; 
         const SUPABASE_KEY = "sb_publishable_puy9U_93p-7_Q64oHrYUpg_iEF3nJ-c";
 
-        // GANTI EMAIL INI DENGAN EMAIL ACC SUPERADMIN ANDA
+        // GANTI DENGAN EMAIL SUPERADMIN ANDA
         const SUPERADMIN_EMAILS = ["mastrisnocom@gmail.com", "adnan@ahtris.my.id"];
 
         let currentUser = null;
         let isRegisterMode = false;
+        let pendingShortenData = null;
         let adSettings = {};
 
         function initTheme() {
@@ -355,7 +376,7 @@
             };
         }
 
-        // --- MANAJEMEN PENGATURAN IKLAN ---
+        // --- PENGATURAN IKLAN ---
         async function fetchAdSettings() {
             try {
                 const res = await fetch(`${SUPABASE_URL}/rest/v1/ad_settings?id=eq.default_ads&select=*`, {
@@ -416,7 +437,7 @@
                     closeAdminModal();
                     fetchAdSettings();
                 } else {
-                    alert("Gagal menyimpan iklan. Pastikan Anda login sebagai Superadmin.");
+                    alert("Gagal menyimpan iklan. Pastikan Anda Superadmin.");
                 }
             } catch (err) {
                 alert("Error: " + err.message);
@@ -425,7 +446,75 @@
             }
         });
 
-        // --- QR CODE GENERATOR ---
+        // --- SISTEM CAPTCHA ---
+        function openCaptchaModal() {
+            document.getElementById('captchaModal').classList.remove('hidden');
+            if (window.hcaptcha) hcaptcha.reset();
+        }
+
+        function closeCaptchaModal() {
+            document.getElementById('captchaModal').classList.add('hidden');
+            pendingShortenData = null;
+        }
+
+        function onCaptchaSuccess(token) {
+            setTimeout(() => {
+                closeCaptchaModal();
+                if (pendingShortenData) {
+                    processShortenLink(pendingShortenData.original_url, pendingShortenData.slug);
+                }
+            }, 500);
+        }
+
+        // --- PROSES FORM SHORTENER ---
+        const form = document.getElementById('shortenForm');
+        const originalUrlInput = document.getElementById('originalUrl');
+        const customSlugInput = document.getElementById('customSlug');
+        const customSlugField = document.getElementById('customSlugField');
+        const tableContainer = document.getElementById('tableContainer');
+        const currentOrigin = window.location.origin;
+        document.getElementById('domainPrefix').textContent = `${window.location.host}/`;
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const original_url = originalUrlInput.value.trim();
+
+            let slug = currentUser ? customSlugInput.value.trim().replace(/^\/|\/$/g, '') : "";
+            if (!slug) slug = generateRandomSlug(5);
+
+            pendingShortenData = { original_url, slug };
+            openCaptchaModal();
+        });
+
+        async function processShortenLink(original_url, slug) {
+            const delayTime = currentUser ? 3 : 5;
+            await startGenerateDelay(delayTime);
+
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/urls`, {
+                    method: 'POST',
+                    headers: getHeaders(currentUser ? currentUser.access_token : null),
+                    body: JSON.stringify({
+                        original_url: original_url,
+                        slug: slug,
+                        user_id: currentUser ? currentUser.user.id : null
+                    })
+                });
+
+                if (response.ok) {
+                    const generatedUrl = `${currentOrigin}/${slug}`;
+                    openGuestModal(generatedUrl);
+                    form.reset();
+                    if (currentUser) loadUrls();
+                } else {
+                    alert("Gagal membuat link. Slug mungkin sudah terpakai.");
+                }
+            } catch (err) {
+                alert("Terjadi kesalahan koneksi.");
+            }
+        }
+
+        // --- QR CODE CANVAS GENERATOR BADGE AH ---
         function generateQrWithCenterText(targetUrl, callback) {
             const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(targetUrl)}`;
             const img = new Image();
@@ -480,8 +569,6 @@
 
         function renderUserUI() {
             const btnSuperadmin = document.getElementById('btnSuperadmin');
-            const customSlugField = document.getElementById('customSlugField');
-            const tableContainer = document.getElementById('tableContainer');
 
             if (currentUser && currentUser.access_token) {
                 document.getElementById('btnOpenAuth').classList.add('hidden');
@@ -490,7 +577,6 @@
                 customSlugField.classList.remove('hidden');
                 tableContainer.classList.remove('hidden');
 
-                // Cek Email Superadmin
                 const email = currentUser.user?.email || currentUser.email;
                 if (SUPERADMIN_EMAILS.includes(email)) {
                     btnSuperadmin.classList.remove('hidden');
@@ -615,49 +701,6 @@
                 }, 1000);
             });
         }
-
-        document.getElementById('shortenForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const original_url = document.getElementById('originalUrl').value.trim();
-
-            if (!currentUser) {
-                const slug = generateRandomSlug(5);
-                await startGenerateDelay(5);
-
-                try {
-                    const response = await fetch(`${SUPABASE_URL}/rest/v1/urls`, {
-                        method: 'POST',
-                        headers: getHeaders(),
-                        body: JSON.stringify({ original_url, slug, user_id: null })
-                    });
-
-                    if (response.ok) {
-                        openGuestModal(`${window.location.origin}/${slug}`);
-                        document.getElementById('shortenForm').reset();
-                    }
-                } catch (err) {}
-                return;
-            }
-
-            let slug = document.getElementById('customSlug').value.trim().replace(/^\/|\/$/g, '');
-            if (!slug) slug = generateRandomSlug(5);
-
-            await startGenerateDelay(3);
-
-            try {
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/urls`, {
-                    method: 'POST',
-                    headers: getHeaders(currentUser.access_token),
-                    body: JSON.stringify({ original_url, slug, user_id: currentUser.user.id })
-                });
-
-                if (response.ok) {
-                    openGuestModal(`${window.location.origin}/${slug}`);
-                    document.getElementById('shortenForm').reset();
-                    loadUrls();
-                }
-            } catch (err) {}
-        });
 
         async function loadUrls() {
             const urlTableBody = document.getElementById('urlTableBody');
