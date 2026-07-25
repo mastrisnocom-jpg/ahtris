@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
+            darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
@@ -37,100 +38,120 @@
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
     </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen font-sans flex flex-col justify-between selection:bg-emerald-500 selection:text-slate-950">
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 min-h-screen font-sans flex flex-col justify-between transition-colors duration-300">
 
-    <!-- Header / Navbar Corporate Style -->
-    <header class="w-full border-b border-emerald-900/40 bg-slate-900/90 backdrop-blur-md sticky top-0 z-40">
+    <!-- Header / Navbar -->
+    <header class="w-full border-b border-slate-200 dark:border-emerald-900/40 bg-white/80 dark:bg-slate-900/90 backdrop-blur-md sticky top-0 z-40 transition-colors">
         <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
             <!-- Logo Brand -->
-            <a href="/" class="text-xl font-bold tracking-tight text-white flex items-center gap-2.5">
-                <div class="w-9 h-9 bg-emerald-600 rounded-lg flex items-center justify-center shadow-lg shadow-emerald-600/20 text-slate-950 font-black text-lg">
+            <a href="/" class="text-xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-2.5">
+                <div class="w-9 h-9 bg-emerald-600 rounded-lg flex items-center justify-center shadow-lg shadow-emerald-600/20 text-white dark:text-slate-950 font-black text-lg">
                     <i class="fa-solid fa-link"></i>
                 </div>
-                <span class="font-extrabold tracking-wider">SHORT<span class="text-emerald-400">LINK</span></span>
+                <span class="font-extrabold tracking-wider">SHORT<span class="text-emerald-600 dark:text-emerald-400">LINK</span></span>
             </a>
 
-            <!-- Area Auth -->
-            <div id="authArea">
-                <button id="btnOpenAuth" onclick="openAuthModal()" class="px-4 py-2 bg-slate-800 hover:bg-emerald-900/30 border border-emerald-800/40 rounded-lg text-xs font-semibold text-emerald-400 hover:text-emerald-300 transition flex items-center gap-2">
-                    <i class="fa-regular fa-user"></i> Login / Daftar
+            <!-- Right Controls: Toggle Dark Mode & Auth -->
+            <div class="flex items-center gap-3">
+                <!-- Tombol Toggle Dark Mode -->
+                <button id="themeToggle" onclick="toggleTheme()" class="w-9 h-9 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-600 dark:text-emerald-400 hover:text-emerald-600 transition flex items-center justify-center text-sm shadow-sm">
+                    <i id="themeIcon" class="fa-solid fa-moon"></i>
                 </button>
 
-                <div id="userProfile" class="hidden items-center gap-3">
-                    <span id="userEmailDisplay" class="text-xs font-mono text-emerald-200 bg-emerald-950/60 px-3 py-1.5 rounded-lg border border-emerald-800/50">
-                        user@example.com
-                    </span>
-                    <button onclick="handleLogout()" class="px-3 py-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 rounded-lg text-xs font-semibold transition flex items-center gap-1">
-                        <i class="fa-solid fa-arrow-right-from-bracket"></i> Keluar
+                <!-- Area Auth -->
+                <div id="authArea">
+                    <button id="btnOpenAuth" onclick="openAuthModal()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 dark:bg-slate-800 dark:hover:bg-emerald-900/30 border border-emerald-600 dark:border-emerald-800/40 rounded-xl text-xs font-bold text-white dark:text-emerald-400 transition flex items-center gap-2 shadow-md shadow-emerald-600/10">
+                        <i class="fa-regular fa-user"></i> Login / Daftar
                     </button>
+
+                    <div id="userProfile" class="hidden items-center gap-3">
+                        <span id="userEmailDisplay" class="text-xs font-mono text-emerald-800 dark:text-emerald-200 bg-emerald-50 dark:bg-emerald-950/60 px-3 py-1.5 rounded-lg border border-emerald-200 dark:border-emerald-800/50">
+                            user@example.com
+                        </span>
+                        <button onclick="handleLogout()" class="px-3 py-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 dark:text-rose-400 border border-rose-500/20 rounded-lg text-xs font-semibold transition flex items-center gap-1">
+                            <i class="fa-solid fa-arrow-right-from-bracket"></i> Keluar
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
     </header>
 
     <!-- Container Utama -->
-    <div class="max-w-4xl mx-auto px-4 py-12 w-full flex-1">
-        <!-- Hero Header -->
-        <div class="text-center mb-10">
-            <span class="px-3 py-1 bg-emerald-950 border border-emerald-800/60 text-emerald-400 text-xs font-semibold rounded-full uppercase tracking-wider">
-                Enterprise URL Management
-            </span>
-            <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight mt-3">
-                System Short Link & Analytics
+    <div class="max-w-4xl mx-auto px-4 py-12 sm:py-16 w-full flex-1">
+        <!-- Hero Header Bergaya s.id -->
+        <div class="text-center mb-10 max-w-2xl mx-auto">
+            <h1 class="text-4xl sm:text-6xl font-black text-slate-900 dark:text-white tracking-tight mb-4">
+                #semuabisadi<span class="text-emerald-600 dark:text-emerald-400">sid</span>
             </h1>
-            <p class="text-slate-400 mt-2 text-sm sm:text-base">
-                Domain Resmi: <span class="text-emerald-400 font-mono font-semibold" id="displayDomain">...</span>
+            <p class="text-slate-600 dark:text-slate-300 text-base sm:text-lg leading-relaxed font-normal">
+                Satu platform buat semua kebutuhan digital kamu — link bio, link pendek, QR Code, dan analitik. Gratis.
             </p>
         </div>
 
-        <!-- FORM PEMBUAT LINK (CORPORATE LOOK) -->
-        <div class="bg-slate-900 border border-emerald-900/50 rounded-2xl p-6 sm:p-8 shadow-2xl shadow-emerald-950/40 mb-10 relative overflow-hidden">
-            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-600 via-teal-500 to-emerald-400"></div>
-            
-            <form id="shortenForm" class="space-y-5">
-                <div>
-                    <label class="block text-xs uppercase tracking-wider font-semibold text-slate-300 mb-2">URL Original (Tautan Asli)</label>
-                    <input type="url" id="originalUrl" required placeholder="https://example.com/halaman-sangat-panjang" 
-                           class="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-slate-100 placeholder-slate-500 text-sm focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition">
+        <!-- Tab Pills Options -->
+        <div class="flex justify-center gap-2 sm:gap-3 mb-6">
+            <button type="button" class="px-5 py-2.5 bg-emerald-600 text-white rounded-full text-xs font-bold shadow-md shadow-emerald-600/20 flex items-center gap-2">
+                <i class="fa-solid fa-link"></i> Shortener
+            </button>
+            <button type="button" class="px-5 py-2.5 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 rounded-full text-xs font-medium hover:border-emerald-500 transition flex items-center gap-2">
+                <i class="fa-solid fa-qrcode"></i> Kode QR
+            </button>
+            <button type="button" class="px-5 py-2.5 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 rounded-full text-xs font-medium hover:border-emerald-500 transition flex items-center gap-2">
+                <i class="fa-regular fa-newspaper"></i> Microsite
+            </button>
+        </div>
+
+        <!-- FORM PEMBUAT LINK (MINIMALIS MODERN PILL STYLE) -->
+        <div class="mb-6">
+            <form id="shortenForm" class="space-y-4">
+                <div class="relative bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-full p-2 pl-6 shadow-xl flex items-center justify-between focus-within:border-emerald-500 focus-within:ring-2 focus-within:ring-emerald-500/20 transition-all">
+                    <input type="url" id="originalUrl" required placeholder="Tempel tautan disini" 
+                           class="w-full bg-transparent text-slate-900 dark:text-white placeholder-slate-400 text-sm sm:text-base focus:outline-none pr-4">
+                    
+                    <button type="submit" id="btnSubmit" 
+                            class="py-3 px-6 sm:px-8 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-full transition duration-200 flex items-center justify-center gap-2 text-xs sm:text-sm tracking-wide shrink-0 shadow-lg shadow-emerald-600/30">
+                        <i class="fa-solid fa-bolt"></i> Persingkat
+                    </button>
                 </div>
 
                 <!-- CUSTOM SLUG FIELD (KHUSUS MEMBER) -->
-                <div id="customSlugField" class="hidden">
-                    <div class="flex justify-between items-center mb-2">
-                        <label class="block text-xs uppercase tracking-wider font-semibold text-slate-300">Custom Short Slug</label>
-                        <span class="text-xs text-emerald-400 font-medium flex items-center gap-1">
-                            <i class="fa-solid fa-circle-check text-[10px]"></i> Akses Member Terverifikasi
+                <div id="customSlugField" class="hidden max-w-xl mx-auto pt-2">
+                    <div class="flex justify-between items-center mb-1 px-2">
+                        <label class="block text-xs uppercase tracking-wider font-semibold text-slate-600 dark:text-slate-300">Custom Short Slug</label>
+                        <span class="text-xs text-emerald-600 dark:text-emerald-400 font-medium flex items-center gap-1">
+                            <i class="fa-solid fa-circle-check text-[10px]"></i> Akses Member
                         </span>
                     </div>
-                    <div class="flex items-center bg-slate-950 border border-slate-800 rounded-xl overflow-hidden focus-within:border-emerald-500 focus-within:ring-1 focus-within:ring-emerald-500 transition">
-                        <span class="pl-4 pr-2 text-slate-500 text-sm font-mono" id="domainPrefix">.../</span>
+                    <div class="flex items-center bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-full overflow-hidden focus-within:border-emerald-500 transition px-4">
+                        <span class="pr-2 text-slate-400 text-xs sm:text-sm font-mono" id="domainPrefix">.../</span>
                         <input type="text" id="customSlug" placeholder="hasilshort" 
-                               class="w-full py-3 pr-4 bg-transparent text-slate-100 focus:outline-none font-mono text-sm">
+                               class="w-full py-2.5 bg-transparent text-slate-900 dark:text-white focus:outline-none font-mono text-xs sm:text-sm">
                     </div>
                 </div>
-
-                <button type="submit" id="btnSubmit" 
-                        class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold rounded-xl transition duration-200 flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20 text-sm tracking-wide">
-                    <i class="fa-solid fa-link"></i> PENDEKKAN URL & BUAT BARCODE
-                </button>
             </form>
+
+            <p class="text-center text-xs text-slate-500 dark:text-slate-400 mt-4">
+                Dengan memproses form ini, anda telah setuju dengan semua 
+                <a href="privacy.html" class="text-emerald-600 dark:text-emerald-400 hover:underline font-medium">ketentuan layanan</a> kami
+            </p>
             <div id="statusMessage" class="mt-4 text-center text-sm font-medium hidden"></div>
         </div>
 
         <!-- TABEL DAFTAR LINK (KHUSUS MEMBER) -->
-        <div id="tableContainer" class="bg-slate-900 border border-emerald-900/50 rounded-2xl p-6 sm:p-8 shadow-2xl hidden">
-            <div class="flex justify-between items-center mb-6 border-b border-slate-800 pb-4">
+        <div id="tableContainer" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-emerald-900/50 rounded-2xl p-6 sm:p-8 shadow-xl hidden">
+            <div class="flex justify-between items-center mb-6 border-b border-slate-100 dark:border-slate-800 pb-4">
                 <div>
-                    <h2 class="text-lg font-bold text-white">Daftar Link Saya</h2>
-                    <p class="text-xs text-slate-400">Riwayat tautan pendek yang telah Anda buat.</p>
+                    <h2 class="text-lg font-bold text-slate-900 dark:text-white">Daftar Link Saya</h2>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Riwayat tautan pendek yang telah Anda buat.</p>
                 </div>
-                <button onclick="loadUrls()" class="text-xs text-emerald-400 hover:text-emerald-300 transition flex items-center gap-1.5 px-3 py-1.5 bg-emerald-950 border border-emerald-800/40 rounded-lg">
+                <button onclick="loadUrls()" class="text-xs text-emerald-600 dark:text-emerald-400 hover:underline transition flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-950 border border-emerald-200 dark:border-emerald-800/40 rounded-lg">
                     <i class="fa-solid fa-rotate-right"></i> Refresh
                 </button>
             </div>
             <div class="overflow-x-auto">
-                <table class="w-full text-left text-sm text-slate-300">
-                    <thead class="text-xs uppercase tracking-wider bg-slate-950 text-slate-400 border-b border-slate-800">
+                <table class="w-full text-left text-sm text-slate-700 dark:text-slate-300">
+                    <thead class="text-xs uppercase tracking-wider bg-slate-50 dark:bg-slate-950 text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-800">
                         <tr>
                             <th class="p-3.5 rounded-l-lg">Short Link</th>
                             <th class="p-3.5">URL Asli</th>
@@ -138,7 +159,7 @@
                             <th class="p-3.5 text-right rounded-r-lg">Aksi</th>
                         </tr>
                     </thead>
-                    <tbody id="urlTableBody" class="divide-y divide-slate-800/60">
+                    <tbody id="urlTableBody" class="divide-y divide-slate-100 dark:divide-slate-800/60">
                         <!-- Data URL dimuat di sini -->
                     </tbody>
                 </table>
@@ -148,15 +169,15 @@
 
     <!-- MODAL LOADING PEMBUATAN LINK -->
     <div id="loadingModal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-slate-900 border border-emerald-800/60 rounded-2xl w-full max-w-sm p-6 shadow-2xl text-center">
-            <i class="fa-solid fa-gear fa-spin text-4xl text-emerald-400 mb-4"></i>
-            <h3 class="text-lg font-bold text-white mb-1">Memproses Short Link...</h3>
-            <p id="loadingTextNotice" class="text-xs text-slate-400 mb-4">Harap tunggu sebentar.</p>
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-emerald-800/60 rounded-2xl w-full max-w-sm p-6 shadow-2xl text-center">
+            <i class="fa-solid fa-gear fa-spin text-4xl text-emerald-600 dark:text-emerald-400 mb-4"></i>
+            <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-1">Memproses Short Link...</h3>
+            <p id="loadingTextNotice" class="text-xs text-slate-500 dark:text-slate-400 mb-4">Harap tunggu sebentar.</p>
             
-            <div class="w-full bg-slate-950 h-2 rounded-full overflow-hidden mb-2 border border-slate-800">
-                <div id="genProgressBar" class="bg-emerald-500 h-full w-0 transition-all duration-1000 ease-linear"></div>
+            <div class="w-full bg-slate-100 dark:bg-slate-950 h-2 rounded-full overflow-hidden mb-2 border border-slate-200 dark:border-slate-800">
+                <div id="genProgressBar" class="bg-emerald-600 dark:bg-emerald-500 h-full w-0 transition-all duration-1000 ease-linear"></div>
             </div>
-            <p class="text-xs font-mono text-emerald-400 font-semibold">
+            <p class="text-xs font-mono text-emerald-600 dark:text-emerald-400 font-semibold">
                 <span id="genCountdown">0</span> Detik
             </p>
         </div>
@@ -164,27 +185,27 @@
 
     <!-- MODAL POPUP HASIL SHORT LINK + BARCODE/QR CODE GUEST -->
     <div id="guestResultModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-slate-900 border border-emerald-700/50 rounded-2xl w-full max-w-md p-6 shadow-2xl relative text-center">
-            <button onclick="closeGuestModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-emerald-700/50 rounded-2xl w-full max-w-md p-6 shadow-2xl relative text-center">
+            <button onclick="closeGuestModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-white text-lg">
                 <i class="fa-solid fa-xmark"></i>
             </button>
             
-            <h3 class="text-xl font-bold text-white mb-1">Hasil Short Link & QR Code</h3>
-            <p class="text-xs text-amber-400 mb-4 flex items-center justify-center gap-1">
+            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-1">Hasil Short Link & QR Code</h3>
+            <p class="text-xs text-amber-600 dark:text-amber-400 mb-4 flex items-center justify-center gap-1">
                 <i class="fa-solid fa-triangle-exclamation"></i> Link sementara (Guest) - Tidak tersimpan di database.
             </p>
 
-            <div class="bg-white p-3 rounded-xl inline-block mb-4 shadow-lg">
+            <div class="bg-slate-50 dark:bg-white p-3 rounded-xl inline-block mb-4 shadow-md border border-slate-200">
                 <img id="guestQrCodeImg" src="" alt="QR Code" class="w-40 h-40 object-contain mx-auto">
             </div>
 
             <div class="space-y-3">
-                <input type="text" id="guestShortUrlInput" readonly class="w-full bg-slate-950 text-emerald-300 px-4 py-3 rounded-xl text-sm font-mono border border-slate-800 text-center focus:outline-none">
+                <input type="text" id="guestShortUrlInput" readonly class="w-full bg-slate-50 dark:bg-slate-950 text-emerald-600 dark:text-emerald-300 px-4 py-3 rounded-xl text-sm font-mono border border-slate-200 dark:border-slate-800 text-center focus:outline-none">
                 <div class="grid grid-cols-2 gap-2">
-                    <button onclick="copyGuestLink()" class="py-2.5 bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold rounded-xl text-xs transition flex items-center justify-center gap-1.5">
+                    <button onclick="copyGuestLink()" class="py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white dark:text-slate-950 font-bold rounded-xl text-xs transition flex items-center justify-center gap-1.5">
                         <i class="fa-regular fa-copy"></i> Salin Link
                     </button>
-                    <a id="downloadQrBtn" href="" download="qrcode.png" target="_blank" class="py-2.5 bg-slate-800 hover:bg-slate-700 text-white font-semibold rounded-xl text-xs transition flex items-center justify-center gap-1.5">
+                    <a id="downloadQrBtn" href="" download="qrcode.png" target="_blank" class="py-2.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-white font-semibold rounded-xl text-xs transition flex items-center justify-center gap-1.5">
                         <i class="fa-solid fa-download"></i> Unduh QR
                     </a>
                 </div>
@@ -194,15 +215,15 @@
 
     <!-- MODAL KHUSUS QR CODE UNTUK MEMBER -->
     <div id="qrModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-xs p-6 shadow-2xl relative text-center">
-            <button onclick="closeQrModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl w-full max-w-xs p-6 shadow-2xl relative text-center">
+            <button onclick="closeQrModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-white text-lg">
                 <i class="fa-solid fa-xmark"></i>
             </button>
-            <h3 class="text-lg font-bold text-white mb-4">Barcode / QR Code</h3>
-            <div class="bg-white p-3 rounded-xl inline-block mb-4 shadow-lg">
+            <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-4">Barcode / QR Code</h3>
+            <div class="bg-white p-3 rounded-xl inline-block mb-4 shadow-md border border-slate-100">
                 <img id="memberQrCodeImg" src="" alt="QR Code" class="w-44 h-44 object-contain mx-auto">
             </div>
-            <a id="downloadMemberQrBtn" href="" download="qrcode.png" target="_blank" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold rounded-xl text-xs transition flex items-center justify-center gap-2">
+            <a id="downloadMemberQrBtn" href="" download="qrcode.png" target="_blank" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white dark:text-slate-950 font-bold rounded-xl text-xs transition flex items-center justify-center gap-2">
                 <i class="fa-solid fa-download"></i> Unduh Barcode (QR)
             </a>
         </div>
@@ -210,72 +231,72 @@
 
     <!-- MODAL AUTH (LOGIN / REGISTER) -->
     <div id="authModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-slate-900 border border-emerald-900/50 rounded-2xl w-full max-w-md p-6 shadow-2xl relative">
-            <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-emerald-900/50 rounded-2xl w-full max-w-md p-6 shadow-2xl relative">
+            <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-white text-lg">
                 <i class="fa-solid fa-xmark"></i>
             </button>
-            <h3 id="modalTitle" class="text-2xl font-bold text-white mb-1">Masuk ke Akun</h3>
-            <p class="text-xs text-slate-400 mb-6">Akses fitur custom slug & penyimpanan riwayat link.</p>
+            <h3 id="modalTitle" class="text-2xl font-bold text-slate-900 dark:text-white mb-1">Masuk ke Akun</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mb-6">Akses fitur custom slug & penyimpanan riwayat link.</p>
 
             <form id="authForm" class="space-y-4">
                 <div>
-                    <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Email</label>
-                    <input type="email" id="authEmail" required placeholder="nama@domain.com" class="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-slate-100 text-sm focus:outline-none focus:border-emerald-500">
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider mb-1">Email</label>
+                    <input type="email" id="authEmail" required placeholder="nama@domain.com" class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-slate-100 text-sm focus:outline-none focus:border-emerald-500">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Password</label>
-                    <input type="password" id="authPassword" required placeholder="••••••••" class="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-slate-100 text-sm focus:outline-none focus:border-emerald-500">
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider mb-1">Password</label>
+                    <input type="password" id="authPassword" required placeholder="••••••••" class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-slate-100 text-sm focus:outline-none focus:border-emerald-500">
                 </div>
-                <button type="submit" id="btnAuthSubmit" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold rounded-xl text-sm transition shadow-lg shadow-emerald-600/20">Login</button>
+                <button type="submit" id="btnAuthSubmit" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white dark:text-slate-950 font-bold rounded-xl text-sm transition shadow-lg shadow-emerald-600/20">Login</button>
             </form>
             <div id="authStatus" class="mt-3 text-center text-xs font-medium hidden"></div>
 
-            <div class="mt-6 pt-4 border-t border-slate-800 text-center text-xs text-slate-400">
+            <div class="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800 text-center text-xs text-slate-500 dark:text-slate-400">
                 <span id="toggleAuthText">Belum punya akun?</span>
-                <button onclick="toggleAuthMode()" id="btnToggleAuth" class="text-emerald-400 hover:underline font-semibold ml-1">Daftar Sekarang</button>
+                <button onclick="toggleAuthMode()" id="btnToggleAuth" class="text-emerald-600 dark:text-emerald-400 hover:underline font-semibold ml-1">Daftar Sekarang</button>
             </div>
         </div>
     </div>
 
     <!-- FOOTER CORPORATE + SECTION SUPPORTED BY -->
-    <footer class="border-t border-emerald-950 bg-slate-950 pt-10 pb-6 text-center text-xs text-slate-400">
+    <footer class="border-t border-slate-200 dark:border-emerald-950 bg-white dark:bg-slate-950 pt-10 pb-6 text-center text-xs text-slate-500 dark:text-slate-400 transition-colors">
         <div class="max-w-5xl mx-auto px-4 space-y-8">
             
             <!-- SECTION SUPPORTED BY -->
-            <div class="bg-slate-900/60 border border-emerald-900/30 rounded-2xl p-6">
-                <p class="text-[11px] uppercase tracking-widest font-bold text-emerald-500 mb-4">Supported By System Ecosystem</p>
+            <div class="bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-emerald-900/30 rounded-2xl p-6">
+                <p class="text-[11px] uppercase tracking-widest font-bold text-emerald-600 dark:text-emerald-500 mb-4">Supported By System Ecosystem</p>
                 
                 <div class="flex flex-wrap items-center justify-center gap-6 sm:gap-12">
                     <!-- PT Binayasa Putrabatara -->
-                    <div class="flex items-center gap-2 text-slate-200 hover:text-white transition">
-                        <i class="fa-solid fa-building text-emerald-500 text-lg"></i>
+                    <div class="flex items-center gap-2 text-slate-700 dark:text-slate-200 hover:text-emerald-600 transition">
+                        <i class="fa-solid fa-building text-emerald-600 dark:text-emerald-500 text-lg"></i>
                         <span class="font-bold text-xs tracking-tight">PT. BINAYASA PUTRABATARA</span>
                     </div>
 
                     <!-- BMIS -->
-                    <div class="flex items-center gap-2 text-slate-200 hover:text-white transition">
-                        <i class="fa-solid fa-network-wired text-emerald-500 text-lg"></i>
-                        <span class="font-bold text-xs tracking-tight">BMIS <span class="text-slate-500 font-normal">(Building Management Info System)</span></span>
+                    <div class="flex items-center gap-2 text-slate-700 dark:text-slate-200 hover:text-emerald-600 transition">
+                        <i class="fa-solid fa-network-wired text-emerald-600 dark:text-emerald-500 text-lg"></i>
+                        <span class="font-bold text-xs tracking-tight">BMIS <span class="text-slate-400 font-normal">(Building Management Info System)</span></span>
                     </div>
 
                     <!-- BPB Mobile -->
-                    <div class="flex items-center gap-2 text-slate-200 hover:text-white transition">
-                        <i class="fa-solid fa-mobile-screen-button text-emerald-500 text-lg"></i>
+                    <div class="flex items-center gap-2 text-slate-700 dark:text-slate-200 hover:text-emerald-600 transition">
+                        <i class="fa-solid fa-mobile-screen-button text-emerald-600 dark:text-emerald-500 text-lg"></i>
                         <span class="font-bold text-xs tracking-tight">BPB MOBILE</span>
                     </div>
                 </div>
             </div>
 
             <!-- Footer Bottom Menu -->
-            <div class="flex justify-center items-center space-x-6 font-medium text-slate-300">
-                <a href="/" class="hover:text-emerald-400 transition">Beranda</a>
-                <span class="text-slate-800">•</span>
-                <a href="privacy.html" class="hover:text-emerald-400 transition">Privacy Policy</a>
-                <span class="text-slate-800">•</span>
-                <a href="kontak.html" class="hover:text-emerald-400 transition">Kontak Kami</a>
+            <div class="flex justify-center items-center space-x-6 font-medium text-slate-600 dark:text-slate-300">
+                <a href="/" class="hover:text-emerald-600 dark:hover:text-emerald-400 transition">Beranda</a>
+                <span class="text-slate-300 dark:text-slate-800">•</span>
+                <a href="privacy.html" class="hover:text-emerald-600 dark:hover:text-emerald-400 transition">Privacy Policy</a>
+                <span class="text-slate-300 dark:text-slate-800">•</span>
+                <a href="kontak.html" class="hover:text-emerald-600 dark:hover:text-emerald-400 transition">Kontak Kami</a>
             </div>
 
-            <p class="text-slate-600 text-[11px]">© 2026 Short Link Manager. Database Powered by Supabase & Hosted on GitHub Pages</p>
+            <p class="text-slate-400 dark:text-slate-600 text-[11px]">© 2026 Short Link Manager. Database Powered by Supabase & Hosted on GitHub Pages</p>
         </div>
     </footer>
 
@@ -287,6 +308,30 @@
         let currentUser = null;
         let isRegisterMode = false;
         let redirectInterval = null;
+
+        // --- DARK MODE LOGIC ---
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            if (savedTheme === 'dark') {
+                document.documentElement.classList.add('dark');
+                document.getElementById('themeIcon').className = 'fa-solid fa-sun text-amber-400';
+            } else {
+                document.documentElement.classList.remove('dark');
+                document.getElementById('themeIcon').className = 'fa-solid fa-moon text-slate-600';
+            }
+        }
+
+        function toggleTheme() {
+            if (document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+                document.getElementById('themeIcon').className = 'fa-solid fa-moon text-slate-600';
+            } else {
+                document.documentElement.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+                document.getElementById('themeIcon').className = 'fa-solid fa-sun text-amber-400';
+            }
+        }
 
         function getHeaders(token = null) {
             const headers = {
@@ -308,7 +353,6 @@
 
         const currentOrigin = window.location.origin;
         document.getElementById('domainPrefix').textContent = `${window.location.host}/`;
-        document.getElementById('displayDomain').textContent = window.location.host;
 
         // ----------------------------------------------------
         // 1. SESSION MANAGEMENT
@@ -415,7 +459,7 @@
                 if (response.ok) {
                     if (isRegisterMode) {
                         authStatus.textContent = "Pendaftaran berhasil! Silakan Login.";
-                        authStatus.className = "mt-3 text-center text-xs font-medium text-emerald-400";
+                        authStatus.className = "mt-3 text-center text-xs font-medium text-emerald-500";
                         toggleAuthMode();
                     } else {
                         currentUser = data;
@@ -426,7 +470,7 @@
                     }
                 } else {
                     authStatus.textContent = data.error_description || data.msg || "Gagal Autentikasi";
-                    authStatus.className = "mt-3 text-center text-xs font-medium text-rose-400";
+                    authStatus.className = "mt-3 text-center text-xs font-medium text-rose-500";
                 }
             } catch (err) {
                 authStatus.textContent = "Terjadi kesalahan koneksi.";
@@ -610,10 +654,10 @@
                         openGuestModal(generatedUrl);
                         form.reset();
                     } else {
-                        showStatus("Gagal membuat link, silakan coba lagi.", "text-rose-400");
+                        showStatus("Gagal membuat link, silakan coba lagi.", "text-rose-500");
                     }
                 } catch (err) {
-                    showStatus("Gagal terhubung ke database.", "text-rose-400");
+                    showStatus("Gagal terhubung ke database.", "text-rose-500");
                 }
                 return;
             }
@@ -632,15 +676,15 @@
                 });
 
                 if (response.ok) {
-                    showStatus(`Short link tersimpan: /${slug}`, "text-emerald-400");
+                    showStatus(`Short link tersimpan: /${slug}`, "text-emerald-500");
                     form.reset();
                     loadUrls();
                 } else {
                     const errData = await response.json();
-                    showStatus("Gagal: " + (errData.message || "Slug sudah digunakan"), "text-rose-400");
+                    showStatus("Gagal: " + (errData.message || "Slug sudah digunakan"), "text-rose-500");
                 }
             } catch (err) {
-                showStatus("Gagal terhubung ke database.", "text-rose-400");
+                showStatus("Gagal terhubung ke database.", "text-rose-500");
             }
         });
 
@@ -671,7 +715,7 @@
                 if (!data || data.length === 0) {
                     urlTableBody.innerHTML = `
                         <tr>
-                            <td colspan="4" class="p-4 text-center text-slate-500">Anda belum pernah membuat short link.</td>
+                            <td colspan="4" class="p-4 text-center text-slate-400">Anda belum pernah membuat short link.</td>
                         </tr>
                     `;
                     return;
@@ -680,23 +724,23 @@
                 data.forEach(item => {
                     const fullShortUrl = `${currentOrigin}/${item.slug}`;
                     const row = document.createElement('tr');
-                    row.className = "hover:bg-slate-800/40 transition";
+                    row.className = "hover:bg-slate-50 dark:hover:bg-slate-800/40 transition";
 
                     row.innerHTML = `
-                        <td class="p-3.5 font-mono text-emerald-400 font-medium">
+                        <td class="p-3.5 font-mono text-emerald-600 dark:text-emerald-400 font-medium">
                             <a href="${fullShortUrl}" target="_blank" class="hover:underline">/${item.slug}</a>
                         </td>
-                        <td class="p-3.5 truncate max-w-xs text-slate-400" title="${item.original_url}">
+                        <td class="p-3.5 truncate max-w-xs text-slate-500 dark:text-slate-400" title="${item.original_url}">
                             ${item.original_url}
                         </td>
-                        <td class="p-3.5 text-center font-bold text-slate-200">
+                        <td class="p-3.5 text-center font-bold text-slate-800 dark:text-slate-200">
                             ${item.click_count || 0}
                         </td>
                         <td class="p-3.5 text-right flex justify-end gap-1.5">
-                            <button onclick="copyToClipboard('${fullShortUrl}')" class="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 rounded-lg transition inline-flex items-center gap-1" title="Salin Link">
+                            <button onclick="copyToClipboard('${fullShortUrl}')" class="px-2.5 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs text-slate-700 dark:text-slate-200 rounded-lg transition inline-flex items-center gap-1" title="Salin Link">
                                 <i class="fa-regular fa-copy"></i>
                             </button>
-                            <button onclick="openMemberQrModal('${fullShortUrl}')" class="px-2.5 py-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs rounded-lg transition inline-flex items-center gap-1" title="Lihat Barcode">
+                            <button onclick="openMemberQrModal('${fullShortUrl}')" class="px-2.5 py-1.5 bg-emerald-50 dark:bg-emerald-500/10 hover:bg-emerald-100 dark:hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30 text-xs rounded-lg transition inline-flex items-center gap-1" title="Lihat Barcode">
                                 <i class="fa-solid fa-qrcode"></i>
                             </button>
                         </td>
@@ -706,7 +750,7 @@
             } catch (err) {
                 urlTableBody.innerHTML = `
                     <tr>
-                        <td colspan="4" class="p-4 text-center text-rose-400">Gagal memuat daftar link.</td>
+                        <td colspan="4" class="p-4 text-center text-rose-500">Gagal memuat daftar link.</td>
                     </tr>
                 `;
             }
@@ -718,6 +762,7 @@
         }
 
         // Exec
+        initTheme();
         checkSession();
         handleRedirect();
     </script>
