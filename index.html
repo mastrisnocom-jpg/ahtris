@@ -1,549 +1,323 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Luxury Dark & Gold - Supabase Auth</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sistem Keuangan | Dashboard AdminLTE</title>
 
-  <!-- Google Fonts: Poppins -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
-  <!-- Supabase JS Library -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Google Font: Source Sans Pro & Poppins -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700&display=fallback">
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Theme style AdminLTE -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
+  <!-- FullCalendar CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css">
 
   <style>
     :root {
-      --bg-color: #0d0d0d;
-      --card-bg: #141414;
-      --gold-primary: #d4af37;
-      --gold-hover: #f3e5ab;
-      --gold-gradient: linear-gradient(135deg, #d4af37 0%, #aa771c 100%);
-      --text-main: #f5f5f5;
-      --text-muted: #a0a0a0;
-      --border-gold: rgba(212, 175, 55, 0.3);
-      --danger: #ff4d4d;
+      --gold-main: #d4af37;
+      --gold-dark: #aa771c;
+      --bg-dark: #121212;
     }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Poppins', sans-serif;
+    body.dark-mode {
+      background-color: var(--bg-dark);
     }
-
-    body {
-      background-color: var(--bg-color);
-      color: var(--text-main);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
+    .main-header, .main-sidebar {
+      border-bottom: 1px solid rgba(212, 175, 55, 0.2) !important;
     }
-
-    /* --- Navbar Styling --- */
-    nav {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1.2rem 3rem;
-      background: rgba(20, 20, 20, 0.8);
-      backdrop-filter: blur(10px);
-      border-bottom: 1px solid var(--border-gold);
-      position: sticky;
-      top: 0;
-      z-index: 100;
+    .brand-link {
+      border-bottom: 1px solid rgba(212, 175, 55, 0.2) !important;
     }
-
-    .nav-brand {
-      display: flex;
-      align-items: center;
-      gap: 2.5rem;
+    .brand-text {
+      color: var(--gold-main) !important;
+      font-weight: 600;
     }
-
-    .brand-logo {
-      font-size: 1.4rem;
-      font-weight: 700;
-      letter-spacing: 1px;
-      background: var(--gold-gradient);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      text-transform: uppercase;
+    .sidebar-dark-primary .nav-sidebar>.nav-item>.nav-link.active {
+      background-color: var(--gold-main);
+      color: #000 !important;
+      font-weight: 600;
     }
-
-    .nav-links {
-      display: flex;
-      list-style: none;
-      gap: 1.8rem;
-    }
-
-    .nav-links a {
-      text-decoration: none;
-      color: var(--text-muted);
-      font-weight: 400;
-      font-size: 0.95rem;
-      transition: all 0.3s ease;
-    }
-
-    .nav-links a:hover {
-      color: var(--gold-primary);
-      text-shadow: 0 0 8px rgba(212, 175, 55, 0.4);
-    }
-
-    /* --- Buttons --- */
-    .btn-gold {
-      padding: 10px 24px;
-      background: var(--gold-gradient);
+    .small-box.bg-gold {
+      background: linear-gradient(135deg, #d4af37 0%, #aa771c 100%);
       color: #000;
-      border: none;
-      border-radius: 30px;
-      font-weight: 600;
-      font-size: 0.9rem;
-      cursor: pointer;
-      box-shadow: 0 4px 15px rgba(212, 175, 55, 0.2);
-      transition: all 0.3s ease;
-    }
-
-    .btn-gold:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
-      background: linear-gradient(135deg, #f3e5ab 0%, #c59b27 100%);
-    }
-
-    .btn-logout {
-      background: transparent;
-      color: var(--danger);
-      border: 1px solid var(--danger);
-      padding: 8px 20px;
-      border-radius: 30px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .btn-logout:hover {
-      background: var(--danger);
-      color: #fff;
-      box-shadow: 0 0 10px rgba(255, 77, 77, 0.4);
-    }
-
-    /* --- Hero Section --- */
-    main {
-      flex: 1;
-      padding: 4rem 2rem;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-    }
-
-    .hero-title {
-      font-size: 2.5rem;
-      font-weight: 600;
-      margin-bottom: 0.5rem;
-      background: linear-gradient(to right, #fff, #a0a0a0);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .hero-subtitle {
-      color: var(--text-muted);
-      font-size: 1.1rem;
-      max-width: 600px;
-      margin-bottom: 2rem;
-    }
-
-    /* --- Super Admin Panel --- */
-    .admin-dashboard {
-      display: none;
-      width: 100%;
-      max-width: 480px;
-      background: var(--card-bg);
-      border: 1px solid var(--border-gold);
-      border-radius: 16px;
-      padding: 2.5rem;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-      margin-top: 1rem;
-    }
-
-    .admin-dashboard.active {
-      display: block;
-      animation: fadeIn 0.4s ease-in-out;
-    }
-
-    .admin-dashboard h3 {
-      font-size: 1.2rem;
-      color: var(--gold-primary);
-      margin-bottom: 1.5rem;
-      letter-spacing: 0.5px;
-    }
-
-    /* --- Form Elements --- */
-    .form-group {
-      margin-bottom: 1.2rem;
-      text-align: left;
-    }
-
-    .form-group label {
-      display: block;
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      margin-bottom: 0.4rem;
-    }
-
-    .form-group input {
-      width: 100%;
-      padding: 12px 16px;
-      background: #1c1c1c;
-      border: 1px solid #333;
-      border-radius: 8px;
-      color: var(--text-main);
-      font-size: 0.95rem;
-      transition: all 0.3s ease;
-    }
-
-    .form-group input:focus {
-      outline: none;
-      border-color: var(--gold-primary);
-      box-shadow: 0 0 8px rgba(212, 175, 55, 0.2);
-    }
-
-    /* --- Modal --- */
-    .modal-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: rgba(0, 0, 0, 0.75);
-      backdrop-filter: blur(5px);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s ease;
-      z-index: 1000;
-    }
-
-    .modal-overlay.active {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    .modal-content {
-      background: var(--card-bg);
-      border: 1px solid var(--border-gold);
-      padding: 2.5rem;
-      border-radius: 16px;
-      width: 100%;
-      max-width: 400px;
-      position: relative;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
-      transform: translateY(-20px);
-      transition: transform 0.3s ease;
-    }
-
-    .modal-overlay.active .modal-content {
-      transform: translateY(0);
-    }
-
-    .close-btn {
-      position: absolute;
-      top: 15px;
-      right: 20px;
-      background: none;
-      border: none;
-      font-size: 1.6rem;
-      color: var(--text-muted);
-      cursor: pointer;
-      transition: color 0.2s;
-    }
-
-    .close-btn:hover {
-      color: var(--gold-primary);
-    }
-
-    .modal-title {
-      font-size: 1.5rem;
-      color: var(--gold-primary);
-      margin-bottom: 1.5rem;
-    }
-
-    .toggle-text {
-      margin-top: 1.2rem;
-      font-size: 0.85rem;
-      color: var(--text-muted);
-    }
-
-    .toggle-text a {
-      color: var(--gold-primary);
-      text-decoration: none;
-      font-weight: 500;
-    }
-
-    .toggle-text a:hover {
-      text-decoration: underline;
-    }
-
-    .message {
-      margin-top: 1rem;
-      font-size: 0.85rem;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
-<body>
+<body class="hold-transition sidebar-mini layout-fixed dark-mode">
+<div class="wrapper">
 
-  <!-- Top Navigation Bar -->
-  <nav>
-    <div class="nav-brand">
-      <span class="brand-logo">Website Saya</span>
-      <!-- Dynamic Menu Container -->
-      <ul class="nav-links" id="dynamicNavLinks"></ul>
-    </div>
+  <!-- Navbar -->
+  <nav class="main-header navbar navbar-expand navbar-dark navbar-black">
+    <!-- Left navbar links -->
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+      </li>
+      <li class="nav-item d-none d-sm-inline-block">
+        <a href="index.html" class="nav-link">Dashboard</a>
+      </li>
+    </ul>
 
-    <div id="authContainer">
-      <button class="btn-gold" id="openAuthBtn" type="button">Login / Register</button>
-    </div>
+    <!-- Right navbar links -->
+    <ul class="navbar-nav ml-auto">
+      <li class="nav-item dropdown">
+        <a class="nav-link" data-toggle="dropdown" href="#">
+          <img id="userAvatar" src="https://via.placeholder.com/150" class="img-circle elevation-1" alt="User Image" style="width: 30px; height: 30px; object-fit: cover;">
+          <span id="userName" class="ml-2 d-none d-md-inline">Loading...</span>
+        </a>
+        <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+          <span class="dropdown-item dropdown-header" id="userRoleBadge">Role: -</span>
+          <div class="dropdown-divider"></div>
+          <a href="#" class="dropdown-item" data-toggle="modal" data-target="#modalProfile">
+            <i class="fas fa-user-cog mr-2"></i> Profil & Foto
+          </a>
+          <a href="#" class="dropdown-item" data-toggle="modal" data-target="#modalPassword">
+            <i class="fas fa-key mr-2"></i> Ganti Password
+          </a>
+          <div class="dropdown-divider"></div>
+          <a href="#" class="dropdown-item dropdown-footer text-danger" id="logoutBtn">
+            <i class="fas fa-sign-out-alt mr-2"></i> Logout
+          </a>
+        </div>
+      </li>
+    </ul>
   </nav>
 
-  <!-- Content Main -->
-  <main>
-    <h1 class="hero-title" id="welcomeText">Selamat Datang</h1>
-    <p class="hero-subtitle" id="subWelcomeText">Silakan login untuk mengakses fitur lengkap.</p>
+  <!-- Main Sidebar Container -->
+  <aside class="main-sidebar sidebar-dark-primary elevation-4">
+    <a href="index.html" class="brand-link text-center">
+      <span class="brand-text font-weight-bold"><i class="fas fa-wallet mr-2"></i>FINANCE APP</span>
+    </a>
 
-    <!-- Super Admin Dashboard -->
-    <div class="admin-dashboard" id="adminDashboard">
-      <h3>Panel Super Admin - Tambah Menu</h3>
-      <form id="addMenuForm">
-        <div class="form-group">
-          <label for="menuTitle">Judul Menu</label>
-          <input type="text" id="menuTitle" placeholder="Contoh: Berita, About Us" required>
-        </div>
-        <div class="form-group">
-          <label for="menuUrl">Link (URL)</label>
-          <input type="text" id="menuUrl" placeholder="Contoh: /berita atau https://link.com" required>
-        </div>
-        <button type="submit" class="btn-gold" style="width: 100%; border-radius: 8px; margin-top: 0.5rem;">Tambah Menu</button>
-      </form>
-      <div class="message" id="adminMessage"></div>
+    <div class="sidebar">
+      <!-- Sidebar Menu -->
+      <nav class="mt-2">
+        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu">
+          <li class="nav-item">
+            <a href="index.html" class="nav-link active">
+              <i class="nav-icon fas fa-tachometer-alt"></i>
+              <p>Dashboard</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-exchange-alt"></i>
+              <p>Transaksi</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-tags"></i>
+              <p>Kategori</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-university"></i>
+              <p>Rekening Bank</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-hand-holding-usd"></i>
+              <p>Hutang & Piutang</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-chart-line"></i>
+              <p>Laporan Keuangan</p>
+            </a>
+          </li>
+
+          <!-- Khusus Administrator -->
+          <li class="nav-header admin-only d-none">ADMINISTRATOR</li>
+          <li class="nav-item admin-only d-none">
+            <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-users-cog"></i>
+              <p>Kelola Pengguna</p>
+            </a>
+          </li>
+        </ul>
+      </nav>
     </div>
-  </main>
+  </aside>
 
-  <!-- Pop-up Modal Auth -->
-  <div class="modal-overlay" id="modalOverlay">
-    <div class="modal-content">
-      <button class="close-btn" id="closeModalBtn" type="button">&times;</button>
-      
-      <h2 class="modal-title" id="modalTitle">Login</h2>
-
-      <form id="authForm">
-        <div class="form-group">
-          <label for="email">Email</label>
-          <input type="email" id="email" placeholder="nama@email.com" required>
+  <!-- Content Wrapper -->
+  <div class="content-wrapper">
+    <!-- Content Header -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0 text-gold">Ringkasan Keuangan</h1>
+          </div>
         </div>
-        <div class="form-group">
-          <label for="password">Password</label>
-          <input type="password" id="password" placeholder="••••••••" required>
-        </div>
-        <button type="submit" class="btn-gold" id="submitBtn" style="width: 100%; border-radius: 8px; margin-top: 0.5rem;">Masuk</button>
-      </form>
-
-      <div class="toggle-text">
-        <span id="toggleQuestion">Belum punya akun?</span>
-        <a href="#" id="toggleAuthMode">Daftar sekarang</a>
       </div>
-
-      <div class="message" id="authMessage"></div>
     </div>
+
+    <!-- Main Content -->
+    <section class="content">
+      <div class="container-fluid">
+
+        <!-- Ringkasan Pemasukan & Pengeluaran -->
+        <div class="row">
+          <!-- Pemasukan Cards -->
+          <div class="col-lg-3 col-6">
+            <div class="small-box bg-success">
+              <div class="inner">
+                <h3 id="inToday">Rp 0</h3>
+                <p>Pemasukan Hari Ini</p>
+              </div>
+              <div class="icon"><i class="fas fa-arrow-down"></i></div>
+            </div>
+          </div>
+          <div class="col-lg-3 col-6">
+            <div class="small-box bg-success">
+              <div class="inner">
+                <h3 id="inMonth">Rp 0</h3>
+                <p>Pemasukan Bulan Ini</p>
+              </div>
+              <div class="icon"><i class="fas fa-calendar-alt"></i></div>
+            </div>
+          </div>
+
+          <!-- Pengeluaran Cards -->
+          <div class="col-lg-3 col-6">
+            <div class="small-box bg-danger">
+              <div class="inner">
+                <h3 id="outToday">Rp 0</h3>
+                <p>Pengeluaran Hari Ini</p>
+              </div>
+              <div class="icon"><i class="fas fa-arrow-up"></i></div>
+            </div>
+          </div>
+          <div class="col-lg-3 col-6">
+            <div class="small-box bg-danger">
+              <div class="inner">
+                <h3 id="outMonth">Rp 0</h3>
+                <p>Pengeluaran Bulan Ini</p>
+              </div>
+              <div class="icon"><i class="fas fa-calendar-times"></i></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Row Grafik & Kalender -->
+        <div class="row">
+          <!-- Grafik -->
+          <div class="col-md-8">
+            <div class="card card-dark">
+              <div class="card-header border-0">
+                <h3 class="card-title"><i class="fas fa-chart-bar mr-1"></i> Grafik Pemasukan & Pengeluaran</h3>
+              </div>
+              <div class="card-body">
+                <canvas id="financeChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- Kalender -->
+          <div class="col-md-4">
+            <div class="card card-dark">
+              <div class="card-header border-0">
+                <h3 class="card-title"><i class="fas fa-calendar-day mr-1"></i> Kalender Transaksi</h3>
+              </div>
+              <div class="card-body p-2">
+                <div id="calendar"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
   </div>
 
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      // 1. Inisialisasi Supabase
-      const SUPABASE_URL = "https://lcpskriooezyxgrnarol.supabase.co"; 
-      const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_puy9U_93p-7_Q64oHrYUpg_iEF3nJ-c";
-      
-      const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+  <footer class="main-footer text-sm">
+    <strong>Copyright &copy; 2026 Finance App.</strong> All rights reserved.
+  </footer>
+</div>
 
-      // Super Admin Emails
-      const SUPER_ADMINS = [
-        "mastrisnocom@gmail.com",
-        "ndeletz@gmail.com"
-      ];
+<!-- REQUIRED SCRIPTS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
+<!-- Chart.js & FullCalendar -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
 
-      // 2. DOM Elements
-      const modalOverlay = document.getElementById('modalOverlay');
-      const openAuthBtn = document.getElementById('openAuthBtn');
-      const closeModalBtn = document.getElementById('closeModalBtn');
-      const authForm = document.getElementById('authForm');
-      const modalTitle = document.getElementById('modalTitle');
-      const submitBtn = document.getElementById('submitBtn');
-      const toggleAuthMode = document.getElementById('toggleAuthMode');
-      const toggleQuestion = document.getElementById('toggleQuestion');
-      const authMessage = document.getElementById('authMessage');
-      const authContainer = document.getElementById('authContainer');
-      const welcomeText = document.getElementById('welcomeText');
-      const subWelcomeText = document.getElementById('subWelcomeText');
+<!-- Supabase SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-      const dynamicNavLinks = document.getElementById('dynamicNavLinks');
-      const adminDashboard = document.getElementById('adminDashboard');
-      const addMenuForm = document.getElementById('addMenuForm');
-      const adminMessage = document.getElementById('adminMessage');
+<script>
+  document.addEventListener('DOMContentLoaded', async () => {
+    // 1. Inisialisasi Supabase Client
+    const SUPABASE_URL = "https://lcpskriooezyxgrnarol.supabase.co"; 
+    const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_puy9U_93p-7_Q64oHrYUpg_iEF3nJ-c";
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
-      let isSignUp = false;
+    // 2. Cek Sesi Auth
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      // Redirect ke login jika belum terautentikasi
+      window.location.href = 'login.html';
+      return;
+    }
 
-      // 3. Load Dynamic Menus
-      async function loadDynamicMenus() {
-        const { data: menus, error } = await supabase
-          .from('menus')
-          .select('*')
-          .order('created_at', { ascending: true });
+    const userId = session.user.id;
 
-        if (error) {
-          console.error("Gagal memuat menu:", error.message);
-          return;
-        }
+    // 3. Load Profile & Hak Akses (Role)
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', userId)
+      .single();
 
-        dynamicNavLinks.innerHTML = "";
-        menus.forEach(item => {
-          const li = document.createElement('li');
-          li.innerHTML = `<a href="${item.url}">${item.title}</a>`;
-          dynamicNavLinks.appendChild(li);
-        });
+    if (profile) {
+      document.getElementById('userName').textContent = profile.full_name || session.user.email;
+      document.getElementById('userRoleBadge').textContent = `Role: ${profile.role}`;
+      if (profile.avatar_url) {
+        document.getElementById('userAvatar').src = profile.avatar_url;
       }
 
-      // 4. Modal Handlers
-      if (openAuthBtn) {
-        openAuthBtn.addEventListener('click', () => modalOverlay.classList.add('active'));
+      // Tampilkan Menu Khusus Administrator
+      if (profile.role === 'Administrator') {
+        document.querySelectorAll('.admin-only').forEach(el => el.classList.remove('d-none'));
       }
+    }
 
-      if (closeModalBtn) {
-        closeModalBtn.addEventListener('click', closeModal);
-      }
-      
-      modalOverlay.addEventListener('click', (e) => {
-        if (e.target === modalOverlay) closeModal();
-      });
-
-      function closeModal() {
-        modalOverlay.classList.remove('active');
-        authMessage.textContent = '';
-        authForm.reset();
-      }
-
-      toggleAuthMode.addEventListener('click', (e) => {
-        e.preventDefault();
-        isSignUp = !isSignUp;
-        authMessage.textContent = '';
-
-        if (isSignUp) {
-          modalTitle.textContent = 'Daftar Akun';
-          submitBtn.textContent = 'Daftar';
-          toggleQuestion.textContent = 'Sudah punya akun?';
-          toggleAuthMode.textContent = 'Login di sini';
-        } else {
-          modalTitle.textContent = 'Login';
-          submitBtn.textContent = 'Masuk';
-          toggleQuestion.textContent = 'Belum punya akun?';
-          toggleAuthMode.textContent = 'Daftar sekarang';
-        }
-      });
-
-      // 5. Auth Process
-      authForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-
-        authMessage.style.color = var_gold = '#d4af37';
-        authMessage.textContent = 'Memproses...';
-
-        if (isSignUp) {
-          const { data, error } = await supabase.auth.signUp({ email, password });
-          if (error) {
-            authMessage.style.color = '#ff4d4d';
-            authMessage.textContent = error.message;
-          } else {
-            authMessage.style.color = '#2ecc71';
-            authMessage.textContent = 'Pendaftaran berhasil! Cek email kamu.';
-          }
-        } else {
-          const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-          if (error) {
-            authMessage.style.color = '#ff4d4d';
-            authMessage.textContent = error.message;
-          } else {
-            closeModal();
-            checkUserSession();
-          }
-        }
-      });
-
-      // 6. Super Admin Add Menu
-      addMenuForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const title = document.getElementById('menuTitle').value;
-        const url = document.getElementById('menuUrl').value;
-
-        adminMessage.style.color = '#d4af37';
-        adminMessage.textContent = 'Menyimpan menu...';
-
-        const { data, error } = await supabase
-          .from('menus')
-          .insert([{ title, url }]);
-
-        if (error) {
-          adminMessage.style.color = '#ff4d4d';
-          adminMessage.textContent = 'Gagal menyimpan: ' + error.message;
-        } else {
-          adminMessage.style.color = '#2ecc71';
-          adminMessage.textContent = 'Menu berhasil ditambahkan!';
-          addMenuForm.reset();
-          loadDynamicMenus();
-        }
-      });
-
-      // 7. Check User Session
-      async function checkUserSession() {
-        const { data: { session } } = await supabase.auth.getSession();
-
-        if (session) {
-          const userEmail = session.user.email;
-          welcomeText.textContent = `Selamat Datang, ${userEmail}!`;
-
-          authContainer.innerHTML = `
-            <button class="btn-logout" id="logoutBtn" type="button">Logout</button>
-          `;
-
-          document.getElementById('logoutBtn').addEventListener('click', async () => {
-            await supabase.auth.signOut();
-            location.reload();
-          });
-
-          if (SUPER_ADMINS.includes(userEmail)) {
-            adminDashboard.classList.add('active');
-            subWelcomeText.textContent = "Anda masuk sebagai Super Admin.";
-          } else {
-            adminDashboard.classList.remove('active');
-            subWelcomeText.textContent = "Anda berhasil login sebagai Pengguna Biasa.";
-          }
-        } else {
-          adminDashboard.classList.remove('active');
-          welcomeText.textContent = "Selamat Datang";
-          subWelcomeText.textContent = "Silakan login untuk mengakses fitur lengkap.";
-        }
-      }
-
-      loadDynamicMenus();
-      checkUserSession();
+    // Logout Handler
+    document.getElementById('logoutBtn').addEventListener('click', async (e) => {
+      e.preventDefault();
+      await supabase.auth.signOut();
+      window.location.href = 'login.html';
     });
-  </script>
+
+    // 4. Inisialisasi Grafik
+    const ctx = document.getElementById('financeChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
+        datasets: [
+          { label: 'Pemasukan', backgroundColor: '#28a745', data: [12, 19, 15, 25, 22, 30, 28, 0, 0, 0, 0, 0] },
+          { label: 'Pengeluaran', backgroundColor: '#dc3545', data: [8, 12, 10, 15, 18, 20, 15, 0, 0, 0, 0, 0] }
+        ]
+      },
+      options: { responsive: true, maintainAspectRatio: false }
+    });
+
+    // 5. Inisialisasi Kalender
+    const calendarEl = document.getElementById('calendar');
+    const calendar = new FullCalendar.Calendar(calendarEl, {
+      initialView: 'dayGridMonth',
+      height: 'auto',
+      headerToolbar: { left: 'prev,next', center: 'title', right: '' }
+    });
+    calendar.render();
+  });
+</script>
 </body>
 </html>
