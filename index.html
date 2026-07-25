@@ -16,7 +16,7 @@
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-screen font-sans flex flex-col justify-between selection:bg-teal-300 selection:text-teal-900">
 
-    <!-- Header / Navbar dengan Menu Legal AdSense -->
+    <!-- Header / Navbar (Hanya Logo & Auth, Tanpa Menu Legal di Atas) -->
     <header class="w-full border-b border-slate-800 bg-slate-900/80 backdrop-blur-md sticky top-0 z-40">
         <div class="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
             <!-- Logo -->
@@ -24,13 +24,6 @@
                 <i class="fa-solid fa-link text-lg"></i>
                 <span>SHORT<span class="text-white">LINK</span></span>
             </a>
-
-            <!-- Menu Navigasi AdSense -->
-            <nav class="hidden md:flex items-center space-x-6 text-xs font-medium text-slate-300">
-                <a href="/" class="text-teal-400 font-semibold">Beranda</a>
-                <a href="privacy.html" class="hover:text-teal-400 transition">Privacy Policy</a>
-                <a href="kontak.html" class="hover:text-teal-400 transition">Kontak Kami</a>
-            </nav>
 
             <!-- Area Auth -->
             <div id="authArea">
@@ -206,16 +199,16 @@
         </div>
     </div>
 
-    <!-- Footer dengan Menu Footer AdSense -->
-    <footer class="py-6 border-t border-slate-800 text-center text-xs text-slate-500 space-y-2">
-        <div class="flex justify-center space-x-4 text-slate-400">
+    <!-- Footer dengan Menu Bottom AdSense -->
+    <footer class="py-6 border-t border-slate-800 text-center text-xs text-slate-500 space-y-3">
+        <div class="flex justify-center items-center space-x-6 text-slate-300 font-medium">
             <a href="/" class="hover:text-teal-400 transition">Beranda</a>
-            <span>•</span>
+            <span class="text-slate-700">•</span>
             <a href="privacy.html" class="hover:text-teal-400 transition">Privacy Policy</a>
-            <span>•</span>
+            <span class="text-slate-700">•</span>
             <a href="kontak.html" class="hover:text-teal-400 transition">Kontak Kami</a>
         </div>
-        <p>© 2026 Short Link Manager. Database Powered by Supabase & Hosted on GitHub Pages</p>
+        <p class="text-slate-500">© 2026 Short Link Manager. Database Powered by Supabase & Hosted on GitHub Pages</p>
     </footer>
 
     <!-- LOGIKA JAVASCRIPT -->
@@ -225,6 +218,7 @@
 
         let currentUser = null;
         let isRegisterMode = false;
+        let redirectInterval = null; // Menyimpan timer redirect
 
         function getHeaders(token = null) {
             const headers = {
@@ -380,6 +374,12 @@
             renderUserUI();
         }
 
+        // FUNGSI KHUSUS UNTUK TOMBOL "LEWATI"
+        function skipRedirect(targetUrl) {
+            if (redirectInterval) clearInterval(redirectInterval);
+            window.location.replace(targetUrl);
+        }
+
         // ----------------------------------------------------
         // 2. LOGIKA REDIRECT (FULLSCREEN NDELET.COM)
         // ----------------------------------------------------
@@ -428,9 +428,9 @@
                                             </p>
                                         </div>
                                     </div>
-                                    <a href="${targetUrl}" class="px-3 py-1.5 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs rounded-lg transition shrink-0">
+                                    <button onclick="skipRedirect('${targetUrl}')" class="px-4 py-2 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs rounded-xl transition shrink-0 cursor-pointer shadow-md">
                                         Lewati <i class="fa-solid fa-arrow-right ml-1"></i>
-                                    </a>
+                                    </button>
                                 </div>
 
                                 <div class="w-full bg-slate-800 h-1 overflow-hidden shrink-0">
@@ -446,14 +446,14 @@
                         const progressBar = document.getElementById('progressBar');
                         const countdownEl = document.getElementById('countdown');
 
-                        const interval = setInterval(() => {
+                        redirectInterval = setInterval(() => {
                             timeLeft--;
                             if (countdownEl) countdownEl.textContent = timeLeft;
                             if (progressBar) progressBar.style.width = `${(timeLeft / totalTime) * 100}%`;
 
                             if (timeLeft <= 0) {
-                                clearInterval(interval);
-                                window.location.href = targetUrl;
+                                clearInterval(redirectInterval);
+                                window.location.replace(targetUrl);
                             }
                         }, 1000);
 
