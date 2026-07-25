@@ -557,6 +557,7 @@
             }
         }
 
+        // --- SIMPAN MICROSITE & OTOMATIS MASUK KE TABEL URLS (DAFTAR LINK SAYA) ---
         async function saveDirectToSupabase() {
             if (!currentUser) {
                 alert("Silakan login terlebih dahulu!");
@@ -581,6 +582,7 @@
                     finalAvatarUrl = await uploadAvatarToSupabaseStorage();
                 }
 
+                // 1. Simpan/Update Profil Microsite
                 const checkRes = await fetch(`${SUPABASE_URL}/rest/v1/microsite_profiles?user_id=eq.${currentUser.user.id}&select=id`, {
                     method: 'GET',
                     headers: getHeaders(currentUser.access_token)
@@ -629,6 +631,7 @@
                     profileId = newProfData[0].id;
                 }
 
+                // 2. Simpan Tautan Sosial Media Microsite
                 const container = document.getElementById('linkInputsContainer');
                 const items = container.querySelectorAll('[id^="link_item_"]');
                 const linksToSave = [];
@@ -661,9 +664,29 @@
                     });
                 }
 
-                const fullUrl = `${window.location.origin}/${slug}`;
-                alert(`Microsite Berhasil Dipublikasikan!\n\nTautan Anda: ${fullUrl}`);
-                window.location.href = fullUrl;
+                // 3. OTOMATIS CATAT LINK MICROSITE KE TABEL URLS (AGAR MUNCUL DI DAFTAR LINK SAYA)
+                const fullMicrositeUrl = `${window.location.origin}/${slug}`;
+                
+                const checkUrlRes = await fetch(`${SUPABASE_URL}/rest/v1/urls?slug=eq.${slug}&select=id`, {
+                    method: 'GET',
+                    headers: getHeaders(currentUser.access_token)
+                });
+                const existingUrlData = await checkUrlRes.json();
+
+                if (!existingUrlData || existingUrlData.length === 0) {
+                    await fetch(`${SUPABASE_URL}/rest/v1/urls`, {
+                        method: 'POST',
+                        headers: getHeaders(currentUser.access_token),
+                        body: JSON.stringify({
+                            original_url: fullMicrositeUrl,
+                            slug: slug,
+                            user_id: currentUser.user.id
+                        })
+                    });
+                }
+
+                alert(`Microsite Berhasil Dipublikasikan!\n\nTautan Anda: ${fullMicrositeUrl}\n(Link ini juga telah ditambahkan ke Daftar Link Saya).`);
+                window.location.href = fullMicrositeUrl;
 
             } catch (err) {
                 alert("Error: " + err.message);
@@ -676,10 +699,8 @@
         checkSession();
         addLinkInput('Channel YouTube', 'https://youtube.com');
         addLinkInput('Instagram Resmi', 'https://instagram.com');
-   addLinkInput('Tiktok Resmi', 'https://tiktok.com');
-addLinkInput('Facebook Resmi', 'https://facebook.com');
-
-    
+        addLinkInput('Facebook Resmi', 'https://facebook.com');
+        addLinkInput('Tiktok Resmi', 'https://tiktok.com');
     </script>
 </body>
 </html>
