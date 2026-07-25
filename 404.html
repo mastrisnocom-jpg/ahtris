@@ -1,64 +1,147 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AHTRIS.MY.ID - Shortlink & Preview</title>
+    <title>Mengarahkan ke Website Tujuan - ahtris.my.id</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        emerald: {
+                            50: '#ecfdf5', 100: '#d1fae5', 200: '#a7f3d0', 300: '#6ee7b7',
+                            400: '#34d399', 500: '#10b981', 600: '#059669', 700: '#047857',
+                            800: '#065f46', 900: '#064e3b', 950: '#022c22',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
     </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between overflow-x-hidden">
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between transition-colors duration-300">
 
-    <!-- 1. IKLAN TOP FRAME (DI ATAS WEBSITE ASLI) -->
-    <div id="topFrameAdBar" class="w-full bg-slate-900 border-b border-emerald-900/50 p-3 text-center hidden z-50 sticky top-0 shadow-lg">
-        <div id="topFrameAdContent" class="max-w-4xl mx-auto overflow-hidden"></div>
-    </div>
+    <!-- 1. HEADER ATAS: COUNTDOWN BAR 10 DETIK -->
+    <header id="topCountdownHeader" class="w-full border-b border-emerald-900/50 bg-slate-900/95 backdrop-blur-md sticky top-0 z-50 p-3 shadow-xl hidden">
+        <div class="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 px-2">
+            
+            <!-- Logo & Info -->
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-emerald-600 rounded-lg flex items-center justify-center text-white font-black text-sm shadow-md">
+                    <i class="fa-solid fa-link"></i>
+                </div>
+                <div>
+                    <span class="font-extrabold text-sm tracking-wider">AHTRIS<span class="text-emerald-400">.MY.ID</span></span>
+                    <p class="text-[10px] text-slate-400">Menghubungkan Anda ke website tujuan...</p>
+                </div>
+            </div>
 
-    <!-- CONTAINER WEBSITE ASLI DALAM IFRAME (MODES TOP FRAME) -->
-    <iframe id="websiteIframe" class="w-full flex-1 border-none hidden" style="height: calc(100vh - 80px);"></iframe>
+            <!-- Countdown Timer & Action Button -->
+            <div class="flex items-center gap-3 w-full sm:w-auto justify-end">
+                <div class="bg-slate-950 border border-emerald-800/60 px-3 py-1.5 rounded-xl flex items-center gap-2 text-xs font-mono font-bold text-emerald-400 shrink-0">
+                    <i class="fa-solid fa-clock fa-spin"></i>
+                    <span>Tunggu <strong id="timerDisplay" class="text-white text-sm">10</strong> Detik</span>
+                </div>
 
-    <!-- 2. MAIN CONTAINER INTERSTITIAL AD (HALAMAN JEDA 5 DETIK) -->
-    <div id="interstitialContainer" class="w-full max-w-md mx-auto p-6 text-center my-auto hidden">
-        <div class="bg-slate-900 border border-emerald-900/50 rounded-2xl p-6 shadow-2xl relative">
-            <h2 class="text-xl font-bold text-white mb-1">Mengarahkan ke Tautan...</h2>
-            <p class="text-xs text-slate-400 mb-4">Mohon tunggu sebentar sebelum menuju lokasi tujuan.</p>
-
-            <!-- SLOT IKLAN INTERSTITIAL JEDA -->
-            <div id="interstitialAdSlot" class="my-4 p-3 bg-slate-950 rounded-xl border border-slate-800 min-h-[150px] flex items-center justify-center overflow-hidden"></div>
-
-            <div class="mt-4">
-                <button id="btnSkipAd" disabled class="w-full py-3 bg-emerald-600 opacity-50 text-white font-bold rounded-xl text-xs transition flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-spinner fa-spin"></i> Tunggu <span id="adCountdown">5</span> Detik...
+                <button id="btnGoToTarget" disabled onclick="redirectToTarget()" class="px-5 py-2 bg-emerald-600 opacity-50 cursor-not-allowed hover:bg-emerald-500 text-white text-xs font-bold rounded-xl transition shadow-lg flex items-center gap-2 shrink-0">
+                    <span>Menyiapkan Link...</span>
+                    <i class="fa-solid fa-arrow-right"></i>
                 </button>
             </div>
+
         </div>
-    </div>
+    </header>
 
-    <!-- MICROSITE PUBLIK -->
-    <div id="micrositeContainer" class="w-full max-w-sm text-center my-auto p-4 hidden">
-        <div class="w-28 h-28 rounded-full mx-auto mb-4 overflow-hidden border-2 border-emerald-500 shadow-lg flex items-center justify-center bg-emerald-500 text-white shrink-0">
-            <img id="userAvatar" src="" class="w-full h-full object-cover hidden">
-            <i id="userAvatarIcon" class="fa-solid fa-user text-4xl"></i>
+    <!-- 2. BODY UTAMA: TAMPILAN IKLAN MITRA / PARTNER AHTRIS.MY.ID -->
+    <main id="mainBodyArea" class="max-w-4xl mx-auto px-4 py-8 w-full flex-1 flex flex-col items-center justify-center">
+        
+        <!-- LOADING INITIAL STATE -->
+        <div id="loadingState" class="text-center py-12">
+            <i class="fa-solid fa-spinner fa-spin text-4xl text-emerald-500 mb-3"></i>
+            <p class="text-sm font-semibold text-slate-400">Memuat Tautan & Informasi Mitra...</p>
         </div>
-        <h1 id="userName" class="text-2xl font-black text-white tracking-wide uppercase">--</h1>
-        <p id="userBio" class="text-xs text-slate-400 font-semibold tracking-widest uppercase mt-1 mb-8">--</p>
-        <div id="userLinks" class="space-y-3.5 w-full"></div>
-    </div>
 
-    <!-- LOADING STATE -->
-    <div id="loadingState" class="my-auto text-center text-slate-400">
-        <i class="fa-solid fa-spinner fa-spin text-3xl text-emerald-500 mb-2"></i>
-        <p class="text-xs font-semibold">Memuat Tautan...</p>
-    </div>
+        <!-- CONTAINER IKLAN MITRA & PARTNER (TAMPIL SAAT COUNTDOWN) -->
+        <div id="adPartnerContainer" class="w-full space-y-6 hidden">
+            
+            <!-- Header Label Iklan -->
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <div class="flex items-center gap-2 text-xs font-bold text-amber-400 uppercase tracking-wider">
+                    <i class="fa-solid fa-rectangle-ad text-base"></i>
+                    <span>Iklan & Sponsor Resmi Mitra AHTRIS.MY.ID</span>
+                </div>
+                <span class="text-[10px] text-slate-500">Iklan Kerjasama</span>
+            </div>
 
-    <!-- SCRIPT UTAMA PERBAIKAN ESEKUSI IKLAN -->
+            <!-- SLOT IKLAN DINAMIS DARI SUPERADMIN (Bisa Script Adsense / Banner HTML) -->
+            <div id="dynamicAdSlot" class="w-full bg-slate-900 border border-emerald-900/40 rounded-2xl p-6 text-center shadow-2xl min-h-[220px] flex items-center justify-center overflow-hidden">
+                <!-- Jika Superadmin mengisi iklan di panel, script akan masuk ke sini -->
+            </div>
+
+            <!-- CARDS MITRA BERSAMA (DEFAULT PARTNER BANNERS) -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                
+                <div class="bg-slate-900/80 border border-slate-800 hover:border-emerald-700/50 rounded-2xl p-4 transition shadow-md flex items-center gap-4">
+                    <div class="w-12 h-12 bg-emerald-950 border border-emerald-800 rounded-xl flex items-center justify-center text-emerald-400 text-xl font-black shrink-0">
+                        <i class="fa-solid fa-building"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-xs font-bold text-white uppercase">PT. Binayasa Putrabatara</h4>
+                        <p class="text-[11px] text-slate-400 mt-0.5">Layanan pengelolaan fasilitas & solusi gedung profesional.</p>
+                        <span class="text-[10px] text-emerald-400 font-semibold mt-1 inline-block">Mitra Utama</span>
+                    </div>
+                </div>
+
+                <div class="bg-slate-900/80 border border-slate-800 hover:border-emerald-700/50 rounded-2xl p-4 transition shadow-md flex items-center gap-4">
+                    <div class="w-12 h-12 bg-sky-950 border border-sky-800 rounded-xl flex items-center justify-center text-sky-400 text-xl font-black shrink-0">
+                        <i class="fa-solid fa-network-wired"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-xs font-bold text-white uppercase">BMIS System</h4>
+                        <p class="text-[11px] text-slate-400 mt-0.5">Building Management Info System terintegrasi.</p>
+                        <span class="text-[10px] text-sky-400 font-semibold mt-1 inline-block">Ekosistem Digital</span>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- CONTAINER TAMPILAN MICROSITE PUBLIK (Jika link berupa Microsite) -->
+        <div id="micrositeContainer" class="w-full max-w-sm text-center my-auto p-4 hidden">
+            <div class="w-28 h-28 rounded-full mx-auto mb-4 overflow-hidden border-2 border-emerald-500 shadow-lg flex items-center justify-center bg-emerald-500 text-white shrink-0">
+                <img id="userAvatar" src="" class="w-full h-full object-cover hidden">
+                <i id="userAvatarIcon" class="fa-solid fa-user text-4xl"></i>
+            </div>
+            <h1 id="userName" class="text-2xl font-black text-white tracking-wide uppercase">--</h1>
+            <p id="userBio" class="text-xs text-slate-400 font-semibold tracking-widest uppercase mt-1 mb-8">--</p>
+            <div id="userLinks" class="space-y-3.5 w-full"></div>
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="border-t border-slate-900 bg-slate-950 py-4 text-center text-xs text-slate-600">
+        © 2026 Short Link & Ads Manager — Powered by <a href="/" class="text-emerald-500 hover:underline">ahtris.my.id</a>
+    </footer>
+
+    <!-- LOGIKA JAVASCRIPT MASTER ROUTER & COUNTDOWN 10 DETIK -->
     <script>
         const SUPABASE_URL = "https://lcpskriooezyxgrnarol.supabase.co"; 
         const SUPABASE_KEY = "sb_publishable_puy9U_93p-7_Q64oHrYUpg_iEF3nJ-c";
+
+        let targetDestinationUrl = "";
 
         function getHeaders() {
             return {
@@ -68,14 +151,13 @@
             };
         }
 
-        // --- FUNGSI KHUSUS UNTUK MENJALANKAN SCRIPT IKLAN DENGAN AMAN ---
+        // --- FUNGSI EKSEKUSI SCRIPT IKLAN SECARA AMAN ---
         function setAndExecuteAdCode(elementId, htmlCode) {
             const container = document.getElementById(elementId);
             if (!container || !htmlCode) return;
 
             container.innerHTML = htmlCode;
 
-            // Cari semua tag <script> di dalam kode iklan dan eksekusi ulang
             const scripts = container.querySelectorAll("script");
             scripts.forEach((oldScript) => {
                 const newScript = document.createElement("script");
@@ -87,7 +169,8 @@
             });
         }
 
-        async function initDynamicRouter() {
+        // --- PROSES ROUTER KETIKA LINK DIBUKA ---
+        async function initDynamicBridgeRouter() {
             const pathSlug = window.location.pathname.replace(/^\/|\/$/g, '');
 
             if (!pathSlug || pathSlug === 'index.html' || pathSlug === 'microsite.html') {
@@ -96,12 +179,12 @@
             }
 
             try {
-                // 1. Ambil Pengaturan Iklan
+                // 1. Ambil Pengaturan Iklan dari Supabase
                 const resAds = await fetch(`${SUPABASE_URL}/rest/v1/ad_settings?id=eq.default_ads&select=*`, { headers: getHeaders() });
                 const adsData = await resAds.json();
                 const ads = (adsData && adsData.length > 0) ? adsData[0] : {};
 
-                // 2. CEK MICROSITE
+                // 2. CEK APAKAH INI LINK MICROSITE
                 const resProf = await fetch(`${SUPABASE_URL}/rest/v1/microsite_profiles?slug=eq.${encodeURIComponent(pathSlug)}&select=*`, { headers: getHeaders() });
                 const profData = await resProf.json();
 
@@ -135,80 +218,77 @@
                     return;
                 }
 
-                // 3. CEK SHORTLINK URL (SISTEM IKLAN INTERSTITIAL & TOP FRAME)
+                // 3. CEK APAKAH INI SHORTLINK URL
                 const resUrl = await fetch(`${SUPABASE_URL}/rest/v1/urls?slug=eq.${encodeURIComponent(pathSlug)}&select=original_url`, { headers: getHeaders() });
                 const urlData = await resUrl.json();
 
                 if (urlData && urlData.length > 0 && urlData[0].original_url) {
-                    const targetUrl = urlData[0].original_url;
+                    targetDestinationUrl = urlData[0].original_url;
 
-                    // A. JIKA ADA IKLAN INTERSTITIAL (JEDA 5 DETIK)
-                    if (ads.ad_interstitial && ads.ad_interstitial.trim() !== '') {
-                        document.getElementById('loadingState').classList.add('hidden');
-                        
-                        // Eksekusi skrip iklan Interstitial
-                        setAndExecuteAdCode('interstitialAdSlot', ads.ad_interstitial);
-                        document.getElementById('interstitialContainer').classList.remove('hidden');
+                    // Sembunyikan Loading State, Tampilkan Header 10 Detik & Body Iklan
+                    document.getElementById('loadingState').classList.add('hidden');
+                    document.getElementById('topCountdownHeader').classList.remove('hidden');
+                    document.getElementById('topCountdownHeader').classList.add('flex');
+                    document.getElementById('adPartnerContainer').classList.remove('hidden');
 
-                        let timeLeft = 5;
-                        const btnSkip = document.getElementById('btnSkipAd');
-                        const countdownSpan = document.getElementById('adCountdown');
-
-                        const timer = setInterval(() => {
-                            timeLeft--;
-                            countdownSpan.textContent = timeLeft;
-
-                            if (timeLeft <= 0) {
-                                clearInterval(timer);
-                                btnSkip.disabled = false;
-                                btnSkip.classList.remove('opacity-50');
-                                btnSkip.innerHTML = `<i class="fa-solid fa-arrow-right font-bold"></i> Lanjutkan ke Tautan Asli`;
-
-                                btnSkip.onclick = function() {
-                                    // B. JIKA JUGA ADA IKLAN TOP FRAME
-                                    if (ads.ad_top_frame && ads.ad_top_frame.trim() !== '') {
-                                        showTopFramePage(targetUrl, ads.ad_top_frame);
-                                    } else {
-                                        window.location.href = targetUrl;
-                                    }
-                                };
-                            }
-                        }, 1000);
-
-                    // C. JIKA HANYA ADA IKLAN TOP FRAME (TANPA INTERSTITIAL)
-                    } else if (ads.ad_top_frame && ads.ad_top_frame.trim() !== '') {
-                        document.getElementById('loadingState').classList.add('hidden');
-                        showTopFramePage(targetUrl, ads.ad_top_frame);
-
-                    // D. JIKA TANPA IKLAN SAMA SEKALI -> DIRECT REDIRECT
+                    // Masukkan script/gambar iklan jika diatur oleh Superadmin
+                    const adContent = ads.ad_interstitial || ads.ad_middle || ads.ad_header;
+                    if (adContent && adContent.trim() !== '') {
+                        setAndExecuteAdCode('dynamicAdSlot', adContent);
                     } else {
-                        window.location.replace(targetUrl);
+                        document.getElementById('dynamicAdSlot').innerHTML = `
+                            <div class="text-center space-y-2">
+                                <i class="fa-solid fa-bullhorn text-3xl text-emerald-500 mb-1"></i>
+                                <h3 class="text-sm font-bold text-white uppercase">Ruang Iklan Kerjasama AHTRIS.MY.ID</h3>
+                                <p class="text-xs text-slate-400 max-w-md mx-auto">Pasang iklan bisnis/konten Anda di sini untuk menjangkau ribuan pengunjung harian.</p>
+                            </div>
+                        `;
                     }
+
+                    // Jalankan Timer 10 Detik
+                    start10SecondCountdown();
                     return;
                 }
 
+                // Jika tidak ditemukan di mana pun -> Kembali ke Beranda
                 window.location.replace('/');
             } catch (err) {
                 window.location.replace('/');
             }
         }
 
-        function showTopFramePage(targetUrl, topFrameAdCode) {
-            document.getElementById('interstitialContainer').classList.add('hidden');
-            
-            // Tampilkan Top Frame Ad Bar
-            const topBar = document.getElementById('topFrameAdBar');
-            topBar.classList.remove('hidden');
-            setAndExecuteAdCode('topFrameAdContent', topFrameAdCode);
+        // --- TIMER 10 DETIK ---
+        function start10SecondCountdown() {
+            let timeLeft = 10;
+            const timerDisplay = document.getElementById('timerDisplay');
+            const btn = document.getElementById('btnGoToTarget');
 
-            // Tampilkan Website Asli via Iframe
-            const iframe = document.getElementById('websiteIframe');
-            iframe.src = targetUrl;
-            iframe.classList.remove('hidden');
-            document.body.classList.remove('justify-between');
+            const timer = setInterval(() => {
+                timeLeft--;
+                timerDisplay.textContent = timeLeft;
+
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    
+                    // Aktifkan Tombol
+                    btn.disabled = false;
+                    btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                    btn.classList.add('hover:scale-105');
+                    btn.innerHTML = `<span>Buka Website Asli</span> <i class="fa-solid fa-circle-arrow-right"></i>`;
+
+                    // Otomatis Buka Link Asli
+                    redirectToTarget();
+                }
+            }, 1000);
         }
 
-        initDynamicRouter();
+        function redirectToTarget() {
+            if (targetDestinationUrl) {
+                window.location.href = targetDestinationUrl;
+            }
+        }
+
+        initDynamicBridgeRouter();
     </script>
 </body>
 </html>
