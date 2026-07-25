@@ -71,7 +71,7 @@
         </div>
         <div class="overflow-hidden w-full relative">
             <marquee id="newsMarqueeContainer" behavior="scroll" direction="left" scrollamount="6" class="font-medium text-slate-300 dark:text-emerald-300" onmouseover="this.stop();" onmouseout="this.start();">
-                <span class="text-slate-400">Memuat berita Indonesia terkini...</span>
+                <span class="text-slate-400"><i class="fa-solid fa-spinner fa-spin mr-1"></i> Memuat berita Indonesia terkini...</span>
             </marquee>
         </div>
     </div>
@@ -217,7 +217,7 @@
         © 2026 Short Link & Microsite Manager — Supported by PT. Binayasa Putrabatara
     </footer>
 
-    <!-- LOGIKA JAVASCRIPT & MARQUEE BERITA OTOMATIS -->
+    <!-- LOGIKA JAVASCRIPT & ENGINE BERITA MULTI-SOURCE -->
     <script>
         const SUPABASE_URL = "https://lcpskriooezyxgrnarol.supabase.co"; 
         const SUPABASE_KEY = "sb_publishable_puy9U_93p-7_Q64oHrYUpg_iEF3nJ-c";
@@ -228,34 +228,46 @@
         let selectedAvatarFile = null;
         let currentUploadedAvatarUrl = "";
 
-        // --- FUNGSI AMBIL BERITA INDONESIA DARI RSS FEED ---
+        // --- FUNGSI PROSESSING AMBIL BERITA RI MULTI-SOURCE HANDLER ---
         async function fetchIndonesiaNews() {
             const marquee = document.getElementById('newsMarqueeContainer');
-            try {
-                // Fetch Berita Terkini Indonesia dari API CNN / Antara
-                const res = await fetch("https://api-berita-indonesia.vercel.app/cnn/terbaru/");
-                const data = await res.json();
+            
+            // Daftar Feed Berita Indonesia via RSS2JSON Service
+            const newsSources = [
+                'https://api.rss2json.com/v1/api.json?rss_url=https://www.antaranews.com/rss/terkini.xml',
+                'https://api.rss2json.com/v1/api.json?rss_url=https://www.cnbcindonesia.com/news/rss',
+                'https://api.rss2json.com/v1/api.json?rss_url=https://www.republika.co.id/rss'
+            ];
 
-                if (data.status === 200 && data.data && data.data.posts) {
-                    const newsList = data.data.posts.slice(0, 10);
-                    let newsHtml = "";
+            for (let url of newsSources) {
+                try {
+                    const res = await fetch(url);
+                    const data = await res.json();
 
-                    newsList.forEach((news, idx) => {
-                        newsHtml += `
-                            <a href="${news.link}" target="_blank" class="hover:underline hover:text-white transition">
-                                <span class="font-bold text-emerald-400">#${idx + 1}</span> ${news.title}
-                            </a>
-                            <span class="mx-4 text-emerald-600 dark:text-emerald-500">•</span>
-                        `;
-                    });
-
-                    marquee.innerHTML = newsHtml;
-                } else {
-                    marquee.innerHTML = "<span>Selamat Datang di Ahtris.my.id - Layanan Shortener & Microsite Indonesia</span>";
+                    if (data.status === 'ok' && data.items && data.items.length > 0) {
+                        let newsHtml = "";
+                        data.items.slice(0, 10).forEach((item, idx) => {
+                            newsHtml += `
+                                <a href="${item.link}" target="_blank" class="hover:underline hover:text-white transition">
+                                    <span class="font-bold text-emerald-400">#${idx + 1}</span> ${item.title}
+                                </a>
+                                <span class="mx-4 text-emerald-600 dark:text-emerald-500">•</span>
+                            `;
+                        });
+                        marquee.innerHTML = newsHtml;
+                        return; // Berhasil dimuat, hentikan loop
+                    }
+                } catch (e) {
+                    console.error("Gagal memuat feed:", url);
                 }
-            } catch (err) {
-                marquee.innerHTML = "<span>Berita Terkini Indonesia: Tetap Pantau Update Informasi Terbaru di Ahtris.my.id</span>";
             }
+
+            // Backup Teks Jika Koneksi Internet Bermasalah
+            marquee.innerHTML = `
+                <span class="font-bold text-emerald-400">AHTRIS.MY.ID</span> Selamat Datang di Layanan Shortlink & Microsite Creator Indonesia.
+                <span class="mx-4 text-emerald-600">•</span>
+                <span class="font-bold text-emerald-400">INFO</span> Kelola tautan dan sosial mediamu secara mudah dan cepat di sini.
+            `;
         }
 
         function initTheme() {
@@ -703,7 +715,6 @@
                     });
                 }
 
-                // SIMPAN AUTOMATIS KE TABEL URLS (DAFTAR LINK SAYA)
                 const fullMicrositeUrl = `${window.location.origin}/${slug}`;
                 
                 const checkUrlRes = await fetch(`${SUPABASE_URL}/rest/v1/urls?slug=eq.${slug}&select=id`, {
@@ -736,7 +747,7 @@
 
         initTheme();
         checkSession();
-        fetchIndonesiaNews(); // Panggil fungsi pemicu berita Marquee
+        fetchIndonesiaNews(); // Memanggil fungsi berita otomatis
         addLinkInput('Channel YouTube', 'https://youtube.com');
         addLinkInput('Instagram Resmi', 'https://instagram.com');
     </script>
