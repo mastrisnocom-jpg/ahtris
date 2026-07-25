@@ -32,10 +32,9 @@
 </head>
 <body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 min-h-screen font-sans flex flex-col justify-between transition-colors duration-300">
 
-    <!-- Header / Navbar -->
+    <!-- Header / Navbar Tanpa Tampilan Email -->
     <header class="w-full border-b border-slate-200 dark:border-emerald-900/40 bg-white/80 dark:bg-slate-900/90 backdrop-blur-md sticky top-0 z-40 transition-colors">
         <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
-            <!-- Logo Brand -->
             <a href="/" class="text-xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-2.5">
                 <div class="w-9 h-9 bg-emerald-600 rounded-lg flex items-center justify-center shadow-lg shadow-emerald-600/20 text-white dark:text-slate-950 font-black text-lg">
                     <i class="fa-solid fa-link"></i>
@@ -43,25 +42,18 @@
                 <span class="font-extrabold tracking-wider">AHTRIS<span class="text-emerald-600 dark:text-emerald-400">.MY.ID</span></span>
             </a>
 
-            <!-- Right Controls: Dark Mode & Auth Toggle -->
             <div class="flex items-center gap-3">
-                <!-- Tombol Toggle Dark Mode -->
                 <button id="themeToggle" onclick="toggleTheme()" class="w-9 h-9 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-600 dark:text-emerald-400 hover:text-emerald-600 transition flex items-center justify-center text-sm shadow-sm">
                     <i id="themeIcon" class="fa-solid fa-moon"></i>
                 </button>
 
-                <!-- Area Auth -->
                 <div id="authArea">
                     <button id="btnOpenAuth" onclick="openAuthModal()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 dark:bg-slate-800 dark:hover:bg-emerald-900/30 border border-emerald-600 dark:border-emerald-800/40 rounded-xl text-xs font-bold text-white dark:text-emerald-400 transition flex items-center gap-2 shadow-md shadow-emerald-600/10">
                         <i class="fa-regular fa-user"></i> Login / Daftar
                     </button>
 
                     <div id="userProfile" class="hidden items-center gap-3">
-                        <span id="userEmailDisplay" class="text-xs font-mono text-emerald-800 dark:text-emerald-200 bg-emerald-50 dark:bg-emerald-950/60 px-3 py-1.5 rounded-lg border border-emerald-200 dark:border-emerald-800/50">
-                            user@example.com
-                        </span>
-                        <!-- TOMBOL KELUAR / LOGOUT TERPERBAIKI -->
-                        <button type="button" onclick="handleLogout()" class="px-3 py-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 dark:text-rose-400 border border-rose-500/20 rounded-lg text-xs font-semibold transition flex items-center gap-1 cursor-pointer">
+                        <button onclick="handleLogout()" class="px-3.5 py-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 dark:text-rose-400 border border-rose-500/20 rounded-xl text-xs font-semibold transition flex items-center gap-1.5">
                             <i class="fa-solid fa-arrow-right-from-bracket"></i> Keluar
                         </button>
                     </div>
@@ -95,11 +87,10 @@
             </a>
         </div>
 
-        <!-- FORM PEMBUAT LINK & BARCODE -->
+        <!-- FORM PEMBUAT LINK -->
         <div class="mb-6">
             <form id="shortenForm" class="space-y-4">
                 <div class="relative bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-full p-2 pl-6 shadow-xl flex items-center justify-between focus-within:border-emerald-500 focus-within:ring-2 focus-within:ring-emerald-500/20 transition-all">
-                    <!-- Text Placeholder Abu-abu "Salin/Tempel tautan di sini" -->
                     <input type="url" id="originalUrl" required placeholder="Salin/Tempel tautan di sini" 
                            class="w-full bg-transparent text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 text-sm sm:text-base focus:outline-none pr-4">
                     
@@ -161,29 +152,26 @@
         </div>
     </div>
 
-    <!-- MODAL SAMPLE QR CODE (DITAMPILKAN SAAT KLIK KODE QR TAB) -->
+    <!-- MODAL SAMPLE QR CODE -->
     <div id="sampleQrModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl w-full max-w-sm p-6 shadow-2xl relative text-center">
             <button onclick="closeSampleQrModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-white text-lg">
                 <i class="fa-solid fa-xmark"></i>
             </button>
-            
             <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-1">Contoh Barcode / QR Code</h3>
             <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">
                 Tempelkan URL Anda di form untuk menghasilkan Kode QR resmi.
             </p>
-
             <div class="bg-white p-3 rounded-xl inline-block mb-4 shadow-md border border-slate-200">
                 <img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=https://ahtris.my.id" alt="Contoh Barcode QR" class="w-48 h-48 object-contain mx-auto">
             </div>
-
             <button onclick="closeSampleQrModal()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs transition">
                 Tutup & Mulai Buat QR Code
             </button>
         </div>
     </div>
 
-    <!-- MODAL HASIL KHUSUS BARCODE / QR CODE -->
+    <!-- MODAL HASIL SHORT LINK / QR CODE -->
     <div id="guestResultModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-emerald-700/50 rounded-2xl w-full max-w-sm p-6 shadow-2xl relative text-center">
             <button onclick="closeGuestModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-white text-lg">
@@ -213,7 +201,7 @@
         </div>
     </div>
 
-    <!-- MODAL LOADING PEMBUATAN LINK -->
+    <!-- MODAL LOADING -->
     <div id="loadingModal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-emerald-800/60 rounded-2xl w-full max-w-sm p-6 shadow-2xl text-center">
             <i class="fa-solid fa-gear fa-spin text-4xl text-emerald-600 dark:text-emerald-400 mb-4"></i>
@@ -229,7 +217,7 @@
         </div>
     </div>
 
-    <!-- MODAL AUTH (LOGIN / REGISTER) -->
+    <!-- MODAL AUTH -->
     <div id="authModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-emerald-900/50 rounded-2xl w-full max-w-md p-6 shadow-2xl relative">
             <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-white text-lg">
@@ -358,8 +346,6 @@
                     renderUserUI();
                 } catch (e) {
                     localStorage.removeItem('sb_user_session');
-                    currentUser = null;
-                    renderUserUI();
                 }
             } else {
                 renderUserUI();
@@ -367,29 +353,17 @@
         }
 
         function renderUserUI() {
-            const btnOpenAuth = document.getElementById('btnOpenAuth');
-            const userProfile = document.getElementById('userProfile');
-            const userEmailDisplay = document.getElementById('userEmailDisplay');
-
             if (currentUser && currentUser.access_token) {
-                btnOpenAuth.classList.add('hidden');
-                userProfile.classList.remove('hidden');
-                userProfile.classList.add('flex');
-                
-                if (currentUser.user && currentUser.user.email) {
-                    userEmailDisplay.textContent = currentUser.user.email;
-                } else if (currentUser.email) {
-                    userEmailDisplay.textContent = currentUser.email;
-                }
-
+                document.getElementById('btnOpenAuth').classList.add('hidden');
+                document.getElementById('userProfile').classList.remove('hidden');
+                document.getElementById('userProfile').classList.add('flex');
                 customSlugField.classList.remove('hidden');
                 tableContainer.classList.remove('hidden');
                 loadUrls();
             } else {
-                btnOpenAuth.classList.remove('hidden');
-                userProfile.classList.add('hidden');
-                userProfile.classList.remove('flex');
-                
+                document.getElementById('btnOpenAuth').classList.remove('hidden');
+                document.getElementById('userProfile').classList.add('hidden');
+                document.getElementById('userProfile').classList.remove('flex');
                 customSlugField.classList.add('hidden');
                 customSlugInput.value = '';
                 tableContainer.classList.add('hidden');
@@ -413,65 +387,6 @@
             const input = document.getElementById('guestShortUrlInput');
             navigator.clipboard.writeText(input.value);
             alert("Short URL berhasil disalin!");
-        }
-
-        function toggleAuthMode() {
-            isRegisterMode = !isRegisterMode;
-            document.getElementById('modalTitle').textContent = isRegisterMode ? "Daftar Akun Baru" : "Masuk ke Akun";
-            document.getElementById('btnAuthSubmit').textContent = isRegisterMode ? "Daftar" : "Login";
-            document.getElementById('toggleAuthText').textContent = isRegisterMode ? "Sudah punya akun?" : "Belum punya akun?";
-            document.getElementById('btnToggleAuth').textContent = isRegisterMode ? "Login di sini" : "Daftar Sekarang";
-        }
-
-        document.getElementById('authForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('authEmail').value.trim();
-            const password = document.getElementById('authPassword').value.trim();
-            const authStatus = document.getElementById('authStatus');
-
-            authStatus.textContent = "Memproses...";
-            authStatus.className = "mt-3 text-center text-xs font-medium text-slate-400";
-            authStatus.classList.remove('hidden');
-
-            const endpoint = isRegisterMode ? `${SUPABASE_URL}/auth/v1/signup` : `${SUPABASE_URL}/auth/v1/token?grant_type=password`;
-
-            try {
-                const response = await fetch(endpoint, {
-                    method: 'POST',
-                    headers: getHeaders(),
-                    body: JSON.stringify({ email, password })
-                });
-
-                const data = await response.json();
-
-                if (response.ok) {
-                    if (isRegisterMode) {
-                        authStatus.textContent = "Pendaftaran berhasil! Silakan Login.";
-                        authStatus.className = "mt-3 text-center text-xs font-medium text-emerald-500";
-                        toggleAuthMode();
-                    } else {
-                        currentUser = data;
-                        localStorage.setItem('sb_user_session', JSON.stringify(data));
-                        renderUserUI();
-                        closeAuthModal();
-                        document.getElementById('authForm').reset();
-                    }
-                } else {
-                    authStatus.textContent = data.error_description || data.msg || "Gagal Autentikasi";
-                    authStatus.className = "mt-3 text-center text-xs font-medium text-rose-500";
-                }
-            } catch (err) {
-                authStatus.textContent = "Terjadi kesalahan koneksi.";
-                authStatus.className = "mt-3 text-center text-xs font-medium text-rose-500";
-            }
-        });
-
-        // --- FUNGSI LOGOUT TERPERBAIKI SANGAT STABIL ---
-        function handleLogout() {
-            localStorage.removeItem('sb_user_session');
-            currentUser = null;
-            renderUserUI();
-            window.location.reload();
         }
 
         function generateRandomSlug(length = 5) {
@@ -511,8 +426,6 @@
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             const original_url = originalUrlInput.value.trim();
-
-            statusMessage.classList.add('hidden');
 
             if (!currentUser) {
                 const slug = generateRandomSlug(5);
@@ -574,21 +487,17 @@
                         row.innerHTML = `
                             <td class="p-3.5 font-mono text-emerald-600 dark:text-emerald-400 font-medium">/${item.slug}</td>
                             <td class="p-3.5 truncate max-w-xs text-slate-500 dark:text-slate-400">${item.original_url}</td>
-                            <td class="p-3.5 text-center font-bold text-slate-800 dark:text-slate-200">${item.click_count || 0}</td>
-                            <td class="p-3.5 text-right flex justify-end gap-1.5">
-                                <button onclick="copyTableLink('${fullShortUrl}')" class="px-2.5 py-1.5 bg-slate-100 dark:bg-slate-800 text-xs text-slate-700 dark:text-slate-200 rounded-lg">Salin</button>
-                                <button onclick="openGuestModal('${fullShortUrl}')" class="px-2.5 py-1.5 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-300 border border-emerald-200 text-xs rounded-lg">QR</button>
+                            <td class="p-3.5 text-center font-bold">${item.click_count || 0}</td>
+                            <td class="p-3.5 text-right">
+                                <button onclick="openGuestModal('${fullShortUrl}')" class="px-2.5 py-1.5 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30 text-xs rounded-lg transition">
+                                    <i class="fa-solid fa-qrcode"></i> Lihat QR
+                                </button>
                             </td>
                         `;
                         urlTableBody.appendChild(row);
                     });
                 }
             } catch (err) {}
-        }
-
-        function copyTableLink(url) {
-            navigator.clipboard.writeText(url);
-            alert("Link berhasil disalin!");
         }
 
         initTheme();
