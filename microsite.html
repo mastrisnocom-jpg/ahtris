@@ -63,6 +63,19 @@
         </div>
     </header>
 
+    <!-- BAR MARQUEE BERITA INDONESIA TERKINI -->
+    <div class="w-full bg-slate-900 dark:bg-slate-900 text-slate-200 border-b border-emerald-900/40 py-2 px-4 flex items-center text-xs shadow-inner">
+        <div class="flex items-center gap-1.5 bg-emerald-600 text-white font-extrabold px-2.5 py-1 rounded-md shrink-0 uppercase tracking-wider text-[10px] mr-3 shadow-sm">
+            <i class="fa-solid fa-newspaper text-xs"></i>
+            <span>Berita RI</span>
+        </div>
+        <div class="overflow-hidden w-full relative">
+            <marquee id="newsMarqueeContainer" behavior="scroll" direction="left" scrollamount="6" class="font-medium text-slate-300 dark:text-emerald-300" onmouseover="this.stop();" onmouseout="this.start();">
+                <span class="text-slate-400">Memuat berita Indonesia terkini...</span>
+            </marquee>
+        </div>
+    </div>
+
     <!-- Content Utama Builder -->
     <main id="mainContent" class="max-w-6xl mx-auto px-4 py-10 w-full flex-1">
         <div class="text-center mb-8">
@@ -204,7 +217,7 @@
         © 2026 Short Link & Microsite Manager — Supported by PT. Binayasa Putrabatara
     </footer>
 
-    <!-- LOGIKA JAVASCRIPT LENGKAP -->
+    <!-- LOGIKA JAVASCRIPT & MARQUEE BERITA OTOMATIS -->
     <script>
         const SUPABASE_URL = "https://lcpskriooezyxgrnarol.supabase.co"; 
         const SUPABASE_KEY = "sb_publishable_puy9U_93p-7_Q64oHrYUpg_iEF3nJ-c";
@@ -214,6 +227,36 @@
         let linkCount = 0;
         let selectedAvatarFile = null;
         let currentUploadedAvatarUrl = "";
+
+        // --- FUNGSI AMBIL BERITA INDONESIA DARI RSS FEED ---
+        async function fetchIndonesiaNews() {
+            const marquee = document.getElementById('newsMarqueeContainer');
+            try {
+                // Fetch Berita Terkini Indonesia dari API CNN / Antara
+                const res = await fetch("https://api-berita-indonesia.vercel.app/cnn/terbaru/");
+                const data = await res.json();
+
+                if (data.status === 200 && data.data && data.data.posts) {
+                    const newsList = data.data.posts.slice(0, 10);
+                    let newsHtml = "";
+
+                    newsList.forEach((news, idx) => {
+                        newsHtml += `
+                            <a href="${news.link}" target="_blank" class="hover:underline hover:text-white transition">
+                                <span class="font-bold text-emerald-400">#${idx + 1}</span> ${news.title}
+                            </a>
+                            <span class="mx-4 text-emerald-600 dark:text-emerald-500">•</span>
+                        `;
+                    });
+
+                    marquee.innerHTML = newsHtml;
+                } else {
+                    marquee.innerHTML = "<span>Selamat Datang di Ahtris.my.id - Layanan Shortener & Microsite Indonesia</span>";
+                }
+            } catch (err) {
+                marquee.innerHTML = "<span>Berita Terkini Indonesia: Tetap Pantau Update Informasi Terbaru di Ahtris.my.id</span>";
+            }
+        }
 
         function initTheme() {
             const savedTheme = localStorage.getItem('theme') || 'dark';
@@ -298,7 +341,6 @@
             document.getElementById('btnToggleAuth').textContent = isRegisterMode ? "Login di sini" : "Daftar Sekarang";
         }
 
-        // --- AUTENTIKASI SUPABASE AUTH AMAN ---
         document.getElementById('authForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('authEmail').value.trim();
@@ -557,7 +599,6 @@
             }
         }
 
-        // --- SIMPAN MICROSITE & OTOMATIS MASUK KE TABEL URLS (DAFTAR LINK SAYA) ---
         async function saveDirectToSupabase() {
             if (!currentUser) {
                 alert("Silakan login terlebih dahulu!");
@@ -582,7 +623,6 @@
                     finalAvatarUrl = await uploadAvatarToSupabaseStorage();
                 }
 
-                // 1. Simpan/Update Profil Microsite
                 const checkRes = await fetch(`${SUPABASE_URL}/rest/v1/microsite_profiles?user_id=eq.${currentUser.user.id}&select=id`, {
                     method: 'GET',
                     headers: getHeaders(currentUser.access_token)
@@ -631,7 +671,6 @@
                     profileId = newProfData[0].id;
                 }
 
-                // 2. Simpan Tautan Sosial Media Microsite
                 const container = document.getElementById('linkInputsContainer');
                 const items = container.querySelectorAll('[id^="link_item_"]');
                 const linksToSave = [];
@@ -664,7 +703,7 @@
                     });
                 }
 
-                // 3. OTOMATIS CATAT LINK MICROSITE KE TABEL URLS (AGAR MUNCUL DI DAFTAR LINK SAYA)
+                // SIMPAN AUTOMATIS KE TABEL URLS (DAFTAR LINK SAYA)
                 const fullMicrositeUrl = `${window.location.origin}/${slug}`;
                 
                 const checkUrlRes = await fetch(`${SUPABASE_URL}/rest/v1/urls?slug=eq.${slug}&select=id`, {
@@ -697,10 +736,9 @@
 
         initTheme();
         checkSession();
+        fetchIndonesiaNews(); // Panggil fungsi pemicu berita Marquee
         addLinkInput('Channel YouTube', 'https://youtube.com');
         addLinkInput('Instagram Resmi', 'https://instagram.com');
-        addLinkInput('Facebook Resmi', 'https://facebook.com');
-        addLinkInput('Tiktok Resmi', 'https://tiktok.com');
     </script>
 </body>
 </html>
