@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Short Link Manager - Supabase Auth</title>
+    <title>Short Link Manager - Guest & Member</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome Icons -->
@@ -24,14 +24,12 @@
                 <span>SHORT<span class="text-white">LINK</span></span>
             </a>
 
-            <!-- Area Login / User Status di Pojok Kanan Atas -->
+            <!-- Area Auth -->
             <div id="authArea">
-                <!-- Tampilan saat Belum Login -->
                 <button id="btnOpenAuth" onclick="openAuthModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl text-sm font-semibold text-teal-400 transition flex items-center gap-2">
                     <i class="fa-regular fa-user"></i> Login / Daftar
                 </button>
 
-                <!-- Tampilan saat Sudah Login (Hidden by default) -->
                 <div id="userProfile" class="hidden items-center gap-3">
                     <span id="userEmailDisplay" class="text-xs font-mono text-slate-300 bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700">
                         user@example.com
@@ -50,7 +48,7 @@
         <div class="text-center mb-8">
             <h1 class="text-3xl sm:text-4xl font-extrabold text-teal-400 tracking-tight">Short Link Database</h1>
             <p class="text-slate-400 mt-2 text-sm sm:text-base">
-                Buat link pendek kustom dengan domain <span class="text-teal-300 font-semibold" id="displayDomain">...</span>
+                Domain: <span class="text-teal-300 font-semibold" id="displayDomain">...</span>
             </p>
         </div>
 
@@ -66,12 +64,12 @@
                     <div class="flex justify-between items-center mb-1">
                         <label class="block text-sm font-medium text-slate-300">Custom Slug</label>
                         <span id="slugNotice" class="text-xs text-amber-400 font-medium">
-                            <i class="fa-solid fa-lock text-[10px]"></i> Login untuk custom slug
+                            <i class="fa-solid fa-lock text-[10px]"></i> Login untuk simpan link & custom slug
                         </span>
                     </div>
-                    <div class="flex items-center bg-slate-900 border border-slate-700 rounded-xl overflow-hidden focus-within:border-teal-400 transition" id="slugInputWrapper">
+                    <div class="flex items-center bg-slate-900 border border-slate-700 rounded-xl overflow-hidden focus-within:border-teal-400 transition">
                         <span class="pl-4 pr-1 text-slate-500 text-sm font-mono" id="domainPrefix">.../</span>
-                        <input type="text" id="customSlug" disabled placeholder="Otomatis 5 karakter (Login untuk ganti)" 
+                        <input type="text" id="customSlug" disabled placeholder="Otomatis 5 karakter (Guest tidak tersimpan)" 
                                class="w-full py-3 pr-4 bg-transparent text-slate-100 focus:outline-none font-mono text-sm disabled:opacity-50 disabled:cursor-not-allowed">
                     </div>
                 </div>
@@ -81,12 +79,25 @@
                 </button>
             </form>
             <div id="statusMessage" class="mt-4 text-center text-sm font-medium hidden"></div>
+
+            <!-- HASIL TEMPORARY UNTUK GUEST -->
+            <div id="guestResultBox" class="mt-6 p-4 bg-slate-900/90 border border-teal-500/30 rounded-xl hidden">
+                <p class="text-xs text-amber-400 mb-2 flex items-center gap-1">
+                    <i class="fa-solid fa-triangle-exclamation"></i> Link ini hanya tayang sementara. Login jika ingin menyimpan permanen.
+                </p>
+                <div class="flex items-center justify-between gap-2">
+                    <input type="text" id="guestShortUrlInput" readonly class="w-full bg-slate-800 text-teal-300 px-3 py-2 rounded-lg text-sm font-mono border border-slate-700">
+                    <button onclick="copyGuestLink()" class="px-4 py-2 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs rounded-lg transition shrink-0">
+                        Salin
+                    </button>
+                </div>
+            </div>
         </div>
 
         <!-- Tabel Daftar Link -->
         <div class="bg-slate-800 border border-slate-700/80 rounded-2xl p-6 shadow-xl">
             <div class="flex justify-between items-center mb-4 border-b border-slate-700 pb-3">
-                <h2 class="text-xl font-bold text-white">Daftar Short Link</h2>
+                <h2 class="text-xl font-bold text-white" id="tableTitle">Daftar Link Saya</h2>
                 <button onclick="loadUrls()" class="text-xs text-slate-400 hover:text-teal-400 transition flex items-center gap-1">
                     <i class="fa-solid fa-rotate-right"></i> Refresh
                 </button>
@@ -109,39 +120,31 @@
         </div>
     </div>
 
-    <!-- MODAL POPUP LOGIN / REGISTER -->
+    <!-- MODAL AUTH -->
     <div id="authModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-slate-800 border border-slate-700 rounded-2xl w-full max-w-md p-6 shadow-2xl relative">
             <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">
                 <i class="fa-solid fa-xmark"></i>
             </button>
-            
             <h3 id="modalTitle" class="text-2xl font-bold text-white mb-2">Masuk ke Akun</h3>
-            <p class="text-xs text-slate-400 mb-6">Login untuk mengaktifkan fitur Custom Short Slug milik Anda sendiri.</p>
+            <p class="text-xs text-slate-400 mb-6">Login untuk menyimpan riwayat link & custom slug milik Anda.</p>
 
             <form id="authForm" class="space-y-4">
                 <div>
                     <label class="block text-xs font-medium text-slate-300 mb-1">Email</label>
-                    <input type="email" id="authEmail" required placeholder="nama@email.com"
-                           class="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-slate-100 text-sm focus:outline-none focus:border-teal-400">
+                    <input type="email" id="authEmail" required placeholder="nama@email.com" class="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-slate-100 text-sm focus:outline-none focus:border-teal-400">
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-slate-300 mb-1">Password</label>
-                    <input type="password" id="authPassword" required placeholder="••••••••"
-                           class="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-slate-100 text-sm focus:outline-none focus:border-teal-400">
+                    <input type="password" id="authPassword" required placeholder="••••••••" class="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-slate-100 text-sm focus:outline-none focus:border-teal-400">
                 </div>
-                <button type="submit" id="btnAuthSubmit" class="w-full py-3 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold rounded-xl text-sm transition">
-                    Login
-                </button>
+                <button type="submit" id="btnAuthSubmit" class="w-full py-3 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold rounded-xl text-sm transition">Login</button>
             </form>
-
             <div id="authStatus" class="mt-3 text-center text-xs font-medium hidden"></div>
 
             <div class="mt-6 pt-4 border-t border-slate-700 text-center text-xs text-slate-400">
                 <span id="toggleAuthText">Belum punya akun?</span>
-                <button onclick="toggleAuthMode()" id="btnToggleAuth" class="text-teal-400 hover:underline font-semibold ml-1">
-                    Daftar Sekarang
-                </button>
+                <button onclick="toggleAuthMode()" id="btnToggleAuth" class="text-teal-400 hover:underline font-semibold ml-1">Daftar Sekarang</button>
             </div>
         </div>
     </div>
@@ -151,15 +154,14 @@
         Database Powered by Supabase & Hosted on GitHub Pages
     </footer>
 
-    <!-- LOGIKA JAVASCRIPT DIRECT REST API SUPABASE -->
+    <!-- LOGIKA JAVASCRIPT -->
     <script>
         const SUPABASE_URL = "https://lcpskriooezyxgrnarol.supabase.co"; 
         const SUPABASE_KEY = "sb_publishable_puy9U_93p-7_Q64oHrYUpg_iEF3nJ-c";
 
-        let currentUser = null; // Menyimpan data session user
-        let isRegisterMode = false; // Mode login/register
+        let currentUser = null;
+        let isRegisterMode = false;
 
-        // Header standar
         function getHeaders(token = null) {
             const headers = {
                 'apikey': SUPABASE_KEY,
@@ -170,20 +172,21 @@
             return headers;
         }
 
-        // DOM Elements
         const form = document.getElementById('shortenForm');
         const originalUrlInput = document.getElementById('originalUrl');
         const customSlugInput = document.getElementById('customSlug');
         const slugNotice = document.getElementById('slugNotice');
         const statusMessage = document.getElementById('statusMessage');
         const urlTableBody = document.getElementById('urlTableBody');
+        const guestResultBox = document.getElementById('guestResultBox');
+        const guestShortUrlInput = document.getElementById('guestShortUrlInput');
 
         const currentOrigin = window.location.origin;
         document.getElementById('domainPrefix').textContent = `${window.location.host}/`;
         document.getElementById('displayDomain').textContent = window.location.host;
 
         // ----------------------------------------------------
-        // 1. MANAGEMENT SESSI AKUN / AUTHENTICATION
+        // 1. SESSION MANAGEMENT
         // ----------------------------------------------------
         function checkSession() {
             const sessionData = localStorage.getItem('sb_user_session');
@@ -194,6 +197,8 @@
                 } catch (e) {
                     localStorage.removeItem('sb_user_session');
                 }
+            } else {
+                renderUserUI();
             }
         }
 
@@ -204,24 +209,24 @@
                 document.getElementById('userProfile').classList.add('flex');
                 document.getElementById('userEmailDisplay').textContent = currentUser.user.email;
 
-                // Enable Custom Slug jika sudah Login
                 customSlugInput.disabled = false;
                 customSlugInput.placeholder = "hasilshort";
-                slugNotice.innerHTML = `<span class="text-teal-400"><i class="fa-solid fa-check text-[10px]"></i> Custom Slug Aktif</span>`;
+                slugNotice.innerHTML = `<span class="text-teal-400"><i class="fa-solid fa-check text-[10px]"></i> Tersimpan Permanen</span>`;
+                document.getElementById('tableTitle').textContent = "Daftar Link Saya";
             } else {
                 document.getElementById('btnOpenAuth').classList.remove('hidden');
                 document.getElementById('userProfile').classList.add('hidden');
                 document.getElementById('userProfile').classList.remove('flex');
 
-                // Disable Custom Slug untuk Guest
                 customSlugInput.disabled = true;
                 customSlugInput.value = '';
-                customSlugInput.placeholder = "Otomatis 5 karakter (Login untuk ganti)";
-                slugNotice.innerHTML = `<i class="fa-solid fa-lock text-[10px]"></i> Login untuk custom slug`;
+                customSlugInput.placeholder = "Otomatis 5 karakter (Guest tidak tersimpan)";
+                slugNotice.innerHTML = `<i class="fa-solid fa-lock text-[10px]"></i> Login untuk simpan link & custom slug`;
+                document.getElementById('tableTitle').textContent = "Daftar Link Publik";
             }
+            loadUrls();
         }
 
-        // Modal Handler
         function openAuthModal() { document.getElementById('authModal').classList.remove('hidden'); }
         function closeAuthModal() { document.getElementById('authModal').classList.add('hidden'); }
 
@@ -231,10 +236,8 @@
             document.getElementById('btnAuthSubmit').textContent = isRegisterMode ? "Daftar" : "Login";
             document.getElementById('toggleAuthText').textContent = isRegisterMode ? "Sudah punya akun?" : "Belum punya akun?";
             document.getElementById('btnToggleAuth').textContent = isRegisterMode ? "Login di sini" : "Daftar Sekarang";
-            document.getElementById('authStatus').classList.add('hidden');
         }
 
-        // Submit Auth Form
         document.getElementById('authForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('authEmail').value.trim();
@@ -274,7 +277,6 @@
                 }
             } catch (err) {
                 authStatus.textContent = "Terjadi kesalahan koneksi.";
-                authStatus.className = "mt-3 text-center text-xs font-medium text-red-400";
             }
         });
 
@@ -285,7 +287,7 @@
         }
 
         // ----------------------------------------------------
-        // 2. LOGIKA REDIRECT PENGUNJUNG
+        // 2. LOGIKA REDIRECT
         // ----------------------------------------------------
         async function handleRedirect() {
             let redirectPath = sessionStorage.getItem('redirect_path');
@@ -344,7 +346,7 @@
         }
 
         // ----------------------------------------------------
-        // 3. FUNGSI MEMBUAT SHORT LINK (FLEKSIBEL)
+        // 3. LOGIKA MEMBUAT LINK (GUEST VS USER LOGIN)
         // ----------------------------------------------------
         function generateRandomSlug(length = 5) {
             const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -361,43 +363,65 @@
             const original_url = originalUrlInput.value.trim();
             let slug = customSlugInput.value.trim().replace(/^\/|\/$/g, '');
 
-            // Logika Aturan Slug:
-            // Jika User Login & mengisi Custom Slug -> Pakai Custom Slug
-            // Jika Guest ATAU Custom Slug kosong -> Generate otomatis 5 Karakter Acak
-            if (!currentUser || !slug) {
-                slug = generateRandomSlug(5);
-            }
-
             showStatus("Memproses...", "text-slate-400");
+            guestResultBox.classList.add('hidden');
 
-            const payload = { original_url, slug };
-            if (currentUser && currentUser.user) {
-                payload.user_id = currentUser.user.id;
+            // 1. JIKA USER BELUM LOGIN (GUEST)
+            if (!currentUser) {
+                slug = generateRandomSlug(5);
+
+                // Tetap daftarkan slug ke Supabase agar redirect berjalan, tetapi tanpa user_id
+                try {
+                    const response = await fetch(`${SUPABASE_URL}/rest/v1/urls`, {
+                        method: 'POST',
+                        headers: getHeaders(),
+                        body: JSON.stringify({ original_url, slug })
+                    });
+
+                    if (response.ok) {
+                        const generatedUrl = `${currentOrigin}/${slug}`;
+                        showStatus("Short link instan berhasil dibuat!", "text-teal-400");
+                        
+                        // Tampilkan di Box Instan (Langsung Salin)
+                        guestShortUrlInput.value = generatedUrl;
+                        guestResultBox.classList.remove('hidden');
+                        form.reset();
+                    } else {
+                        showStatus("Gagal membuat link, silakan coba lagi.", "text-red-400");
+                    }
+                } catch (err) {
+                    showStatus("Gagal terhubung ke database.", "text-red-400");
+                }
+                return;
             }
+
+            // 2. JIKA USER SUDAH LOGIN (MEMBER)
+            if (!slug) slug = generateRandomSlug(5);
 
             try {
                 const response = await fetch(`${SUPABASE_URL}/rest/v1/urls`, {
                     method: 'POST',
-                    headers: getHeaders(currentUser ? currentUser.access_token : null),
-                    body: JSON.stringify(payload)
+                    headers: getHeaders(currentUser.access_token),
+                    body: JSON.stringify({ original_url, slug, user_id: currentUser.user.id })
                 });
 
                 if (response.ok) {
-                    showStatus(`Short link berhasil dibuat: /${slug}`, "text-teal-400");
+                    showStatus(`Short link tersimpan permanen: /${slug}`, "text-teal-400");
                     form.reset();
-                    loadUrls();
+                    loadUrls(); // Refresh tabel akun milik user
                 } else {
                     const errData = await response.json();
-                    if (response.status === 409 || (errData.message && errData.message.includes('unique'))) {
-                        showStatus("Slug tersebut sudah digunakan! Coba klik tombol lagi.", "text-red-400");
-                    } else {
-                        showStatus("Gagal: " + (errData.message || "Terjadi kesalahan"), "text-red-400");
-                    }
+                    showStatus("Gagal: " + (errData.message || "Slug sudah ada"), "text-red-400");
                 }
             } catch (err) {
                 showStatus("Gagal terhubung ke database.", "text-red-400");
             }
         });
+
+        function copyGuestLink() {
+            navigator.clipboard.writeText(guestShortUrlInput.value);
+            alert("Short URL berhasil disalin!");
+        }
 
         function showStatus(msg, colorClass) {
             statusMessage.textContent = msg;
@@ -406,24 +430,39 @@
         }
 
         // ----------------------------------------------------
-        // 4. MEMUAT DAFTAR SHORT LINK
+        // 4. MEMUAT DAFTAR LINK (HANYA MILIK USER LOGIN)
         // ----------------------------------------------------
         async function loadUrls() {
+            urlTableBody.innerHTML = '';
+
+            // Jika belum login, tabel tidak menampilkan data tersimpan
+            if (!currentUser) {
+                urlTableBody.innerHTML = `
+                    <tr>
+                        <td colspan="4" class="p-6 text-center text-slate-500 text-xs">
+                            <i class="fa-solid fa-lock text-slate-600 text-lg mb-2 block"></i>
+                            Silakan <b>Login</b> untuk melihat dan menyimpan riwayat short link Anda secara permanen.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            // Jika sudah login, ambil link yang HANYA milik user_id tersebut
             try {
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/urls?select=*&order=created_at.desc`, {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/urls?user_id=eq.${currentUser.user.id}&select=*&order=created_at.desc`, {
                     method: 'GET',
-                    headers: getHeaders()
+                    headers: getHeaders(currentUser.access_token)
                 });
 
                 if (!response.ok) throw new Error();
 
                 const data = await response.json();
-                urlTableBody.innerHTML = '';
 
                 if (!data || data.length === 0) {
                     urlTableBody.innerHTML = `
                         <tr>
-                            <td colspan="4" class="p-4 text-center text-slate-500">Belum ada short link yang dibuat.</td>
+                            <td colspan="4" class="p-4 text-center text-slate-500">Anda belum pernah membuat short link.</td>
                         </tr>
                     `;
                     return;
@@ -455,7 +494,7 @@
             } catch (err) {
                 urlTableBody.innerHTML = `
                     <tr>
-                        <td colspan="4" class="p-4 text-center text-red-400">Gagal memuat data dari Supabase.</td>
+                        <td colspan="4" class="p-4 text-center text-red-400">Gagal memuat daftar link.</td>
                     </tr>
                 `;
             }
@@ -466,13 +505,9 @@
             alert("Short URL berhasil disalin!");
         }
 
-        // Inisialisasi awal
+        // Initial Exec
         checkSession();
-        handleRedirect().then((isRedirecting) => {
-            if (!isRedirecting) {
-                loadUrls();
-            }
-        });
+        handleRedirect();
     </script>
 </body>
 </html>
