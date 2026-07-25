@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Supabase Dynamic Menu & Super Admin</title>
+  <title>Supabase Auth & Dynamic Menu</title>
 
   <!-- Supabase JS Library -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -263,8 +263,11 @@
       
       const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
-      // Email yang diizinkan sebagai Super Admin (Silakan sesuaikan email Anda)
-      const SUPER_ADMIN_EMAIL = "admin@email.com"; 
+      // Daftar Email Super Admin yang diizinkan mengelola menu
+      const SUPER_ADMINS = [
+        "mastrisnocom@gmail.com",
+        "ndeletz@gmail.com"
+      ];
 
       // 2. Element DOM
       const modalOverlay = document.getElementById('modalOverlay');
@@ -290,8 +293,6 @@
 
       // 3. Render Dynamic Nav Items dari Supabase
       async function loadDynamicMenus() {
-        dynamicNavLinks.innerHTML = "<li>Loading menu...</li>";
-
         const { data: menus, error } = await supabase
           .from('menus')
           .select('*')
@@ -330,7 +331,7 @@
         authForm.reset();
       }
 
-      // Toggle Login / Register
+      // Toggle Login <-> Register
       toggleAuthMode.addEventListener('click', (e) => {
         e.preventDefault();
         isSignUp = !isSignUp;
@@ -379,7 +380,7 @@
         }
       });
 
-      // 6. Form Tambah Menu oleh Admin
+      // 6. Form Tambah Menu oleh Super Admin
       addMenuForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const title = document.getElementById('menuTitle').value;
@@ -401,12 +402,12 @@
           adminMessage.textContent = 'Menu berhasil ditambahkan!';
           addMenuForm.reset();
           
-          // Reload daftar menu di navigasi secara otomatis
+          // Update daftar menu secara live
           loadDynamicMenus();
         }
       });
 
-      // 7. Cek Status User & Tampilkan Dashboard Admin jika berhak
+      // 7. Cek Status User & Tampilkan Dashboard Super Admin
       async function checkUserSession() {
         const { data: { session } } = await supabase.auth.getSession();
 
@@ -427,8 +428,8 @@
             });
           }
 
-          // Cek apakah user adalah Super Admin (Bisa diganti logika atau email-nya)
-          if (userEmail === SUPER_ADMIN_EMAIL || userEmail.includes('admin')) {
+          // Tampilkan dashboard hanya jika email ada di SUPER_ADMINS
+          if (SUPER_ADMINS.includes(userEmail)) {
             adminDashboard.classList.add('active');
             subWelcomeText.textContent = "Anda masuk sebagai Super Admin. Gunakan panel di bawah untuk mengelola menu.";
           } else {
@@ -437,10 +438,12 @@
           }
         } else {
           adminDashboard.classList.remove('active');
+          welcomeText.textContent = "Selamat Datang!";
+          subWelcomeText.textContent = "Silakan login untuk mengakses fitur lengkap.";
         }
       }
 
-      // Inisialisasi awal
+      // Jalankan inisialisasi awal
       loadDynamicMenus();
       checkUserSession();
     });
