@@ -63,7 +63,7 @@
         </div>
     </header>
 
-    <!-- 2. MAIN AREA: WEBSITE KERJASAMA FULL SCREEN / MICROSITE -->
+    <!-- 2. MAIN AREA: WEBSITE KERJASAMA FULL SCREEN / FALLBACK PAGE -->
     <main class="w-full flex-1 relative overflow-hidden flex items-center justify-center">
         
         <!-- LOADING STATE -->
@@ -75,7 +75,7 @@
         <!-- CONTAINER IKLAN WEBSITE MITRA (FULL SCREEN IFRAME) -->
         <div id="adPartnerContainer" class="w-full h-full hidden relative">
             <div id="dynamicAdSlot" class="w-full h-full flex items-center justify-center overflow-hidden">
-                <!-- Website Mitra / Script Iklan di-render di sini secara Layar Penuh -->
+                <!-- Website Mitra / Script Iklan di-render di sini -->
             </div>
         </div>
 
@@ -92,7 +92,7 @@
 
     </main>
 
-    <!-- LOGIKA JAVASCRIPT ROUTER FULL SCREEN -->
+    <!-- LOGIKA JAVASCRIPT DETEKSI IFRAME REFUSED & AUTO REDIRECT -->
     <script>
         const SUPABASE_URL = "https://lcpskriooezyxgrnarol.supabase.co"; 
         const SUPABASE_KEY = "sb_publishable_puy9U_93p-7_Q64oHrYUpg_iEF3nJ-c";
@@ -107,7 +107,7 @@
             };
         }
 
-        // --- FUNGSI EMBED WEBSITE MITRA FULL SCREEN ---
+        // --- FUNGSI EMBED WEBSITE MITRA DENGAN AUTO DETEKSI DITOLAK (REFUSED TO CONNECT) ---
         function renderPartnerAd(elementId, adContent) {
             const container = document.getElementById(elementId);
             if (!container || !adContent) return;
@@ -115,14 +115,33 @@
             const contentTrimmed = adContent.trim();
 
             if (contentTrimmed.startsWith('http://') || contentTrimmed.startsWith('https://')) {
+                // Tampilkan Iframe terlebih dahulu
                 container.innerHTML = `
-                    <iframe src="${contentTrimmed}" 
+                    <iframe id="partnerIframe" 
+                            src="${contentTrimmed}" 
                             class="w-full h-full border-0 bg-white" 
                             loading="lazy" 
-                            sandbox="allow-scripts allow-same-origin allow-popups">
+                            sandbox="allow-scripts allow-same-origin allow-popups allow-forms">
                     </iframe>
                 `;
+
+                // Deteksi jika iframe gagal / diblokir oleh domain mitra (Refused to Connect)
+                let iframeLoaded = false;
+                const iframeEl = document.getElementById('partnerIframe');
+
+                iframeEl.onload = function() {
+                    iframeLoaded = true;
+                };
+
+                // Jika dalam 2.5 detik iframe tidak merespons / ditolak pembukaannya, tampilkan Fallback Redirect
+                setTimeout(() => {
+                    if (!iframeLoaded) {
+                        showFallbackRedirectPage(container, contentTrimmed);
+                    }
+                }, 2500);
+
             } else {
+                // Jika berupa Script / HTML biasa
                 container.innerHTML = contentTrimmed;
                 const scripts = container.querySelectorAll("script");
                 scripts.forEach((oldScript) => {
@@ -134,6 +153,25 @@
                     oldScript.parentNode.replaceChild(newScript, oldScript);
                 });
             }
+        }
+
+        // --- TAMPILAN FALLBACK JIKA IFRAME DITOLAK WEBSITES MITRA ---
+        function showFallbackRedirectPage(container, partnerUrl) {
+            container.innerHTML = `
+                <div class="flex flex-col items-center justify-center p-8 text-center max-w-lg mx-auto bg-slate-900 border border-emerald-900/50 rounded-3xl shadow-2xl my-auto">
+                    <div class="w-16 h-16 bg-emerald-950 border border-emerald-700/60 rounded-2xl flex items-center justify-center text-emerald-400 text-2xl mb-4 shadow-lg">
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    </div>
+                    <h3 class="text-lg font-black text-white uppercase tracking-wide mb-1">Mengarahkan ke Website Mitra</h3>
+                    <p class="text-xs text-slate-400 mb-6 leading-relaxed">
+                        Website mitra (<span class="text-emerald-400 font-mono">${partnerUrl}</span>) membutuhkan koneksi langsung dan akan terbuka otomatis dalam 10 detik.
+                    </p>
+                    <a href="${partnerUrl}" target="_blank" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl transition shadow-lg flex items-center justify-center gap-2">
+                        <span>Buka Langsung Sekarang</span>
+                        <i class="fa-solid fa-external-link text-xs"></i>
+                    </a>
+                </div>
+            `;
         }
 
         async function initDynamicBridgeRouter() {
@@ -201,7 +239,7 @@
                         renderPartnerAd('dynamicAdSlot', adContent);
                     } else {
                         document.getElementById('dynamicAdSlot').innerHTML = `
-                            <div class="text-center space-y-2 p-6">
+                            <div class="text-center space-y-2 p-6 my-auto">
                                 <i class="fa-solid fa-bullhorn text-4xl text-emerald-500 mb-2"></i>
                                 <h3 class="text-base font-bold text-white uppercase">Ruang Iklan Kerjasama AHTRIS.MY.ID</h3>
                                 <p class="text-xs text-slate-400 max-w-md mx-auto">Pasang iklan bisnis/konten Anda di sini untuk menjangkau ribuan pengunjung harian.</p>
@@ -219,6 +257,7 @@
             }
         }
 
+        // --- TIMING 10 DETIK BUKA TARGEET AUTOMATIS ---
         function start10SecondCountdown() {
             let timeLeft = 10;
             const timerDisplay = document.getElementById('timerDisplay');
