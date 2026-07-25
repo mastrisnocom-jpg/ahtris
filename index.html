@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Short Link Manager - Guest & Member</title>
+    <title>Short Link Manager - Guest Interstitial & Delay</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome Icons -->
@@ -287,7 +287,7 @@
         }
 
         // ----------------------------------------------------
-        // 2. LOGIKA REDIRECT
+        // 2. LOGIKA REDIRECT (DENGAN DELAY 5 DETIK & INTERSTITIAL NDELET.COM)
         // ----------------------------------------------------
         async function handleRedirect() {
             let redirectPath = sessionStorage.getItem('redirect_path');
@@ -298,31 +298,81 @@
             if (pathSlug && pathSlug !== 'index.html' && pathSlug !== '404.html') {
                 window.history.replaceState(null, null, '/' + pathSlug);
 
-                document.body.innerHTML = `
-                    <div class="min-h-screen flex items-center justify-center bg-slate-900 text-white">
-                        <div class="text-center">
-                            <i class="fa-solid fa-spinner fa-spin text-4xl text-teal-400 mb-4"></i>
-                            <h1 class="text-2xl font-bold mb-2">Mengalihkan Halaman...</h1>
-                            <p class="text-slate-400">Harap tunggu sebentar.</p>
-                        </div>
-                    </div>
-                `;
-
                 try {
-                    const response = await fetch(`${SUPABASE_URL}/rest/v1/urls?slug=eq.${encodeURIComponent(pathSlug)}&select=original_url`, {
+                    const response = await fetch(`${SUPABASE_URL}/rest/v1/urls?slug=eq.${encodeURIComponent(pathSlug)}&select=original_url,user_id`, {
                         method: 'GET',
                         headers: getHeaders()
                     });
                     const data = await response.json();
 
                     if (data && data.length > 0 && data[0].original_url) {
+                        const targetUrl = data[0].original_url;
+                        const isOwnerUser = data[0].user_id !== null;
+
+                        // Increment hit click
                         fetch(`${SUPABASE_URL}/rest/v1/rpc/increment_click_count`, {
                             method: 'POST',
                             headers: getHeaders(),
                             body: JSON.stringify({ target_slug: pathSlug })
                         }).catch(() => {});
 
-                        window.location.href = data[0].original_url;
+                        let timeLeft = 5;
+
+                        if (isOwnerUser) {
+                            // User yang buat = Member/Login -> Langsung halaman redirect biasa + countdown 5 detik
+                            document.body.innerHTML = `
+                                <div class="min-h-screen flex items-center justify-center bg-slate-900 text-white p-4">
+                                    <div class="text-center max-w-md">
+                                        <i class="fa-solid fa-spinner fa-spin text-5xl text-teal-400 mb-6"></i>
+                                        <h1 class="text-2xl font-bold mb-2">Mengalihkan Halaman...</h1>
+                                        <p class="text-slate-400 mb-4">Anda akan dialihkan secara otomatis dalam <span id="countdown" class="text-teal-400 font-bold text-xl">5</span> detik.</p>
+                                        <a href="${targetUrl}" class="inline-block px-5 py-2.5 bg-teal-500 hover:bg-teal-400 text-slate-950 font-semibold rounded-xl text-xs transition">
+                                            Klik di sini jika tidak beralih otomatis
+                                        </a>
+                                    </div>
+                                </div>
+                            `;
+
+                            const interval = setInterval(() => {
+                                timeLeft--;
+                                const countdownEl = document.getElementById('countdown');
+                                if (countdownEl) countdownEl.textContent = timeLeft;
+                                if (timeLeft <= 0) {
+                                    clearInterval(interval);
+                                    window.location.href = targetUrl;
+                                }
+                            }, 1000);
+
+                        } else {
+                            // Guest / Non-Login -> Alihkan ke ndelet.com selama 5 detik terlebih dahulu
+                            document.body.innerHTML = `
+                                <div class="min-h-screen flex flex-col items-center justify-center bg-slate-900 text-white p-4">
+                                    <div class="text-center max-w-md w-full mb-4">
+                                        <p class="text-slate-400 text-sm mb-2">Mengalihkan sponsor (<span class="text-teal-400 font-mono">ndelet.com</span>) dalam <span id="countdown" class="text-teal-400 font-bold text-lg">5</span> detik...</p>
+                                        <div class="w-full bg-slate-800 rounded-full h-2 overflow-hidden border border-slate-700">
+                                            <div id="progressBar" class="bg-teal-400 h-full w-full transition-all duration-1000 ease-linear"></div>
+                                        </div>
+                                    </div>
+                                    <div class="w-full max-w-3xl h-[600px] border border-slate-700 rounded-2xl overflow-hidden shadow-2xl bg-slate-950">
+                                        <iframe src="https://ndelet.com" class="w-full h-full border-0"></iframe>
+                                    </div>
+                                </div>
+                            `;
+
+                            const progressBar = document.getElementById('progressBar');
+                            const interval = setInterval(() => {
+                                timeLeft--;
+                                const countdownEl = document.getElementById('countdown');
+                                if (countdownEl) countdownEl.textContent = timeLeft;
+                                if (progressBar) progressBar.style.width = `${(timeLeft / 5) * 100}%`;
+
+                                if (timeLeft <= 0) {
+                                    clearInterval(interval);
+                                    window.location.href = targetUrl;
+                                }
+                            }, 1000);
+                        }
+
                     } else {
                         throw new Error('Link tidak ditemukan');
                     }
@@ -346,7 +396,7 @@
         }
 
         // ----------------------------------------------------
-        // 3. LOGIKA MEMBUAT LINK (GUEST VS USER LOGIN)
+        // 3. LOGIKA MEMBUAT LINK
         // ----------------------------------------------------
         function generateRandomSlug(length = 5) {
             const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -366,23 +416,21 @@
             showStatus("Memproses...", "text-slate-400");
             guestResultBox.classList.add('hidden');
 
-            // 1. JIKA USER BELUM LOGIN (GUEST)
+            // GUEST (TANPA LOGIN)
             if (!currentUser) {
                 slug = generateRandomSlug(5);
 
-                // Tetap daftarkan slug ke Supabase agar redirect berjalan, tetapi tanpa user_id
                 try {
                     const response = await fetch(`${SUPABASE_URL}/rest/v1/urls`, {
                         method: 'POST',
                         headers: getHeaders(),
-                        body: JSON.stringify({ original_url, slug })
+                        body: JSON.stringify({ original_url, slug, user_id: null })
                     });
 
                     if (response.ok) {
                         const generatedUrl = `${currentOrigin}/${slug}`;
                         showStatus("Short link instan berhasil dibuat!", "text-teal-400");
                         
-                        // Tampilkan di Box Instan (Langsung Salin)
                         guestShortUrlInput.value = generatedUrl;
                         guestResultBox.classList.remove('hidden');
                         form.reset();
@@ -395,7 +443,7 @@
                 return;
             }
 
-            // 2. JIKA USER SUDAH LOGIN (MEMBER)
+            // USER LOGIN
             if (!slug) slug = generateRandomSlug(5);
 
             try {
@@ -408,7 +456,7 @@
                 if (response.ok) {
                     showStatus(`Short link tersimpan permanen: /${slug}`, "text-teal-400");
                     form.reset();
-                    loadUrls(); // Refresh tabel akun milik user
+                    loadUrls();
                 } else {
                     const errData = await response.json();
                     showStatus("Gagal: " + (errData.message || "Slug sudah ada"), "text-red-400");
@@ -430,12 +478,11 @@
         }
 
         // ----------------------------------------------------
-        // 4. MEMUAT DAFTAR LINK (HANYA MILIK USER LOGIN)
+        // 4. MEMUAT DAFTAR LINK
         // ----------------------------------------------------
         async function loadUrls() {
             urlTableBody.innerHTML = '';
 
-            // Jika belum login, tabel tidak menampilkan data tersimpan
             if (!currentUser) {
                 urlTableBody.innerHTML = `
                     <tr>
@@ -448,7 +495,6 @@
                 return;
             }
 
-            // Jika sudah login, ambil link yang HANYA milik user_id tersebut
             try {
                 const response = await fetch(`${SUPABASE_URL}/rest/v1/urls?user_id=eq.${currentUser.user.id}&select=*&order=created_at.desc`, {
                     method: 'GET',
