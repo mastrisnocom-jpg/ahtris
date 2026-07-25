@@ -25,16 +25,16 @@
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
     </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between transition-colors duration-300">
+<body class="bg-slate-950 text-slate-100 h-screen w-screen flex flex-col overflow-hidden m-0 p-0">
 
     <!-- 1. HEADER ATAS: COUNTDOWN BAR 10 DETIK -->
-    <header id="topCountdownHeader" class="w-full border-b border-emerald-900/50 bg-slate-900/95 backdrop-blur-md sticky top-0 z-50 p-3 shadow-xl hidden">
-        <div class="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 px-2">
+    <header id="topCountdownHeader" class="w-full border-b border-emerald-900/50 bg-slate-900/95 backdrop-blur-md z-50 p-3 shadow-xl hidden shrink-0">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 px-2">
             
             <!-- Logo & Info -->
             <div class="flex items-center gap-3">
@@ -47,7 +47,7 @@
                 </div>
             </div>
 
-            <!-- Countdown Timer & Action Button -->
+            <!-- Countdown Timer & Tombol Aksi -->
             <div class="flex items-center gap-3 w-full sm:w-auto justify-end">
                 <div class="bg-slate-950 border border-emerald-800/60 px-3 py-1.5 rounded-xl flex items-center gap-2 text-xs font-mono font-bold text-emerald-400 shrink-0">
                     <i class="fa-solid fa-clock fa-spin"></i>
@@ -63,58 +63,23 @@
         </div>
     </header>
 
-    <!-- 2. BODY UTAMA: TAMPILAN IKLAN / WEBSITE MITRA -->
-    <main id="mainBodyArea" class="max-w-4xl mx-auto px-4 py-8 w-full flex-1 flex flex-col items-center justify-center">
+    <!-- 2. MAIN AREA: WEBSITE KERJASAMA FULL SCREEN / MICROSITE -->
+    <main class="w-full flex-1 relative overflow-hidden flex items-center justify-center">
         
-        <!-- LOADING INITIAL STATE -->
+        <!-- LOADING STATE -->
         <div id="loadingState" class="text-center py-12">
             <i class="fa-solid fa-spinner fa-spin text-4xl text-emerald-500 mb-3"></i>
             <p class="text-sm font-semibold text-slate-400">Memuat Tautan & Informasi Mitra...</p>
         </div>
 
-        <!-- CONTAINER IKLAN MITRA & PARTNER -->
-        <div id="adPartnerContainer" class="w-full space-y-6 hidden">
-            
-            <!-- Header Label Iklan -->
-            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-                <div class="flex items-center gap-2 text-xs font-bold text-amber-400 uppercase tracking-wider">
-                    <i class="fa-solid fa-rectangle-ad text-base"></i>
-                    <span>IKLAN & SPONSOR RESMI MITRA AHTRIS.MY.ID</span>
-                </div>
-                <span class="text-[10px] text-slate-500">Iklan Kerjasama</span>
+        <!-- CONTAINER IKLAN WEBSITE MITRA (FULL SCREEN IFRAME) -->
+        <div id="adPartnerContainer" class="w-full h-full hidden relative">
+            <div id="dynamicAdSlot" class="w-full h-full flex items-center justify-center overflow-hidden">
+                <!-- Website Mitra / Script Iklan di-render di sini secara Layar Penuh -->
             </div>
-
-            <!-- KOTAK WEBSITE MITRA / SCRIPT IKLAN -->
-            <div id="dynamicAdSlot" class="w-full bg-slate-900 border border-emerald-900/40 rounded-2xl p-2 text-center shadow-2xl min-h-[300px] flex items-center justify-center overflow-hidden"></div>
-
-            <!-- CARDS SPONSOR BERSAMA -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                <div class="bg-slate-900/80 border border-slate-800 hover:border-emerald-700/50 rounded-2xl p-4 transition shadow-md flex items-center gap-4">
-                    <div class="w-12 h-12 bg-emerald-950 border border-emerald-800 rounded-xl flex items-center justify-center text-emerald-400 text-xl font-black shrink-0">
-                        <i class="fa-solid fa-building"></i>
-                    </div>
-                    <div>
-                        <h4 class="text-xs font-bold text-white uppercase">PT. BINAYASA PUTRABATARA</h4>
-                        <p class="text-[11px] text-slate-400 mt-0.5">Layanan pengelolaan fasilitas & solusi gedung profesional.</p>
-                        <span class="text-[10px] text-emerald-400 font-semibold mt-1 inline-block">Mitra Utama</span>
-                    </div>
-                </div>
-
-                <div class="bg-slate-900/80 border border-slate-800 hover:border-emerald-700/50 rounded-2xl p-4 transition shadow-md flex items-center gap-4">
-                    <div class="w-12 h-12 bg-sky-950 border border-sky-800 rounded-xl flex items-center justify-center text-sky-400 text-xl font-black shrink-0">
-                        <i class="fa-solid fa-network-wired"></i>
-                    </div>
-                    <div>
-                        <h4 class="text-xs font-bold text-white uppercase">BMIS SYSTEM</h4>
-                        <p class="text-[11px] text-slate-400 mt-0.5">Building Management Info System terintegrasi.</p>
-                        <span class="text-[10px] text-sky-400 font-semibold mt-1 inline-block">Ekosistem Digital</span>
-                    </div>
-                </div>
-            </div>
-
         </div>
 
-        <!-- CONTAINER MICROSITE PUBLIK -->
+        <!-- CONTAINER MICROSITE PUBLIK (Jika link berupa Microsite) -->
         <div id="micrositeContainer" class="w-full max-w-sm text-center my-auto p-4 hidden">
             <div class="w-28 h-28 rounded-full mx-auto mb-4 overflow-hidden border-2 border-emerald-500 shadow-lg flex items-center justify-center bg-emerald-500 text-white shrink-0">
                 <img id="userAvatar" src="" class="w-full h-full object-cover hidden">
@@ -127,12 +92,7 @@
 
     </main>
 
-    <!-- FOOTER -->
-    <footer class="border-t border-slate-900 bg-slate-950 py-4 text-center text-xs text-slate-600">
-        © 2026 Short Link & Ads Manager — Powered by <a href="/" class="text-emerald-500 hover:underline">ahtris.my.id</a>
-    </footer>
-
-    <!-- LOGIKA JAVASCRIPT MASTER ROUTER -->
+    <!-- LOGIKA JAVASCRIPT ROUTER FULL SCREEN -->
     <script>
         const SUPABASE_URL = "https://lcpskriooezyxgrnarol.supabase.co"; 
         const SUPABASE_KEY = "sb_publishable_puy9U_93p-7_Q64oHrYUpg_iEF3nJ-c";
@@ -147,6 +107,7 @@
             };
         }
 
+        // --- FUNGSI EMBED WEBSITE MITRA FULL SCREEN ---
         function renderPartnerAd(elementId, adContent) {
             const container = document.getElementById(elementId);
             if (!container || !adContent) return;
@@ -156,7 +117,7 @@
             if (contentTrimmed.startsWith('http://') || contentTrimmed.startsWith('https://')) {
                 container.innerHTML = `
                     <iframe src="${contentTrimmed}" 
-                            class="w-full h-[380px] border-0 rounded-xl bg-white" 
+                            class="w-full h-full border-0 bg-white" 
                             loading="lazy" 
                             sandbox="allow-scripts allow-same-origin allow-popups">
                     </iframe>
@@ -241,8 +202,8 @@
                     } else {
                         document.getElementById('dynamicAdSlot').innerHTML = `
                             <div class="text-center space-y-2 p-6">
-                                <i class="fa-solid fa-bullhorn text-3xl text-emerald-500 mb-1"></i>
-                                <h3 class="text-sm font-bold text-white uppercase">Ruang Iklan Kerjasama AHTRIS.MY.ID</h3>
+                                <i class="fa-solid fa-bullhorn text-4xl text-emerald-500 mb-2"></i>
+                                <h3 class="text-base font-bold text-white uppercase">Ruang Iklan Kerjasama AHTRIS.MY.ID</h3>
                                 <p class="text-xs text-slate-400 max-w-md mx-auto">Pasang iklan bisnis/konten Anda di sini untuk menjangkau ribuan pengunjung harian.</p>
                             </div>
                         `;
