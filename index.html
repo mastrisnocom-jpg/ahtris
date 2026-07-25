@@ -400,7 +400,6 @@
             return headers;
         }
 
-        // --- SISTEM INJEKSI IKLAN & EXECUTE SCRIPT ---
         function setElementHTMLWithScripts(element, htmlContent) {
             if (!element) return;
             element.innerHTML = htmlContent;
@@ -502,7 +501,6 @@
                     onCaptchaSuccess("bypass");
                 }
             } else {
-                // Fallback jika hCaptcha diblokir AdBlocker
                 setTimeout(() => onCaptchaSuccess("fallback_pass"), 300);
             }
         }
@@ -578,7 +576,7 @@
             }
         }
 
-        // --- CLIENT-SIDE QR CODE GENERATOR (NO CORS BUG) ---
+        // --- CLIENT-SIDE QR CODE GENERATOR ---
         function generateQrWithCenterText(targetUrl, callback) {
             const tempDiv = document.createElement('div');
             tempDiv.style.display = 'none';
@@ -605,7 +603,6 @@
 
                 ctx.drawImage(qrCanvas, 0, 0, 300, 300);
 
-                // Badge AH di Tengah
                 const centerX = 150; 
                 const centerY = 150; 
                 const boxSize = 54;
@@ -829,9 +826,12 @@
                             <td class="p-3.5 font-mono text-emerald-600 dark:text-emerald-400 font-medium">/${item.slug}</td>
                             <td class="p-3.5 truncate max-w-xs text-slate-500 dark:text-slate-400">${item.original_url}</td>
                             <td class="p-3.5 text-center font-bold">${item.click_count || 0}</td>
-                            <td class="p-3.5 text-right">
-                                <button onclick="openGuestModal('${fullShortUrl}')" class="px-2.5 py-1.5 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30 text-xs rounded-lg transition">
+                            <td class="p-3.5 text-right flex items-center justify-end gap-2">
+                                <button onclick="openGuestModal('${fullShortUrl}')" class="px-2.5 py-1.5 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30 text-xs rounded-lg transition hover:bg-emerald-100 dark:hover:bg-emerald-500/20">
                                     <i class="fa-solid fa-qrcode"></i> Lihat QR
+                                </button>
+                                <button onclick="deleteUrl('${item.id}', '/${item.slug}')" class="px-2.5 py-1.5 bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-500/30 text-xs rounded-lg transition hover:bg-rose-100 dark:hover:bg-rose-500/20">
+                                    <i class="fa-solid fa-trash"></i> Hapus
                                 </button>
                             </td>
                         `;
@@ -846,6 +846,28 @@
                 }
             } catch (err) {
                 console.error("Gagal memuat link:", err);
+            }
+        }
+
+        // --- FUNGSI HAPUS LINK DARI DATABASE ---
+        async function deleteUrl(id, slugName) {
+            if (!confirm(`Apakah Anda yakin ingin menghapus shortlink "${slugName}"?`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/urls?id=eq.${id}`, {
+                    method: 'DELETE',
+                    headers: getHeaders(currentUser ? currentUser.access_token : null)
+                });
+
+                if (response.ok) {
+                    loadUrls(); // Refresh tabel riwayat setelah berhasil hapus
+                } else {
+                    alert("Gagal menghapus link. Pastikan Anda memiliki hak akses.");
+                }
+            } catch (err) {
+                alert("Terjadi kesalahan koneksi saat menghapus link.");
             }
         }
 
