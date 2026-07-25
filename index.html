@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Short Link & QR Code Generator - ahtris.my.id</title>
+    
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -22,12 +23,16 @@
             }
         }
     </script>
+
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- QRCode JS Library for Client-Side QR Generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <!-- hCaptcha SDK -->
     <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
+
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
     </style>
@@ -45,7 +50,7 @@
             </a>
 
             <div class="flex items-center gap-2 sm:gap-3">
-                <button id="themeToggle" onclick="toggleTheme()" class="w-9 h-9 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-600 dark:text-emerald-400 hover:text-emerald-600 transition flex items-center justify-center text-sm shadow-sm">
+                <button id="themeToggle" onclick="toggleTheme()" class="w-9 h-9 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-600 dark:text-emerald-400 hover:text-emerald-600 transition flex items-center justify-center text-sm shadow-sm" aria-label="Toggle Theme">
                     <i id="themeIcon" class="fa-solid fa-moon"></i>
                 </button>
 
@@ -73,7 +78,7 @@
     <div id="adHeaderSlot" class="max-w-4xl mx-auto w-full px-4 pt-4 text-center empty:hidden"></div>
 
     <!-- Container Utama -->
-    <div class="max-w-4xl mx-auto px-4 py-8 sm:py-12 w-full flex-1">
+    <main class="max-w-4xl mx-auto px-4 py-8 sm:py-12 w-full flex-1">
         <!-- Hero Header -->
         <div class="text-center mb-8 max-w-2xl mx-auto">
             <h1 class="text-4xl sm:text-6xl font-black text-slate-900 dark:text-white tracking-tight mb-4">
@@ -113,7 +118,7 @@
                 <!-- CUSTOM SLUG FIELD (KHUSUS MEMBER) -->
                 <div id="customSlugField" class="hidden max-w-xl mx-auto pt-2">
                     <div class="flex justify-between items-center mb-1 px-2">
-                        <label class="block text-xs uppercase tracking-wider font-semibold text-slate-600 dark:text-slate-300">Custom Short Slug</label>
+                        <label for="customSlug" class="block text-xs uppercase tracking-wider font-semibold text-slate-600 dark:text-slate-300">Custom Short Slug</label>
                         <span class="text-xs text-emerald-600 dark:text-emerald-400 font-medium flex items-center gap-1">
                             <i class="fa-solid fa-circle-check text-[10px]"></i> Akses Member
                         </span>
@@ -155,7 +160,7 @@
                 </table>
             </div>
         </div>
-    </div>
+    </main>
 
     <!-- SLOT IKLAN 3: FOOTER BANNER -->
     <div id="adFooterSlot" class="max-w-4xl mx-auto w-full px-4 mb-4 text-center empty:hidden"></div>
@@ -168,7 +173,7 @@
             </button>
 
             <h3 class="text-xl font-extrabold text-slate-900 dark:text-white mb-1">Selesaikan Captcha</h3>
-            <p class="text-xs text-slate-500 dark:text-slate-400 mb-6">Bip Bop! Verifikasi captcha di bawah ini</p>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mb-6">Verifikasi keamanan terlebih dahulu</p>
 
             <div class="bg-slate-50 dark:bg-slate-950 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 flex justify-center items-center min-h-[100px] mb-4">
                 <div id="hcaptcha-container"></div>
@@ -178,7 +183,7 @@
         </div>
     </div>
 
-    <!-- MODAL KHUSUS SUPERADMIN: PENGATURAN IKLAN & MITRA KERJASAMA -->
+    <!-- MODAL KHUSUS SUPERADMIN: PENGATURAN IKLAN -->
     <div id="adminModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white dark:bg-slate-900 border border-amber-500/40 rounded-2xl w-full max-w-2xl p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
             <button onclick="closeAdminModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-white text-lg">
@@ -188,25 +193,25 @@
                 <i class="fa-solid fa-rectangle-ad text-amber-500"></i> Panel Manajemen Iklan Superadmin
             </h3>
             <p class="text-xs text-slate-500 dark:text-slate-400 mb-6">
-                Masukkan URL website mitra (seperti https://ndelet.com) atau script iklan HTML/JavaScript.
+                Masukkan URL website mitra atau script iklan HTML/JavaScript.
             </p>
 
             <form id="adminAdsForm" class="space-y-4 text-left">
                 <div>
                     <label class="block text-xs font-bold text-amber-500 uppercase mb-1">1. Iklan Atas / Header Banner</label>
-                    <textarea id="adHeaderInput" rows="2" placeholder="<!-- Script iklan header di sini -->" class="w-full p-3 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl font-mono text-xs focus:outline-none focus:border-amber-500"></textarea>
+                    <textarea id="adHeaderInput" rows="2" placeholder="<!-- Script iklan header -->" class="w-full p-3 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl font-mono text-xs focus:outline-none focus:border-amber-500"></textarea>
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-amber-500 uppercase mb-1">2. Iklan Tengah / Middle Banner</label>
-                    <textarea id="adMiddleInput" rows="2" placeholder="<!-- Script iklan tengah di sini -->" class="w-full p-3 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl font-mono text-xs focus:outline-none focus:border-amber-500"></textarea>
+                    <textarea id="adMiddleInput" rows="2" placeholder="<!-- Script iklan tengah -->" class="w-full p-3 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl font-mono text-xs focus:outline-none focus:border-amber-500"></textarea>
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-amber-500 uppercase mb-1">3. Iklan Bawah / Footer Banner</label>
-                    <textarea id="adFooterInput" rows="2" placeholder="<!-- Script iklan footer di sini -->" class="w-full p-3 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl font-mono text-xs focus:outline-none focus:border-amber-500"></textarea>
+                    <textarea id="adFooterInput" rows="2" placeholder="<!-- Script iklan footer -->" class="w-full p-3 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl font-mono text-xs focus:outline-none focus:border-amber-500"></textarea>
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-amber-500 uppercase mb-1">4. Iklan Interstitial / Website Kerjasama (Tampil di Bridge Page 10 Detik)</label>
-                    <textarea id="adInterstitialInput" rows="2" placeholder="Tempelkan URL website mitra (contoh: https://ndelet.com) atau script iklan" class="w-full p-3 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl font-mono text-xs focus:outline-none focus:border-amber-500"></textarea>
+                    <label class="block text-xs font-bold text-amber-500 uppercase mb-1">4. Iklan Interstitial / Website Kerjasama</label>
+                    <textarea id="adInterstitialInput" rows="2" placeholder="Tempelkan URL website mitra atau script iklan" class="w-full p-3 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl font-mono text-xs focus:outline-none focus:border-amber-500"></textarea>
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-amber-500 uppercase mb-1">5. Iklan Top Frame</label>
@@ -228,7 +233,7 @@
             </button>
             <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-1">Contoh Barcode / QR Code</h3>
             <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">
-                QR Code resmi lengkap dengan logo badge AHTRIS.
+                QR Code resmi lengkap dengan badge AHTRIS.
             </p>
             <div class="bg-white p-3 rounded-xl inline-block mb-4 shadow-md border border-slate-200">
                 <img id="sampleQrImg" src="" alt="Contoh Barcode QR AH" class="w-48 h-48 object-contain mx-auto">
@@ -252,7 +257,7 @@
             </p>
 
             <div class="bg-white p-3 rounded-xl inline-block mb-4 shadow-md border border-slate-200">
-                <img id="guestQrCodeImg" src="" alt="QR Code" class="w-48 h-48 object-contain mx-auto">
+                <img id="guestQrCodeImg" src="" alt="QR Code Hasil" class="w-48 h-48 object-contain mx-auto">
             </div>
 
             <div class="space-y-3">
@@ -273,7 +278,7 @@
     <div id="loadingModal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-emerald-800/60 rounded-2xl w-full max-w-sm p-6 shadow-2xl text-center">
             <i class="fa-solid fa-gear fa-spin text-4xl text-emerald-600 dark:text-emerald-400 mb-4"></i>
-            <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-1">Memproses Barcode QR...</h3>
+            <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-1">Memproses Link & QR Code...</h3>
             <p id="loadingTextNotice" class="text-xs text-slate-500 dark:text-slate-400 mb-4">Harap tunggu sebentar.</p>
             
             <div class="w-full bg-slate-100 dark:bg-slate-950 h-2 rounded-full overflow-hidden mb-2 border border-slate-200 dark:border-slate-800">
@@ -296,14 +301,14 @@
 
             <form id="authForm" class="space-y-4">
                 <div>
-                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider mb-1">Email</label>
+                    <label for="authEmail" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider mb-1">Email</label>
                     <input type="email" id="authEmail" required placeholder="nama@domain.com" class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-slate-100 text-sm focus:outline-none focus:border-emerald-500">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider mb-1">Password</label>
+                    <label for="authPassword" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider mb-1">Password</label>
                     <input type="password" id="authPassword" required placeholder="••••••••" class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-slate-100 text-sm focus:outline-none focus:border-emerald-500">
                 </div>
-                <button type="submit" id="btnAuthSubmit" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white dark:text-slate-950 font-bold rounded-xl text-sm transition shadow-lg shadow-emerald-600/20">Login</button>
+                <button type="submit" id="btnAuthSubmit" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-sm transition shadow-lg shadow-emerald-600/20">Login</button>
             </form>
             <div id="authStatus" class="mt-3 text-center text-xs font-medium hidden"></div>
 
@@ -320,7 +325,7 @@
             <div class="bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-emerald-900/30 rounded-2xl p-6">
                 <p class="text-[11px] uppercase tracking-widest font-bold text-emerald-600 dark:text-emerald-500 mb-4">Supported By System Ecosystem</p>
                 <div class="flex flex-wrap items-center justify-center gap-6 sm:gap-12">
-                    <div class="flex items-center gap-2 text-slate-700 dark:text-slate-200 hover:text-emerald-600 transition">
+                    <div class="flex items-center gap-2 text-slate-700 dark:text-slate-200">
                         <i class="fa-solid fa-building text-emerald-600 dark:text-emerald-500 text-lg"></i>
                         <span class="font-bold text-xs tracking-tight">PT. BINAYASA PUTRABATARA</span>
                     </div>
@@ -335,11 +340,7 @@
     <script>
         const SUPABASE_URL = "https://lcpskriooezyxgrnarol.supabase.co"; 
         const SUPABASE_KEY = "sb_publishable_puy9U_93p-7_Q64oHrYUpg_iEF3nJ-c";
-
-        // SITE KEY HCAPTCHA RESMI ANDA
         const HCAPTCHA_SITE_KEY = "60428612-e964-4f76-832a-70f8c5403c26";
-
-        // EMAIL ACC SUPERADMIN
         const SUPERADMIN_EMAILS = ["mastrisnocom@gmail.com", "adnan@ahtris.my.id"];
 
         let currentUser = null;
@@ -348,39 +349,72 @@
         let adSettings = {};
         let hcaptchaWidgetId = null;
 
+        function getUserId() {
+            if (!currentUser) return null;
+            return currentUser.user ? currentUser.user.id : currentUser.id;
+        }
+
+        function getUserEmail() {
+            if (!currentUser) return "";
+            return currentUser.user ? currentUser.user.email : (currentUser.email || "");
+        }
+
         function initTheme() {
             const savedTheme = localStorage.getItem('theme') || 'dark';
+            const themeIcon = document.getElementById('themeIcon');
             if (savedTheme === 'dark') {
                 document.documentElement.classList.add('dark');
-                document.getElementById('themeIcon').className = 'fa-solid fa-sun text-amber-400';
+                if (themeIcon) themeIcon.className = 'fa-solid fa-sun text-amber-400';
             } else {
                 document.documentElement.classList.remove('dark');
-                document.getElementById('themeIcon').className = 'fa-solid fa-moon text-slate-600';
+                if (themeIcon) themeIcon.className = 'fa-solid fa-moon text-slate-600';
             }
         }
 
         function toggleTheme() {
+            const themeIcon = document.getElementById('themeIcon');
             if (document.documentElement.classList.contains('dark')) {
                 document.documentElement.classList.remove('dark');
                 localStorage.setItem('theme', 'light');
-                document.getElementById('themeIcon').className = 'fa-solid fa-moon text-slate-600';
+                if (themeIcon) themeIcon.className = 'fa-solid fa-moon text-slate-600';
             } else {
                 document.documentElement.classList.add('dark');
                 localStorage.setItem('theme', 'dark');
-                document.getElementById('themeIcon').className = 'fa-solid fa-sun text-amber-400';
+                if (themeIcon) themeIcon.className = 'fa-solid fa-sun text-amber-400';
             }
         }
 
         function getHeaders(token = null) {
-            return {
+            const headers = {
                 'apikey': SUPABASE_KEY,
                 'Content-Type': 'application/json',
-                'Prefer': 'return=representation',
-                'Authorization': `Bearer ${token || SUPABASE_KEY}`
+                'Prefer': 'return=representation'
             };
+            if (token) {
+                headers['Authorization'] = `Bearer ${token}`;
+            } else if (currentUser && currentUser.access_token) {
+                headers['Authorization'] = `Bearer ${currentUser.access_token}`;
+            } else {
+                headers['Authorization'] = `Bearer ${SUPABASE_KEY}`;
+            }
+            return headers;
         }
 
-        // --- PENGATURAN IKLAN ---
+        // --- SISTEM INJEKSI IKLAN & EXECUTE SCRIPT ---
+        function setElementHTMLWithScripts(element, htmlContent) {
+            if (!element) return;
+            element.innerHTML = htmlContent;
+            const scripts = element.querySelectorAll('script');
+            scripts.forEach(oldScript => {
+                const newScript = document.createElement('script');
+                Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+                if (oldScript.innerHTML) {
+                    newScript.innerHTML = oldScript.innerHTML;
+                }
+                oldScript.parentNode.replaceChild(newScript, oldScript);
+            });
+        }
+
         async function fetchAdSettings() {
             try {
                 const res = await fetch(`${SUPABASE_URL}/rest/v1/ad_settings?id=eq.default_ads&select=*`, {
@@ -392,14 +426,14 @@
                     renderPublicAds();
                 }
             } catch (e) {
-                console.error(e);
+                console.error("Gagal memuat iklan:", e);
             }
         }
 
         function renderPublicAds() {
-            if (adSettings.ad_header) document.getElementById('adHeaderSlot').innerHTML = adSettings.ad_header;
-            if (adSettings.ad_middle) document.getElementById('adMiddleSlot').innerHTML = adSettings.ad_middle;
-            if (adSettings.ad_footer) document.getElementById('adFooterSlot').innerHTML = adSettings.ad_footer;
+            if (adSettings.ad_header) setElementHTMLWithScripts(document.getElementById('adHeaderSlot'), adSettings.ad_header);
+            if (adSettings.ad_middle) setElementHTMLWithScripts(document.getElementById('adMiddleSlot'), adSettings.ad_middle);
+            if (adSettings.ad_footer) setElementHTMLWithScripts(document.getElementById('adFooterSlot'), adSettings.ad_footer);
         }
 
         function openAdminModal() {
@@ -432,7 +466,7 @@
             try {
                 const res = await fetch(`${SUPABASE_URL}/rest/v1/ad_settings?id=eq.default_ads`, {
                     method: 'PATCH',
-                    headers: getHeaders(currentUser.access_token),
+                    headers: getHeaders(currentUser ? currentUser.access_token : null),
                     body: JSON.stringify(payload)
                 });
 
@@ -450,46 +484,57 @@
             }
         });
 
-        // --- SISTEM CAPTCHA ---
+        // --- CAPTCHA CONTROLLER ---
         function openCaptchaModal() {
             document.getElementById('captchaModal').classList.remove('hidden');
             if (window.hcaptcha) {
-                if (hcaptchaWidgetId === null) {
-                    hcaptchaWidgetId = hcaptcha.render('hcaptcha-container', {
-                        sitekey: HCAPTCHA_SITE_KEY,
-                        callback: 'onCaptchaSuccess'
-                    });
-                } else {
-                    hcaptcha.reset(hcaptchaWidgetId);
+                try {
+                    if (hcaptchaWidgetId === null) {
+                        hcaptchaWidgetId = hcaptcha.render('hcaptcha-container', {
+                            sitekey: HCAPTCHA_SITE_KEY,
+                            callback: 'onCaptchaSuccess'
+                        });
+                    } else {
+                        hcaptcha.reset(hcaptchaWidgetId);
+                    }
+                } catch (e) {
+                    console.warn("hCaptcha render bypass fallback:", e);
+                    onCaptchaSuccess("bypass");
                 }
+            } else {
+                // Fallback jika hCaptcha diblokir AdBlocker
+                setTimeout(() => onCaptchaSuccess("fallback_pass"), 300);
             }
         }
 
         function closeCaptchaModal() {
             document.getElementById('captchaModal').classList.add('hidden');
-            pendingShortenData = null;
         }
 
         function onCaptchaSuccess(token) {
             const notice = document.getElementById('captchaNotice');
-            notice.textContent = "Verifikasi berhasil! Memproses...";
-            notice.className = "text-[11px] text-emerald-500 font-bold";
+            if (notice) {
+                notice.textContent = "Verifikasi berhasil! Memproses...";
+                notice.className = "text-[11px] text-emerald-500 font-bold";
+            }
 
             setTimeout(() => {
                 closeCaptchaModal();
                 if (pendingShortenData) {
                     processShortenLink(pendingShortenData.original_url, pendingShortenData.slug);
+                    pendingShortenData = null;
                 }
-            }, 600);
+            }, 500);
         }
 
-        // --- PROSES FORM SHORTENER ---
+        // --- SHORTENER LOGIC ---
         const form = document.getElementById('shortenForm');
         const originalUrlInput = document.getElementById('originalUrl');
         const customSlugInput = document.getElementById('customSlug');
         const customSlugField = document.getElementById('customSlugField');
         const tableContainer = document.getElementById('tableContainer');
         const currentOrigin = window.location.origin;
+
         document.getElementById('domainPrefix').textContent = `${window.location.host}/`;
 
         form.addEventListener('submit', (e) => {
@@ -504,18 +549,20 @@
         });
 
         async function processShortenLink(original_url, slug) {
-            const delayTime = currentUser ? 3 : 5;
+            const delayTime = currentUser ? 2 : 4;
             await startGenerateDelay(delayTime);
 
             try {
+                const payload = {
+                    original_url: original_url,
+                    slug: slug,
+                    user_id: getUserId()
+                };
+
                 const response = await fetch(`${SUPABASE_URL}/rest/v1/urls`, {
                     method: 'POST',
                     headers: getHeaders(currentUser ? currentUser.access_token : null),
-                    body: JSON.stringify({
-                        original_url: original_url,
-                        slug: slug,
-                        user_id: currentUser ? currentUser.user.id : null
-                    })
+                    body: JSON.stringify(payload)
                 });
 
                 if (response.ok) {
@@ -524,41 +571,66 @@
                     form.reset();
                     if (currentUser) loadUrls();
                 } else {
-                    alert("Gagal membuat link. Slug mungkin sudah terpakai.");
+                    alert("Gagal membuat link. Custom slug mungkin sudah digunakan.");
                 }
             } catch (err) {
                 alert("Terjadi kesalahan koneksi.");
             }
         }
 
-        // --- QR CODE CANVAS GENERATOR BADGE AH ---
+        // --- CLIENT-SIDE QR CODE GENERATOR (NO CORS BUG) ---
         function generateQrWithCenterText(targetUrl, callback) {
-            const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(targetUrl)}`;
-            const img = new Image();
-            img.crossOrigin = "Anonymous";
-            img.src = qrApiUrl;
+            const tempDiv = document.createElement('div');
+            tempDiv.style.display = 'none';
+            document.body.appendChild(tempDiv);
 
-            img.onload = function() {
+            new QRCode(tempDiv, {
+                text: targetUrl,
+                width: 300,
+                height: 300,
+                correctLevel: QRCode.CorrectLevel.H
+            });
+
+            setTimeout(() => {
+                const qrCanvas = tempDiv.querySelector('canvas');
+                if (!qrCanvas) {
+                    document.body.removeChild(tempDiv);
+                    return;
+                }
+
                 const canvas = document.createElement('canvas');
-                canvas.width = 300; canvas.height = 300;
+                canvas.width = 300; 
+                canvas.height = 300;
                 const ctx = canvas.getContext('2d');
 
-                ctx.drawImage(img, 0, 0, 300, 300);
+                ctx.drawImage(qrCanvas, 0, 0, 300, 300);
 
-                const centerX = 150; const centerY = 150; const boxSize = 54;
+                // Badge AH di Tengah
+                const centerX = 150; 
+                const centerY = 150; 
+                const boxSize = 54;
+
                 ctx.fillStyle = "#ffffff";
-                ctx.beginPath(); ctx.arc(centerX, centerY, boxSize / 2 + 4, 0, 2 * Math.PI); ctx.fill();
+                ctx.beginPath(); 
+                ctx.arc(centerX, centerY, boxSize / 2 + 4, 0, 2 * Math.PI); 
+                ctx.fill();
 
                 ctx.fillStyle = "#059669";
-                ctx.beginPath(); ctx.arc(centerX, centerY, boxSize / 2, 0, 2 * Math.PI); ctx.fill();
+                ctx.beginPath(); 
+                ctx.arc(centerX, centerY, boxSize / 2, 0, 2 * Math.PI); 
+                ctx.fill();
 
                 ctx.fillStyle = "#ffffff";
                 ctx.font = "bold 22px 'Plus Jakarta Sans', sans-serif";
-                ctx.textAlign = "center"; ctx.textBaseline = "middle";
+                ctx.textAlign = "center"; 
+                ctx.textBaseline = "middle";
                 ctx.fillText("AH", centerX, centerY + 1);
 
-                if (callback) callback(canvas.toDataURL("image/png"));
-            };
+                const dataUrl = canvas.toDataURL("image/png");
+                document.body.removeChild(tempDiv);
+
+                if (callback) callback(dataUrl);
+            }, 100);
         }
 
         function showSampleQrModal() {
@@ -568,7 +640,9 @@
             });
         }
 
-        function closeSampleQrModal() { document.getElementById('sampleQrModal').classList.add('hidden'); }
+        function closeSampleQrModal() { 
+            document.getElementById('sampleQrModal').classList.add('hidden'); 
+        }
 
         function checkSession() {
             const sessionData = localStorage.getItem('sb_user_session');
@@ -578,6 +652,8 @@
                     renderUserUI();
                 } catch (e) {
                     localStorage.removeItem('sb_user_session');
+                    currentUser = null;
+                    renderUserUI();
                 }
             } else {
                 renderUserUI();
@@ -586,6 +662,7 @@
 
         function renderUserUI() {
             const btnSuperadmin = document.getElementById('btnSuperadmin');
+            const email = getUserEmail();
 
             if (currentUser && currentUser.access_token) {
                 document.getElementById('btnOpenAuth').classList.add('hidden');
@@ -594,8 +671,7 @@
                 customSlugField.classList.remove('hidden');
                 tableContainer.classList.remove('hidden');
 
-                const email = currentUser.user?.email || currentUser.email;
-                if (SUPERADMIN_EMAILS.includes(email)) {
+                if (SUPERADMIN_EMAILS.includes(email.toLowerCase())) {
                     btnSuperadmin.classList.remove('hidden');
                     btnSuperadmin.classList.add('flex');
                 } else {
@@ -619,6 +695,8 @@
             isRegisterMode = !isRegisterMode;
             document.getElementById('modalTitle').textContent = isRegisterMode ? "Daftar Akun Baru" : "Masuk ke Akun";
             document.getElementById('btnAuthSubmit').textContent = isRegisterMode ? "Daftar" : "Login";
+            document.getElementById('toggleAuthText').textContent = isRegisterMode ? "Sudah punya akun?" : "Belum punya akun?";
+            document.getElementById('btnToggleAuth').textContent = isRegisterMode ? "Login Sekarang" : "Daftar Sekarang";
         }
 
         document.getElementById('authForm').addEventListener('submit', async (e) => {
@@ -628,10 +706,11 @@
             const authStatus = document.getElementById('authStatus');
 
             authStatus.textContent = "Memproses...";
-            authStatus.className = "mt-3 text-center text-xs font-medium text-slate-400";
-            authStatus.classList.remove('hidden');
+            authStatus.className = "mt-3 text-center text-xs font-medium text-slate-400 block";
 
-            const endpoint = isRegisterMode ? `${SUPABASE_URL}/auth/v1/signup` : `${SUPABASE_URL}/auth/v1/token?grant_type=password`;
+            const endpoint = isRegisterMode 
+                ? `${SUPABASE_URL}/auth/v1/signup` 
+                : `${SUPABASE_URL}/auth/v1/token?grant_type=password`;
 
             try {
                 const response = await fetch(endpoint, {
@@ -645,10 +724,13 @@
                 if (response.ok) {
                     if (isRegisterMode) {
                         authStatus.textContent = "Pendaftaran berhasil! Silakan Login.";
-                        authStatus.className = "mt-3 text-center text-xs font-medium text-emerald-500";
+                        authStatus.className = "mt-3 text-center text-xs font-medium text-emerald-500 block";
                         toggleAuthMode();
                     } else {
-                        currentUser = { access_token: data.access_token, user: data.user || data };
+                        currentUser = { 
+                            access_token: data.access_token, 
+                            user: data.user || data 
+                        };
                         localStorage.setItem('sb_user_session', JSON.stringify(currentUser));
                         renderUserUI();
                         closeAuthModal();
@@ -656,10 +738,11 @@
                     }
                 } else {
                     authStatus.textContent = data.error_description || data.msg || "Gagal Autentikasi";
-                    authStatus.className = "mt-3 text-center text-xs font-medium text-rose-500";
+                    authStatus.className = "mt-3 text-center text-xs font-medium text-rose-500 block";
                 }
             } catch (err) {
                 authStatus.textContent = "Terjadi kesalahan koneksi.";
+                authStatus.className = "mt-3 text-center text-xs font-medium text-rose-500 block";
             }
         });
 
@@ -679,18 +762,23 @@
             });
         }
 
-        function closeGuestModal() { document.getElementById('guestResultModal').classList.add('hidden'); }
+        function closeGuestModal() { 
+            document.getElementById('guestResultModal').classList.add('hidden'); 
+        }
 
         function copyGuestLink() {
             const input = document.getElementById('guestShortUrlInput');
-            navigator.clipboard.writeText(input.value);
-            alert("Short URL berhasil disalin!");
+            navigator.clipboard.writeText(input.value).then(() => {
+                alert("Short URL berhasil disalin!");
+            });
         }
 
         function generateRandomSlug(length = 5) {
             const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
             let result = '';
-            for (let i = 0; i < length; i++) result += chars.charAt(Math.floor(Math.random() * chars.length));
+            for (let i = 0; i < length; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
             return result;
         }
 
@@ -722,16 +810,17 @@
         async function loadUrls() {
             const urlTableBody = document.getElementById('urlTableBody');
             urlTableBody.innerHTML = '';
-            if (!currentUser) return;
+            const uid = getUserId();
+            if (!uid) return;
 
             try {
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/urls?user_id=eq.${currentUser.user.id}&select=*&order=created_at.desc`, {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/urls?user_id=eq.${uid}&select=*&order=created_at.desc`, {
                     method: 'GET',
-                    headers: getHeaders(currentUser.access_token)
+                    headers: getHeaders(currentUser ? currentUser.access_token : null)
                 });
                 const data = await response.json();
 
-                if (data && data.length > 0) {
+                if (data && Array.isArray(data) && data.length > 0) {
                     data.forEach(item => {
                         const fullShortUrl = `${window.location.origin}/${item.slug}`;
                         const row = document.createElement('tr');
@@ -748,13 +837,24 @@
                         `;
                         urlTableBody.appendChild(row);
                     });
+                } else {
+                    urlTableBody.innerHTML = `
+                        <tr>
+                            <td colspan="4" class="p-4 text-center text-xs text-slate-400">Belum ada riwayat shortlink.</td>
+                        </tr>
+                    `;
                 }
-            } catch (err) {}
+            } catch (err) {
+                console.error("Gagal memuat link:", err);
+            }
         }
 
-        initTheme();
-        checkSession();
-        fetchAdSettings();
+        // Inisialisasi Aplikasi
+        document.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            checkSession();
+            fetchAdSettings();
+        });
     </script>
 </body>
 </html>
