@@ -168,10 +168,10 @@
             </button>
 
             <h3 class="text-xl font-extrabold text-slate-900 dark:text-white mb-1">Selesaikan Captcha</h3>
-            <p class="text-xs text-slate-500 dark:text-slate-400 mb-6">Bip Bop! verifikasi captcha di bawah ini</p>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mb-6">Bip Bop! Verifikasi captcha di bawah ini</p>
 
-            <div class="bg-slate-50 dark:bg-slate-950 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 flex justify-center items-center min-h-[120px] mb-4">
-                <div class="h-captcha" data-sitekey="10000000-ffff-ffff-ffff-ffffffffffff" data-callback="onCaptchaSuccess"></div>
+            <div class="bg-slate-50 dark:bg-slate-950 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 flex justify-center items-center min-h-[100px] mb-4">
+                <div id="hcaptcha-container"></div>
             </div>
 
             <p id="captchaNotice" class="text-[11px] text-slate-400">Centang kotak di atas untuk melanjutkan.</p>
@@ -336,13 +336,17 @@
         const SUPABASE_URL = "https://lcpskriooezyxgrnarol.supabase.co"; 
         const SUPABASE_KEY = "sb_publishable_puy9U_93p-7_Q64oHrYUpg_iEF3nJ-c";
 
-        // GANTI DENGAN EMAIL SUPERADMIN ANDA
+        // SITE KEY HCAPTCHA RESMI ANDA
+        const HCAPTCHA_SITE_KEY = "60428612-e964-4f76-832a-70f8c5403c26";
+
+        // EMAIL ACC SUPERADMIN
         const SUPERADMIN_EMAILS = ["mastrisnocom@gmail.com", "adnan@ahtris.my.id"];
 
         let currentUser = null;
         let isRegisterMode = false;
         let pendingShortenData = null;
         let adSettings = {};
+        let hcaptchaWidgetId = null;
 
         function initTheme() {
             const savedTheme = localStorage.getItem('theme') || 'dark';
@@ -449,7 +453,16 @@
         // --- SISTEM CAPTCHA ---
         function openCaptchaModal() {
             document.getElementById('captchaModal').classList.remove('hidden');
-            if (window.hcaptcha) hcaptcha.reset();
+            if (window.hcaptcha) {
+                if (hcaptchaWidgetId === null) {
+                    hcaptchaWidgetId = hcaptcha.render('hcaptcha-container', {
+                        sitekey: HCAPTCHA_SITE_KEY,
+                        callback: 'onCaptchaSuccess'
+                    });
+                } else {
+                    hcaptcha.reset(hcaptchaWidgetId);
+                }
+            }
         }
 
         function closeCaptchaModal() {
@@ -458,12 +471,16 @@
         }
 
         function onCaptchaSuccess(token) {
+            const notice = document.getElementById('captchaNotice');
+            notice.textContent = "Verifikasi berhasil! Memproses...";
+            notice.className = "text-[11px] text-emerald-500 font-bold";
+
             setTimeout(() => {
                 closeCaptchaModal();
                 if (pendingShortenData) {
                     processShortenLink(pendingShortenData.original_url, pendingShortenData.slug);
                 }
-            }, 500);
+            }, 600);
         }
 
         // --- PROSES FORM SHORTENER ---
