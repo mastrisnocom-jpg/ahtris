@@ -66,7 +66,7 @@
         </div>
     </header>
 
-    <!-- Content Utama -->
+    <!-- Content Utama Builder -->
     <main id="mainContent" class="max-w-6xl mx-auto px-4 py-10 w-full flex-1">
         <div class="text-center mb-8">
             <span class="px-3 py-1 bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 text-xs font-semibold rounded-full uppercase tracking-wider">
@@ -113,7 +113,7 @@
                     <div>
                         <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Custom Slug URL</label>
                         <div class="flex items-center bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl px-4 py-2.5">
-                            <span class="text-slate-400 text-xs font-mono mr-1" id="slugPrefix">ahtris.my.id/microsite.html?page=</span>
+                            <span class="text-slate-400 text-xs font-mono mr-1" id="slugPrefix">ahtris.my.id/</span>
                             <input type="text" id="inputSlug" placeholder="adnan-official" class="w-full bg-transparent focus:outline-none font-mono text-xs text-emerald-600 dark:text-emerald-400 font-bold">
                         </div>
                     </div>
@@ -153,7 +153,7 @@
         </div>
     </main>
 
-    <!-- CONTAINER UNTUK TAMPILAN PUBLIK MICROSITE (JIKA DIBUKA LEWAT LINK) -->
+    <!-- CONTAINER TAMPILAN PUBLIK MICROSITE HASIL AKHIR -->
     <div id="publicMicrositeView" class="hidden min-h-[80vh] flex flex-col items-center justify-center p-4">
         <div class="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-2xl p-8 text-center relative">
             <div class="w-24 h-24 bg-emerald-500 rounded-full mx-auto mb-4 flex items-center justify-center text-white text-4xl font-black shadow-lg">
@@ -206,7 +206,7 @@
         © 2026 Short Link & Microsite Manager — Supported by PT. Binayasa Putrabatara
     </footer>
 
-    <!-- LOGIKA JAVASCRIPT AKSI SUPABASE & AUTO-RENDER PUBLIK -->
+    <!-- LOGIKA JAVASCRIPT AKSI SUPABASE & PATH ROUTING -->
     <script>
         const SUPABASE_URL = "https://lcpskriooezyxgrnarol.supabase.co"; 
         const SUPABASE_KEY = "sb_publishable_puy9U_93p-7_Q64oHrYUpg_iEF3nJ-c";
@@ -443,7 +443,7 @@
             });
         }
 
-        // --- FUNGSI SIMPAN MICROSITE KE DATABASE SUPABASE ---
+        // --- SIMPAN MICROSITE KE DATABASE ---
         async function saveMicrosite() {
             if (!currentUser) {
                 alert("Silakan login terlebih dahulu!");
@@ -463,7 +463,6 @@
             btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Mempublikasikan...`;
 
             try {
-                // 1. Simpan/Update Profil Creator
                 const profRes = await fetch(`${SUPABASE_URL}/rest/v1/microsite_profiles`, {
                     method: 'POST',
                     headers: {
@@ -483,7 +482,6 @@
                 const profData = await profRes.json();
                 const profileId = profData[0].id;
 
-                // 2. Kumpulkan Semua Tautan
                 const container = document.getElementById('linkInputsContainer');
                 const items = container.querySelectorAll('[id^="link_item_"]');
                 const linksToSave = [];
@@ -503,7 +501,6 @@
                     }
                 });
 
-                // Hapus tautan lama lalu simpan yang baru
                 await fetch(`${SUPABASE_URL}/rest/v1/microsite_links?profile_id=eq.${profileId}`, {
                     method: 'DELETE',
                     headers: getHeaders(currentUser.access_token)
@@ -517,7 +514,7 @@
                     });
                 }
 
-                const fullUrl = `${window.location.origin}/microsite.html?page=${slug}`;
+                const fullUrl = `${window.location.origin}/${slug}`;
                 alert(`Microsite Berhasil Dipublikasikan!\nTautan Anda: ${fullUrl}`);
                 window.location.href = fullUrl;
 
@@ -528,12 +525,18 @@
             }
         }
 
-        // --- FUNGSI MENCEK & TAMPILKAN MICROSITE PUBLIK ---
+        // --- CEK & TAMPILKAN HASIL MICROSITE DENGAN LINK BERSIH ---
         async function checkPublicPage() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const pageSlug = urlParams.get('page');
+            // Mengambil pathname URL (contoh: ahtris.my.id/adnan-official -> slug = 'adnan-official')
+            let pageSlug = window.location.pathname.replace(/^\/|\/$/g, '');
 
-            if (pageSlug) {
+            // Mencek parameter URL cadangan jika di-pass via query ?page=
+            const urlParams = new URLSearchParams(window.location.search);
+            if (!pageSlug || pageSlug === 'microsite.html') {
+                pageSlug = urlParams.get('page');
+            }
+
+            if (pageSlug && pageSlug !== 'microsite.html' && pageSlug !== 'index.html') {
                 document.getElementById('mainContent').classList.add('hidden');
                 document.getElementById('publicMicrositeView').classList.remove('hidden');
 
@@ -549,7 +552,6 @@
                         document.getElementById('pubName').textContent = prof.display_name;
                         document.getElementById('pubBio').textContent = prof.bio;
 
-                        // Fetch Links
                         const linksRes = await fetch(`${SUPABASE_URL}/rest/v1/microsite_links?profile_id=eq.${prof.id}&select=title,url&order=sort_order.asc`, {
                             method: 'GET',
                             headers: getHeaders()
