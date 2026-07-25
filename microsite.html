@@ -32,7 +32,7 @@
 </head>
 <body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 min-h-screen font-sans flex flex-col justify-between transition-colors duration-300">
 
-    <!-- Header / Navbar -->
+    <!-- Header / Navbar Tanpa Tampilan Email -->
     <header class="w-full border-b border-slate-200 dark:border-emerald-900/40 bg-white/80 dark:bg-slate-900/90 backdrop-blur-md sticky top-0 z-40">
         <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
             <a href="/" class="text-xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-2.5">
@@ -54,10 +54,7 @@
                     </button>
 
                     <div id="userProfile" class="hidden items-center gap-3">
-                        <span id="userEmailDisplay" class="text-xs font-mono text-emerald-800 dark:text-emerald-200 bg-emerald-50 dark:bg-emerald-950/60 px-3 py-1.5 rounded-lg border border-emerald-200 dark:border-emerald-800/50">
-                            user@example.com
-                        </span>
-                        <button type="button" onclick="handleLogout()" class="px-3 py-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 dark:text-rose-400 border border-rose-500/20 rounded-lg text-xs font-semibold transition flex items-center gap-1">
+                        <button type="button" onclick="handleLogout()" class="px-3.5 py-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 dark:text-rose-400 border border-rose-500/20 rounded-xl text-xs font-semibold transition flex items-center gap-1.5">
                             <i class="fa-solid fa-arrow-right-from-bracket"></i> Keluar
                         </button>
                     </div>
@@ -102,7 +99,7 @@
                 </h2>
 
                 <div class="space-y-4">
-                    <!-- UPLOAD FOTO PROFIL (SUPABASE STORAGE) -->
+                    <!-- UPLOAD FOTO PROFIL -->
                     <div>
                         <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-2">Foto Profil (Supabase Storage)</label>
                         <div class="flex items-center gap-4">
@@ -115,24 +112,24 @@
                                 <button type="button" onclick="document.getElementById('inputAvatar').click()" class="px-4 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-emerald-50 dark:hover:bg-emerald-950 border border-slate-300 dark:border-slate-700 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 transition flex items-center gap-2">
                                     <i class="fa-solid fa-cloud-arrow-up text-emerald-500"></i> Pilih Foto
                                 </button>
-                                <p class="text-[10px] text-slate-400 mt-1">Disimpan otomatis di Supabase Storage. Maksimal 5MB.</p>
+                                <p class="text-[10px] text-slate-400 mt-1">Foto otomatis tersimpan di Supabase Storage.</p>
                             </div>
                         </div>
                     </div>
 
                     <div>
                         <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Nama Creator / Judul</label>
-                        <input type="text" id="inputName" oninput="updatePreview()" placeholder="Contoh: Adnan Content Creator" class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-sm focus:outline-none focus:border-emerald-500">
+                        <input type="text" id="inputName" oninput="updatePreview()" placeholder="Contoh: AHTRIS" class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-sm focus:outline-none focus:border-emerald-500 font-bold uppercase">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Bio / Profesi</label>
-                        <input type="text" id="inputBio" oninput="updatePreview()" placeholder="Contoh: Tech Reviewer & Digital Creator" class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-sm focus:outline-none focus:border-emerald-500">
+                        <input type="text" id="inputBio" oninput="updatePreview()" placeholder="Contoh: CONTENT CREATOR" class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-sm focus:outline-none focus:border-emerald-500 uppercase">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Custom Slug URL</label>
                         <div class="flex items-center bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl px-4 py-2.5">
                             <span class="text-slate-400 text-xs font-mono mr-1" id="slugPrefix">ahtris.my.id/</span>
-                            <input type="text" id="inputSlug" placeholder="adnan-official" class="w-full bg-transparent focus:outline-none font-mono text-xs text-emerald-600 dark:text-emerald-400 font-bold">
+                            <input type="text" id="inputSlug" placeholder="ahtris" class="w-full bg-transparent focus:outline-none font-mono text-xs text-emerald-600 dark:text-emerald-400 font-bold">
                         </div>
                     </div>
                 </div>
@@ -148,50 +145,30 @@
                     <div id="linkInputsContainer" class="space-y-3"></div>
                 </div>
 
-                <button type="button" onclick="saveMicrosite()" id="btnSaveMicrosite" class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl transition shadow-lg shadow-emerald-600/20 text-sm flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-floppy-disk"></i> Simpan & Publiskan Microsite
+                <button type="button" onclick="saveDirectToSupabase()" id="btnSaveMicrosite" class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl transition shadow-lg shadow-emerald-600/20 text-sm flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-floppy-disk"></i> Simpan & Publiskan Langsung
                 </button>
             </div>
 
             <!-- LIVE PREVIEW HP (RIGHT) -->
             <div class="lg:col-span-5 flex justify-center sticky top-24">
-                <div class="w-full max-w-[320px] bg-white dark:bg-slate-900 border-8 border-slate-800 dark:border-slate-800 rounded-[40px] shadow-2xl overflow-hidden p-6 flex flex-col items-center text-center relative min-h-[520px]">
+                <div class="w-full max-w-[320px] bg-white border-8 border-slate-800 rounded-[40px] shadow-2xl overflow-hidden p-6 flex flex-col items-center text-center relative min-h-[520px]">
                     <div class="w-28 h-4 bg-slate-800 absolute top-0 rounded-b-xl mb-6"></div>
 
                     <!-- Avatar Profile Preview -->
-                    <div class="w-20 h-20 rounded-full mt-6 mb-3 overflow-hidden border-2 border-emerald-500 shadow-md flex items-center justify-center bg-emerald-500 text-white shrink-0">
+                    <div class="w-24 h-24 rounded-full mt-6 mb-3 overflow-hidden border-2 border-emerald-500 shadow-md flex items-center justify-center bg-emerald-500 text-white shrink-0">
                         <img id="prevAvatarImg" src="" alt="" class="w-full h-full object-cover hidden">
-                        <i id="prevAvatarIcon" class="fa-solid fa-user-astronaut text-3xl"></i>
+                        <i id="prevAvatarIcon" class="fa-solid fa-user text-4xl"></i>
                     </div>
 
-                    <h3 id="prevName" class="font-bold text-base text-slate-900 dark:text-white">Nama Creator</h3>
-                    <p id="prevBio" class="text-xs text-slate-500 dark:text-slate-400 mt-0.5 mb-6">Tech Reviewer & Digital Creator</p>
+                    <h3 id="prevName" class="font-extrabold text-lg text-slate-900 tracking-wide uppercase">AHTRIS</h3>
+                    <p id="prevBio" class="text-xs text-slate-500 font-medium tracking-wider uppercase mt-0.5 mb-6">CONTENT CREATOR</p>
 
-                    <div id="prevLinksContainer" class="w-full space-y-2.5 overflow-y-auto max-h-[300px] pr-1"></div>
+                    <div id="prevLinksContainer" class="w-full space-y-3 overflow-y-auto max-h-[300px] pr-1"></div>
                 </div>
             </div>
         </div>
     </main>
-
-    <!-- CONTAINER TAMPILAN PUBLIK MICROSITE -->
-    <div id="publicMicrositeView" class="hidden min-h-[80vh] flex flex-col items-center justify-center p-4">
-        <div class="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-2xl p-8 text-center relative">
-            <div class="w-24 h-24 rounded-full mx-auto mb-4 overflow-hidden border-4 border-emerald-500 shadow-lg flex items-center justify-center bg-emerald-500 text-white shrink-0">
-                <img id="pubAvatarImg" src="" alt="" class="w-full h-full object-cover hidden">
-                <i id="pubAvatarIcon" class="fa-solid fa-user-astronaut text-4xl"></i>
-            </div>
-            <h1 id="pubName" class="text-2xl font-bold text-slate-900 dark:text-white">--</h1>
-            <p id="pubBio" class="text-xs text-slate-500 dark:text-slate-400 mt-1 mb-8">--</p>
-
-            <div id="pubLinksContainer" class="space-y-3 w-full"></div>
-
-            <div class="mt-10 pt-4 border-t border-slate-100 dark:border-slate-800">
-                <a href="/" class="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 hover:underline">
-                    Powered by ahtris.my.id
-                </a>
-            </div>
-        </div>
-    </div>
 
     <!-- MODAL AUTH -->
     <div id="authModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
@@ -227,7 +204,7 @@
         © 2026 Short Link & Microsite Manager — Supported by PT. Binayasa Putrabatara
     </footer>
 
-    <!-- LOGIKA JAVASCRIPT LOGIKA STORAGE SUPABASE -->
+    <!-- LOGIKA JAVASCRIPT LENGKAP -->
     <script>
         const SUPABASE_URL = "https://lcpskriooezyxgrnarol.supabase.co"; 
         const SUPABASE_KEY = "sb_publishable_puy9U_93p-7_Q64oHrYUpg_iEF3nJ-c";
@@ -290,7 +267,6 @@
         function renderUserUI() {
             const btnOpenAuth = document.getElementById('btnOpenAuth');
             const userProfile = document.getElementById('userProfile');
-            const userEmailDisplay = document.getElementById('userEmailDisplay');
             const loginWarning = document.getElementById('loginWarning');
             const builderContainer = document.getElementById('builderContainer');
 
@@ -298,7 +274,6 @@
                 btnOpenAuth.classList.add('hidden');
                 userProfile.classList.remove('hidden');
                 userProfile.classList.add('flex');
-                userEmailDisplay.textContent = currentUser.user?.email || currentUser.email || 'Member';
 
                 loginWarning.classList.add('hidden');
                 builderContainer.classList.remove('opacity-50', 'pointer-events-none');
@@ -323,6 +298,7 @@
             document.getElementById('btnToggleAuth').textContent = isRegisterMode ? "Login di sini" : "Daftar Sekarang";
         }
 
+        // --- AUTENTIKASI SUPABASE AUTH AMAN ---
         document.getElementById('authForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('authEmail').value.trim();
@@ -333,12 +309,17 @@
             authStatus.className = "mt-3 text-center text-xs font-medium text-slate-400";
             authStatus.classList.remove('hidden');
 
-            const endpoint = isRegisterMode ? `${SUPABASE_URL}/auth/v1/signup` : `${SUPABASE_URL}/auth/v1/token?grant_type=password`;
+            const endpoint = isRegisterMode 
+                ? `${SUPABASE_URL}/auth/v1/signup` 
+                : `${SUPABASE_URL}/auth/v1/token?grant_type=password`;
 
             try {
                 const response = await fetch(endpoint, {
                     method: 'POST',
-                    headers: getHeaders(),
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Content-Type': 'application/json'
+                    },
                     body: JSON.stringify({ email, password })
                 });
 
@@ -350,19 +331,28 @@
                         authStatus.className = "mt-3 text-center text-xs font-medium text-emerald-500";
                         toggleAuthMode();
                     } else {
-                        currentUser = data;
-                        localStorage.setItem('sb_user_session', JSON.stringify(data));
+                        const sessionPayload = {
+                            access_token: data.access_token,
+                            refresh_token: data.refresh_token,
+                            user: data.user || data
+                        };
+                        currentUser = sessionPayload;
+                        localStorage.setItem('sb_user_session', JSON.stringify(sessionPayload));
+                        
                         renderUserUI();
                         loadUserExistingProfile();
                         closeAuthModal();
                         document.getElementById('authForm').reset();
+                        authStatus.classList.add('hidden');
                     }
                 } else {
-                    authStatus.textContent = data.error_description || data.msg || "Gagal Autentikasi";
+                    const errorMsg = data.error_description || data.msg || data.message || "Gagal Autentikasi";
+                    authStatus.textContent = errorMsg;
                     authStatus.className = "mt-3 text-center text-xs font-medium text-rose-500";
                 }
             } catch (err) {
-                authStatus.textContent = "Terjadi kesalahan koneksi.";
+                authStatus.textContent = "Terjadi kesalahan koneksi jaringan.";
+                authStatus.className = "mt-3 text-center text-xs font-medium text-rose-500";
             }
         });
 
@@ -373,7 +363,6 @@
             window.location.reload();
         }
 
-        // --- HANDLER PILIH FOTO LOKAL (PREVIEW) ---
         function handleAvatarSelection(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -384,8 +373,6 @@
             }
 
             selectedAvatarFile = file;
-
-            // Tampilkan Local Preview sementara
             const tempUrl = URL.createObjectURL(file);
             setAvatarPreviewImage(tempUrl);
         }
@@ -413,13 +400,11 @@
             }
         }
 
-        // --- FUNGSI UPLOAD FOTO LANGSUNG KE SUPABASE STORAGE BUCKET 'avatars' ---
         async function uploadAvatarToSupabaseStorage() {
             if (!selectedAvatarFile || !currentUser) return currentUploadedAvatarUrl;
 
             const fileExt = selectedAvatarFile.name.split('.').pop();
             const fileName = `${currentUser.user.id}_avatar_${Date.now()}.${fileExt}`;
-            const filePath = `${fileName}`;
 
             const uploadHeaders = {
                 'apikey': SUPABASE_KEY,
@@ -428,7 +413,7 @@
                 'x-upsert': 'true'
             };
 
-            const uploadRes = await fetch(`${SUPABASE_URL}/storage/v1/object/avatars/${filePath}`, {
+            const uploadRes = await fetch(`${SUPABASE_URL}/storage/v1/object/avatars/${fileName}`, {
                 method: 'POST',
                 headers: uploadHeaders,
                 body: selectedAvatarFile
@@ -439,9 +424,7 @@
                 throw new Error("Gagal unggah foto ke Storage: " + (errJson.message || "Pastikan Bucket 'avatars' sudah dibuat"));
             }
 
-            // Kembalikan Public URL dari Storage Supabase
-            const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/avatars/${filePath}`;
-            return publicUrl;
+            return `${SUPABASE_URL}/storage/v1/object/public/avatars/${fileName}`;
         }
 
         function detectSocialIcon(url) {
@@ -453,17 +436,13 @@
             } else if (lowerUrl.includes('instagram.com')) {
                 return { icon: 'fa-brands fa-instagram', color: 'text-pink-500', name: 'Instagram' };
             } else if (lowerUrl.includes('twitter.com') || lowerUrl.includes('x.com')) {
-                return { icon: 'fa-brands fa-x-twitter', color: 'text-slate-800 dark:text-white', name: 'Twitter / X' };
+                return { icon: 'fa-brands fa-x-twitter', color: 'text-slate-800', name: 'Twitter / X' };
             } else if (lowerUrl.includes('tiktok.com')) {
-                return { icon: 'fa-brands fa-tiktok', color: 'text-slate-900 dark:text-white', name: 'TikTok' };
+                return { icon: 'fa-brands fa-tiktok', color: 'text-slate-900', name: 'TikTok' };
             } else if (lowerUrl.includes('wa.me') || lowerUrl.includes('whatsapp.com')) {
                 return { icon: 'fa-brands fa-whatsapp', color: 'text-emerald-500', name: 'WhatsApp' };
             } else if (lowerUrl.includes('linkedin.com')) {
                 return { icon: 'fa-brands fa-linkedin', color: 'text-blue-500', name: 'LinkedIn' };
-            } else if (lowerUrl.includes('github.com')) {
-                return { icon: 'fa-brands fa-github', color: 'text-purple-400', name: 'GitHub' };
-            } else if (lowerUrl.includes('t.me') || lowerUrl.includes('telegram.org')) {
-                return { icon: 'fa-brands fa-telegram', color: 'text-sky-400', name: 'Telegram' };
             }
             return { icon: 'fa-solid fa-globe', color: 'text-emerald-500', name: 'Website' };
         }
@@ -509,8 +488,8 @@
         }
 
         function updatePreview() {
-            const name = document.getElementById('inputName').value || 'Nama Creator';
-            const bio = document.getElementById('inputBio').value || 'Tech Reviewer & Digital Creator';
+            const name = document.getElementById('inputName').value || 'AHTRIS';
+            const bio = document.getElementById('inputBio').value || 'CONTENT CREATOR';
 
             document.getElementById('prevName').textContent = name;
             document.getElementById('prevBio').textContent = bio;
@@ -528,17 +507,16 @@
                 const detected = detectSocialIcon(url);
 
                 const linkBtnHtml = `
-                    <a href="${url}" target="_blank" class="w-full py-2.5 px-4 bg-slate-100 dark:bg-slate-800/80 hover:bg-emerald-500 hover:text-white rounded-xl text-xs font-semibold text-slate-800 dark:text-slate-100 transition flex items-center justify-between shadow-sm border border-slate-200 dark:border-slate-700/50">
-                        <i class="${detected.icon} ${detected.color} text-base"></i>
-                        <span class="truncate px-2">${title}</span>
-                        <i class="fa-solid fa-chevron-right text-[10px] text-slate-400"></i>
+                    <a href="${url}" target="_blank" class="w-full py-3.5 px-5 bg-slate-50 hover:bg-slate-100 rounded-2xl text-sm font-bold text-slate-800 transition flex items-center justify-between border border-slate-200 shadow-sm">
+                        <i class="${detected.icon} ${detected.color} text-xl"></i>
+                        <span class="truncate px-2 font-bold">${title}</span>
+                        <i class="fa-solid fa-chevron-right text-xs text-slate-400"></i>
                     </a>
                 `;
                 prevLinksContainer.insertAdjacentHTML('beforeend', linkBtnHtml);
             });
         }
 
-        // --- AMBIL DATA PROFIL USER ---
         async function loadUserExistingProfile() {
             if (!currentUser) return;
 
@@ -579,8 +557,7 @@
             }
         }
 
-        // --- SIMPAN MICROSITE DENGAN FOTO STORAGE SUPABASE ---
-        async function saveMicrosite() {
+        async function saveDirectToSupabase() {
             if (!currentUser) {
                 alert("Silakan login terlebih dahulu!");
                 return;
@@ -596,16 +573,14 @@
             }
 
             const btn = document.getElementById('btnSaveMicrosite');
-            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Mengunggah Foto & Mempublikasikan...`;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Mempublikasikan ke Supabase...`;
 
             try {
-                // 1. Unggah Foto ke Storage Supabase jika ada file baru yang dipilih
                 let finalAvatarUrl = currentUploadedAvatarUrl;
                 if (selectedAvatarFile) {
                     finalAvatarUrl = await uploadAvatarToSupabaseStorage();
                 }
 
-                // 2. Cek Apakah Profil User Sudah Ada
                 const checkRes = await fetch(`${SUPABASE_URL}/rest/v1/microsite_profiles?user_id=eq.${currentUser.user.id}&select=id`, {
                     method: 'GET',
                     headers: getHeaders(currentUser.access_token)
@@ -615,7 +590,6 @@
                 let profileId = null;
 
                 if (existingData && existingData.length > 0) {
-                    // UPDATE
                     profileId = existingData[0].id;
                     const updateRes = await fetch(`${SUPABASE_URL}/rest/v1/microsite_profiles?id=eq.${profileId}`, {
                         method: 'PATCH',
@@ -634,7 +608,6 @@
                         throw new Error(errJson.message || "Gagal memperbarui profil.");
                     }
                 } else {
-                    // INSERT
                     const insertRes = await fetch(`${SUPABASE_URL}/rest/v1/microsite_profiles`, {
                         method: 'POST',
                         headers: getHeaders(currentUser.access_token),
@@ -656,7 +629,6 @@
                     profileId = newProfData[0].id;
                 }
 
-                // 3. Simpan Tautan
                 const container = document.getElementById('linkInputsContainer');
                 const items = container.querySelectorAll('[id^="link_item_"]');
                 const linksToSave = [];
@@ -690,84 +662,13 @@
                 }
 
                 const fullUrl = `${window.location.origin}/${slug}`;
-                alert(`Microsite Berhasil Dipublikasikan!\nTautan Anda: ${fullUrl}`);
+                alert(`Microsite Berhasil Dipublikasikan!\n\nTautan Anda: ${fullUrl}`);
                 window.location.href = fullUrl;
 
             } catch (err) {
                 alert("Error: " + err.message);
             } finally {
-                btn.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Simpan & Publiskan Microsite`;
-            }
-        }
-
-        // --- CHECK PUBLIK MICROSITE ---
-        async function checkPublicPage() {
-            let pageSlug = window.location.pathname.replace(/^\/|\/$/g, '');
-            const urlParams = new URLSearchParams(window.location.search);
-            
-            if (!pageSlug || pageSlug === 'microsite.html') {
-                pageSlug = urlParams.get('page');
-            }
-
-            if (pageSlug && pageSlug !== 'microsite.html' && pageSlug !== 'index.html' && pageSlug !== 'privacy.html' && pageSlug !== 'kontak.html') {
-                document.getElementById('mainContent').classList.add('hidden');
-                document.getElementById('publicMicrositeView').classList.remove('hidden');
-
-                try {
-                    const res = await fetch(`${SUPABASE_URL}/rest/v1/microsite_profiles?slug=eq.${encodeURIComponent(pageSlug)}&select=id,display_name,bio,avatar_url`, {
-                        method: 'GET',
-                        headers: getHeaders()
-                    });
-                    const data = await res.json();
-
-                    if (data && data.length > 0) {
-                        const prof = data[0];
-                        document.getElementById('pubName').textContent = prof.display_name;
-                        document.getElementById('pubBio').textContent = prof.bio;
-
-                        const pubAvatarImg = document.getElementById('pubAvatarImg');
-                        const pubAvatarIcon = document.getElementById('pubAvatarIcon');
-
-                        if (prof.avatar_url) {
-                            pubAvatarImg.src = prof.avatar_url;
-                            pubAvatarImg.classList.remove('hidden');
-                            pubAvatarIcon.classList.add('hidden');
-                        } else {
-                            pubAvatarImg.classList.add('hidden');
-                            pubAvatarIcon.classList.remove('hidden');
-                        }
-
-                        const linksRes = await fetch(`${SUPABASE_URL}/rest/v1/microsite_links?profile_id=eq.${prof.id}&select=title,url&order=sort_order.asc`, {
-                            method: 'GET',
-                            headers: getHeaders()
-                        });
-                        const linksData = await linksRes.json();
-
-                        const container = document.getElementById('pubLinksContainer');
-                        container.innerHTML = '';
-
-                        linksData.forEach(item => {
-                            const detected = detectSocialIcon(item.url);
-                            container.innerHTML += `
-                                <a href="${item.url}" target="_blank" class="w-full py-3.5 px-5 bg-slate-50 dark:bg-slate-800 hover:bg-emerald-600 hover:text-white rounded-2xl text-sm font-bold text-slate-800 dark:text-slate-100 transition flex items-center justify-between border border-slate-200 dark:border-slate-700/60 shadow-sm">
-                                    <i class="${detected.icon} ${detected.color} text-xl"></i>
-                                    <span class="truncate px-2">${item.title}</span>
-                                    <i class="fa-solid fa-arrow-up-right-from-square text-xs opacity-50"></i>
-                                </a>
-                            `;
-                        });
-                    } else {
-                        document.getElementById('publicMicrositeView').innerHTML = `
-                            <div class="text-center">
-                                <h1 class="text-3xl font-bold text-rose-500">404 - Microsite Tidak Ditemukan</h1>
-                                <p class="text-xs text-slate-400 mt-2 mb-4">Halaman microsite ini belum terdaftar.</p>
-                                <a href="microsite.html" class="px-4 py-2 bg-emerald-600 text-white rounded-xl text-xs font-bold">Buat Microsite Anda</a>
-                            </div>
-                        `;
-                    }
-                } catch (e) {
-                    console.error(e);
-                }
+                btn.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Simpan & Publiskan Langsung`;
             }
         }
 
@@ -775,7 +676,10 @@
         checkSession();
         addLinkInput('Channel YouTube', 'https://youtube.com');
         addLinkInput('Instagram Resmi', 'https://instagram.com');
-        checkPublicPage();
+   addLinkInput('Tiktok Resmi', 'https://tiktok.com');
+addLinkInput('Facebook Resmi', 'https://facebook.com');
+
+    
     </script>
 </body>
 </html>
