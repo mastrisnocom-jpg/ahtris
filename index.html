@@ -32,7 +32,7 @@
 </head>
 <body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 min-h-screen font-sans flex flex-col justify-between transition-colors duration-300">
 
-    <!-- Header / Navbar Tanpa Tampilan Email -->
+    <!-- Header / Navbar -->
     <header class="w-full border-b border-slate-200 dark:border-emerald-900/40 bg-white/80 dark:bg-slate-900/90 backdrop-blur-md sticky top-0 z-40 transition-colors">
         <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
             <a href="/" class="text-xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-2.5">
@@ -87,7 +87,7 @@
             </a>
         </div>
 
-        <!-- FORM PEMBUAT LINK -->
+        <!-- FORM PEMBUAT LINK & BARCODE -->
         <div class="mb-6">
             <form id="shortenForm" class="space-y-4">
                 <div class="relative bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-full p-2 pl-6 shadow-xl flex items-center justify-between focus-within:border-emerald-500 focus-within:ring-2 focus-within:ring-emerald-500/20 transition-all">
@@ -152,7 +152,7 @@
         </div>
     </div>
 
-    <!-- MODAL SAMPLE QR CODE -->
+    <!-- MODAL SAMPLE QR CODE (DENGAN BADGE AH) -->
     <div id="sampleQrModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl w-full max-w-sm p-6 shadow-2xl relative text-center">
             <button onclick="closeSampleQrModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-white text-lg">
@@ -160,10 +160,10 @@
             </button>
             <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-1">Contoh Barcode / QR Code</h3>
             <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">
-                Tempelkan URL Anda di form untuk menghasilkan Kode QR resmi.
+                QR Code resmi lengkap dengan logo badge AHTRIS.
             </p>
             <div class="bg-white p-3 rounded-xl inline-block mb-4 shadow-md border border-slate-200">
-                <img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=https://ahtris.my.id" alt="Contoh Barcode QR" class="w-48 h-48 object-contain mx-auto">
+                <img id="sampleQrImg" src="" alt="Contoh Barcode QR AH" class="w-48 h-48 object-contain mx-auto">
             </div>
             <button onclick="closeSampleQrModal()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs transition">
                 Tutup & Mulai Buat QR Code
@@ -171,7 +171,7 @@
         </div>
     </div>
 
-    <!-- MODAL HASIL SHORT LINK / QR CODE -->
+    <!-- MODAL HASIL SHORT LINK / QR CODE (DENGAN BADGE AH) -->
     <div id="guestResultModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-emerald-700/50 rounded-2xl w-full max-w-sm p-6 shadow-2xl relative text-center">
             <button onclick="closeGuestModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-white text-lg">
@@ -193,7 +193,7 @@
                     <button onclick="copyGuestLink()" class="py-2.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-white font-bold rounded-xl text-xs transition flex items-center justify-center gap-1.5">
                         <i class="fa-regular fa-copy"></i> Salin Link
                     </button>
-                    <a id="downloadQrBtn" href="" download="qrcode.png" target="_blank" class="py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs transition flex items-center justify-center gap-1.5">
+                    <a id="downloadQrBtn" href="" download="qrcode-ahtris.png" target="_blank" class="py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs transition flex items-center justify-center gap-1.5">
                         <i class="fa-solid fa-download"></i> Unduh QR
                     </a>
                 </div>
@@ -201,7 +201,7 @@
         </div>
     </div>
 
-    <!-- MODAL LOADING -->
+    <!-- MODAL LOADING PEMBUATAN LINK -->
     <div id="loadingModal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-emerald-800/60 rounded-2xl w-full max-w-sm p-6 shadow-2xl text-center">
             <i class="fa-solid fa-gear fa-spin text-4xl text-emerald-600 dark:text-emerald-400 mb-4"></i>
@@ -217,7 +217,7 @@
         </div>
     </div>
 
-    <!-- MODAL AUTH -->
+    <!-- MODAL AUTH (LOGIN / REGISTER) -->
     <div id="authModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-emerald-900/50 rounded-2xl w-full max-w-md p-6 shadow-2xl relative">
             <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-white text-lg">
@@ -254,15 +254,15 @@
                 <div class="flex flex-wrap items-center justify-center gap-6 sm:gap-12">
                     <div class="flex items-center gap-2 text-slate-700 dark:text-slate-200 hover:text-emerald-600 transition">
                         <i class="fa-solid fa-building text-emerald-600 dark:text-emerald-500 text-lg"></i>
-                        <span class="font-bold text-xs tracking-tight">YOUTUBE/span>
+                        <span class="font-bold text-xs tracking-tight">PT. BINAYASA PUTRABATARA</span>
                     </div>
                     <div class="flex items-center gap-2 text-slate-700 dark:text-slate-200 hover:text-emerald-600 transition">
                         <i class="fa-solid fa-network-wired text-emerald-600 dark:text-emerald-500 text-lg"></i>
-                        <span class="font-bold text-xs tracking-tight">FACEBOOK<span class="text-slate-400 font-normal">(Building Management Info System)</span></span>
+                        <span class="font-bold text-xs tracking-tight">BMIS <span class="text-slate-400 font-normal">(Building Management Info System)</span></span>
                     </div>
                     <div class="flex items-center gap-2 text-slate-700 dark:text-slate-200 hover:text-emerald-600 transition">
                         <i class="fa-solid fa-mobile-screen-button text-emerald-600 dark:text-emerald-500 text-lg"></i>
-                        <span class="font-bold text-xs tracking-tight">TIKTOK</span>
+                        <span class="font-bold text-xs tracking-tight">BPB MOBILE</span>
                     </div>
                 </div>
             </div>
@@ -275,11 +275,11 @@
                 <a href="kontak.html" class="hover:text-emerald-600 dark:hover:text-emerald-400 transition">Kontak Kami</a>
             </div>
 
-            <p class="text-slate-400 dark:text-slate-600 text-[11px]">© 2026 Short Link Manager. Database Powered by AHTRIS</p>
+            <p class="text-slate-400 dark:text-slate-600 text-[11px]">© 2026 Short Link Manager. Database Powered by Supabase & Hosted on GitHub Pages</p>
         </div>
     </footer>
 
-    <!-- LOGIKA JAVASCRIPT LENGKAP -->
+    <!-- LOGIKA JAVASCRIPT & QR CODE CANVAS GENERATOR -->
     <script>
         const SUPABASE_URL = "https://lcpskriooezyxgrnarol.supabase.co"; 
         const SUPABASE_KEY = "sb_publishable_puy9U_93p-7_Q64oHrYUpg_iEF3nJ-c";
@@ -310,8 +310,55 @@
             }
         }
 
+        // --- FUNGSI PROSESSING CANVAS KUSTOM LOGO "AH" DI TENGAH QR ---
+        function generateQrWithCenterText(targetUrl, callback) {
+            const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(targetUrl)}`;
+            const img = new Image();
+            img.crossOrigin = "Anonymous";
+            img.src = qrApiUrl;
+
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                canvas.width = 300;
+                canvas.height = 300;
+                const ctx = canvas.getContext('2d');
+
+                // 1. Gambar QR Code Dasar
+                ctx.drawImage(img, 0, 0, 300, 300);
+
+                // 2. Lingkaran Dasar Putih di Tengah
+                const centerX = 150;
+                const centerY = 150;
+                const boxSize = 54;
+
+                ctx.fillStyle = "#ffffff";
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, boxSize / 2 + 4, 0, 2 * Math.PI);
+                ctx.fill();
+
+                // 3. Badge Lingkaran Hijau Emerald
+                ctx.fillStyle = "#059669"; 
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, boxSize / 2, 0, 2 * Math.PI);
+                ctx.fill();
+
+                // 4. Teks "AH"
+                ctx.fillStyle = "#ffffff";
+                ctx.font = "bold 22px 'Plus Jakarta Sans', sans-serif";
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                ctx.fillText("AH", centerX, centerY + 1);
+
+                const finalImageDataUrl = canvas.toDataURL("image/png");
+                if (callback) callback(finalImageDataUrl);
+            };
+        }
+
         function showSampleQrModal() {
-            document.getElementById('sampleQrModal').classList.remove('hidden');
+            generateQrWithCenterText("https://ahtris.my.id", (finalImage) => {
+                document.getElementById('sampleQrImg').src = finalImage;
+                document.getElementById('sampleQrModal').classList.remove('hidden');
+            });
         }
 
         function closeSampleQrModal() {
@@ -381,7 +428,7 @@
             document.getElementById('btnToggleAuth').textContent = isRegisterMode ? "Login di sini" : "Daftar Sekarang";
         }
 
-        // --- SISTEM AUTENTIKASI SUPABASE AUTH AMAN ---
+        // --- AUTENTIKASI SUPABASE AUTH AMAN ---
         document.getElementById('authForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('authEmail').value.trim();
@@ -446,11 +493,12 @@
         }
 
         function openGuestModal(url) {
-            const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(url)}`;
             document.getElementById('guestShortUrlInput').value = url;
-            document.getElementById('guestQrCodeImg').src = qrApiUrl;
-            document.getElementById('downloadQrBtn').href = qrApiUrl;
-            document.getElementById('guestResultModal').classList.remove('hidden');
+            generateQrWithCenterText(url, (finalImage) => {
+                document.getElementById('guestQrCodeImg').src = finalImage;
+                document.getElementById('downloadQrBtn').href = finalImage;
+                document.getElementById('guestResultModal').classList.remove('hidden');
+            });
         }
 
         function closeGuestModal() { document.getElementById('guestResultModal').classList.add('hidden'); }
