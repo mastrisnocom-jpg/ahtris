@@ -46,7 +46,7 @@
     <div class="max-w-3xl mx-auto px-4 py-10 w-full">
         <!-- Header Title -->
         <div class="text-center mb-8">
-            <h1 class="text-3xl sm:text-4xl font-extrabold text-teal-400 tracking-tight">Short Link Database</h1>
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-teal-400 tracking-tight">Short Link</h1>
             <p class="text-slate-400 mt-2 text-sm sm:text-base">
                 Domain: <span class="text-teal-300 font-semibold" id="displayDomain">...</span>
             </p>
@@ -57,14 +57,14 @@
             <form id="shortenForm" class="space-y-4">
                 <div>
                     <label class="block text-sm font-medium text-slate-300 mb-1">URL Original</label>
-                    <input type="url" id="originalUrl" required placeholder="https://example.com/halaman-sangat-panjang" 
+                    <input type="url" id="originalUrl" required placeholder="paste disini link" 
                            class="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-slate-100 focus:outline-none focus:border-teal-400 transition">
                 </div>
                 <div>
                     <div class="flex justify-between items-center mb-1">
                         <label class="block text-sm font-medium text-slate-300">Custom Slug</label>
                         <span id="slugNotice" class="text-xs text-amber-400 font-medium">
-                            <i class="fa-solid fa-lock text-[10px]"></i> Login untuk simpan link & custom slug
+                            <i class="fa-solid fa-lock text-[10px]"></i> Login untuk simpan link
                         </span>
                     </div>
                     <div class="flex items-center bg-slate-900 border border-slate-700 rounded-xl overflow-hidden focus-within:border-teal-400 transition">
@@ -81,8 +81,8 @@
             <div id="statusMessage" class="mt-4 text-center text-sm font-medium hidden"></div>
         </div>
 
-        <!-- Tabel Daftar Link -->
-        <div class="bg-slate-800 border border-slate-700/80 rounded-2xl p-6 shadow-xl">
+        <!-- Tabel Daftar Link (SEMBUNYI SECARA DEFAULT JIKA BELUM LOGIN) -->
+        <div id="tableContainer" class="bg-slate-800 border border-slate-700/80 rounded-2xl p-6 shadow-xl hidden">
             <div class="flex justify-between items-center mb-4 border-b border-slate-700 pb-3">
                 <h2 class="text-xl font-bold text-white" id="tableTitle">Daftar Link Saya</h2>
                 <button onclick="loadUrls()" class="text-xs text-slate-400 hover:text-teal-400 transition flex items-center gap-1">
@@ -118,7 +118,7 @@
             </div>
             <h3 class="text-xl font-bold text-white mb-1">Short Link Berhasil Dibuat!</h3>
             <p class="text-xs text-amber-400 mb-6 flex items-center justify-center gap-1">
-                <i class="fa-solid fa-triangle-exclamation"></i> Link ini sementara & tidak tersimpan di database.
+                <i class="fa-solid fa-triangle-exclamation"></i> Link ini sementara & tidak tersimpan di ahtris.my.id.
             </p>
             <div class="space-y-3">
                 <input type="text" id="guestShortUrlInput" readonly class="w-full bg-slate-900 text-teal-300 px-4 py-3 rounded-xl text-sm font-mono border border-slate-700 text-center focus:outline-none">
@@ -136,7 +136,7 @@
                 <i class="fa-solid fa-xmark"></i>
             </button>
             <h3 id="modalTitle" class="text-2xl font-bold text-white mb-2">Masuk ke Akun</h3>
-            <p class="text-xs text-slate-400 mb-6">Login untuk menyimpan riwayat link & custom slug milik Anda.</p>
+            <p class="text-xs text-slate-400 mb-6">Login untuk menyimpan riwayat link</p>
 
             <form id="authForm" class="space-y-4">
                 <div>
@@ -160,7 +160,7 @@
 
     <!-- Footer -->
     <footer class="py-6 text-center text-xs text-slate-500 border-t border-slate-800">
-        Database Powered by Supabase & Hosted on GitHub Pages
+        Database Powered by ahtris.my.id
     </footer>
 
     <!-- LOGIKA JAVASCRIPT -->
@@ -186,6 +186,7 @@
         const customSlugInput = document.getElementById('customSlug');
         const slugNotice = document.getElementById('slugNotice');
         const statusMessage = document.getElementById('statusMessage');
+        const tableContainer = document.getElementById('tableContainer');
         const urlTableBody = document.getElementById('urlTableBody');
 
         const currentOrigin = window.location.origin;
@@ -219,7 +220,10 @@
                 customSlugInput.disabled = false;
                 customSlugInput.placeholder = "hasilshort";
                 slugNotice.innerHTML = `<span class="text-teal-400"><i class="fa-solid fa-check text-[10px]"></i> Tersimpan Permanen</span>`;
-                document.getElementById('tableTitle').textContent = "Daftar Link Saya";
+                
+                // TAMPILKAN TABEL HANYA SAAT LOGIN
+                tableContainer.classList.remove('hidden');
+                loadUrls();
             } else {
                 document.getElementById('btnOpenAuth').classList.remove('hidden');
                 document.getElementById('userProfile').classList.add('hidden');
@@ -229,9 +233,10 @@
                 customSlugInput.value = '';
                 customSlugInput.placeholder = "Otomatis 5 karakter (Guest tidak tersimpan)";
                 slugNotice.innerHTML = `<i class="fa-solid fa-lock text-[10px]"></i> Login untuk simpan link & custom slug`;
-                document.getElementById('tableTitle').textContent = "Daftar Link Publik";
+                
+                // SEMBUNYIKAN TABEL JIKA TIDAK LOGIN
+                tableContainer.classList.add('hidden');
             }
-            loadUrls();
         }
 
         function openAuthModal() { document.getElementById('authModal').classList.remove('hidden'); }
@@ -498,17 +503,7 @@
         async function loadUrls() {
             urlTableBody.innerHTML = '';
 
-            if (!currentUser) {
-                urlTableBody.innerHTML = `
-                    <tr>
-                        <td colspan="4" class="p-6 text-center text-slate-500 text-xs">
-                            <i class="fa-solid fa-lock text-slate-600 text-lg mb-2 block"></i>
-                            Silakan <b>Login</b> untuk melihat dan menyimpan riwayat short link Anda secara permanen.
-                        </td>
-                    </tr>
-                `;
-                return;
-            }
+            if (!currentUser) return;
 
             try {
                 const response = await fetch(`${SUPABASE_URL}/rest/v1/urls?user_id=eq.${currentUser.user.id}&select=*&order=created_at.desc`, {
