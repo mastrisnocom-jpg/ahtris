@@ -36,19 +36,24 @@
     <header class="w-full border-b border-slate-200 dark:border-emerald-900/40 bg-white/80 dark:bg-slate-900/90 backdrop-blur-md sticky top-0 z-40 transition-colors">
         <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
             <a href="/" class="text-xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-2.5">
-                <div class="w-9 h-9 bg-emerald-600 rounded-lg flex items-center justify-center shadow-lg shadow-emerald-600/20 text-white dark:text-slate-950 font-black text-lg">
+                <div class="w-9 h-9 bg-emerald-600 rounded-lg flex items-center justify-center shadow-lg shadow-emerald-600/20 text-white font-black text-lg">
                     <i class="fa-solid fa-link"></i>
                 </div>
                 <span class="font-extrabold tracking-wider">AHTRIS<span class="text-emerald-600 dark:text-emerald-400">.MY.ID</span></span>
             </a>
 
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2 sm:gap-3">
                 <button id="themeToggle" onclick="toggleTheme()" class="w-9 h-9 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-600 dark:text-emerald-400 hover:text-emerald-600 transition flex items-center justify-center text-sm shadow-sm">
                     <i id="themeIcon" class="fa-solid fa-moon"></i>
                 </button>
 
+                <!-- Tombol Khusus Superadmin (Sembunyi secara default) -->
+                <button id="btnSuperadmin" onclick="openAdminModal()" class="hidden px-3 py-2 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold rounded-xl text-xs transition items-center gap-1.5 shadow-md">
+                    <i class="fa-solid fa-user-shield"></i> <span class="hidden sm:inline">Panel Superadmin</span>
+                </button>
+
                 <div id="authArea">
-                    <button id="btnOpenAuth" onclick="openAuthModal()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 dark:bg-slate-800 dark:hover:bg-emerald-900/30 border border-emerald-600 dark:border-emerald-800/40 rounded-xl text-xs font-bold text-white dark:text-emerald-400 transition flex items-center gap-2 shadow-md shadow-emerald-600/10">
+                    <button id="btnOpenAuth" onclick="openAuthModal()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 dark:bg-slate-800 dark:hover:bg-emerald-900/30 border border-emerald-600 dark:border-emerald-800/40 rounded-xl text-xs font-bold text-white dark:text-emerald-400 transition flex items-center gap-2 shadow-md">
                         <i class="fa-regular fa-user"></i> Login / Daftar
                     </button>
 
@@ -62,15 +67,18 @@
         </div>
     </header>
 
+    <!-- SLOT IKLAN 1: HEADER AD -->
+    <div id="adHeaderSlot" class="max-w-4xl mx-auto w-full px-4 pt-4 text-center empty:hidden"></div>
+
     <!-- Container Utama -->
-    <div class="max-w-4xl mx-auto px-4 py-12 sm:py-16 w-full flex-1">
+    <div class="max-w-4xl mx-auto px-4 py-8 sm:py-12 w-full flex-1">
         <!-- Hero Header -->
-        <div class="text-center mb-10 max-w-2xl mx-auto">
+        <div class="text-center mb-8 max-w-2xl mx-auto">
             <h1 class="text-4xl sm:text-6xl font-black text-slate-900 dark:text-white tracking-tight mb-4">
                 #Ahtris<span class="text-emerald-600 dark:text-emerald-400">MyId</span>
             </h1>
             <p class="text-slate-600 dark:text-slate-300 text-base sm:text-lg leading-relaxed font-normal">
-                Maksimalkan performa konten dan bisnismu. Buat link bio, shortlink, dan QR Code lengkap dengan analitik dalam hitungan detik. Cek sekarang di <span class="text-emerald-600 dark:text-emerald-400 font-semibold">ahtris.my.id</span>.
+                Maksimalkan performa konten dan bisnismu. Buat link bio, shortlink, dan QR Code lengkap dengan analitik dalam hitungan detik.
             </p>
         </div>
 
@@ -87,7 +95,7 @@
             </a>
         </div>
 
-        <!-- FORM PEMBUAT LINK & BARCODE -->
+        <!-- FORM PEMBUAT LINK -->
         <div class="mb-6">
             <form id="shortenForm" class="space-y-4">
                 <div class="relative bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-full p-2 pl-6 shadow-xl flex items-center justify-between focus-within:border-emerald-500 focus-within:ring-2 focus-within:ring-emerald-500/20 transition-all">
@@ -115,13 +123,10 @@
                     </div>
                 </div>
             </form>
-
-            <p class="text-center text-xs text-slate-500 dark:text-slate-400 mt-4">
-                Dengan memproses form ini, anda telah setuju dengan semua 
-                <a href="privacy.html" class="text-emerald-600 dark:text-emerald-400 hover:underline font-medium">ketentuan layanan</a> kami
-            </p>
-            <div id="statusMessage" class="mt-4 text-center text-sm font-medium hidden"></div>
         </div>
+
+        <!-- SLOT IKLAN 2: MIDDLE AD -->
+        <div id="adMiddleSlot" class="my-6 text-center empty:hidden"></div>
 
         <!-- TABEL DAFTAR LINK (KHUSUS MEMBER) -->
         <div id="tableContainer" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-emerald-900/50 rounded-2xl p-6 sm:p-8 shadow-xl hidden">
@@ -144,15 +149,58 @@
                             <th class="p-3.5 text-right rounded-r-lg">Aksi</th>
                         </tr>
                     </thead>
-                    <tbody id="urlTableBody" class="divide-y divide-slate-100 dark:divide-slate-800/60">
-                        <!-- Data URL dimuat di sini -->
-                    </tbody>
+                    <tbody id="urlTableBody" class="divide-y divide-slate-100 dark:divide-slate-800/60"></tbody>
                 </table>
             </div>
         </div>
     </div>
 
-    <!-- MODAL SAMPLE QR CODE (DENGAN BADGE AH) -->
+    <!-- SLOT IKLAN 3: FOOTER AD -->
+    <div id="adFooterSlot" class="max-w-4xl mx-auto w-full px-4 mb-4 text-center empty:hidden"></div>
+
+    <!-- MODAL KHUSUS SUPERADMIN: PENGATURAN IKLAN -->
+    <div id="adminModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white dark:bg-slate-900 border border-amber-500/40 rounded-2xl w-full max-w-2xl p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+            <button onclick="closeAdminModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-white text-lg">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-1 flex items-center gap-2">
+                <i class="fa-solid fa-rectangle-ad text-amber-500"></i> Panel Manajemen Iklan Superadmin
+            </h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mb-6">
+                Masukkan script HTML/JavaScript iklan Adsense atau banner gambar kustom pada setiap posisi yang tersedia.
+            </p>
+
+            <form id="adminAdsForm" class="space-y-4 text-left">
+                <div>
+                    <label class="block text-xs font-bold text-amber-500 uppercase mb-1">1. Iklan Atas / Header Banner</label>
+                    <textarea id="adHeaderInput" rows="2" placeholder="<!-- Tempel script iklan header di sini -->" class="w-full p-3 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl font-mono text-xs focus:outline-none focus:border-amber-500"></textarea>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-amber-500 uppercase mb-1">2. Iklan Tengah / Middle Banner</label>
+                    <textarea id="adMiddleInput" rows="2" placeholder="<!-- Tempel script iklan tengah di sini -->" class="w-full p-3 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl font-mono text-xs focus:outline-none focus:border-amber-500"></textarea>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-amber-500 uppercase mb-1">3. Iklan Bawah / Footer Banner</label>
+                    <textarea id="adFooterInput" rows="2" placeholder="<!-- Tempel script iklan footer di sini -->" class="w-full p-3 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl font-mono text-xs focus:outline-none focus:border-amber-500"></textarea>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-amber-500 uppercase mb-1">4. Iklan Interstitial (Tampil Sebelum User Melihat Link)</label>
+                    <textarea id="adInterstitialInput" rows="2" placeholder="<!-- Script iklan popup / jeda 5 detik -->" class="w-full p-3 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl font-mono text-xs focus:outline-none focus:border-amber-500"></textarea>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-amber-500 uppercase mb-1">5. Iklan Top Frame (Tampil di Atas Website Asli / Shortlink Preview)</label>
+                    <textarea id="adTopFrameInput" rows="2" placeholder="<!-- Script iklan banner di bagian top frame web asli -->" class="w-full p-3 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl font-mono text-xs focus:outline-none focus:border-amber-500"></textarea>
+                </div>
+
+                <button type="submit" id="btnSaveAds" class="w-full py-3 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-xl text-xs transition shadow-lg flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-floppy-disk"></i> Simpan Pengaturan Iklan
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL SAMPLE QR CODE -->
     <div id="sampleQrModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl w-full max-w-sm p-6 shadow-2xl relative text-center">
             <button onclick="closeSampleQrModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-white text-lg">
@@ -171,13 +219,13 @@
         </div>
     </div>
 
-    <!-- MODAL HASIL SHORT LINK / QR CODE (DENGAN BADGE AH) -->
+    <!-- MODAL HASIL SHORT LINK / QR CODE -->
     <div id="guestResultModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-emerald-700/50 rounded-2xl w-full max-w-sm p-6 shadow-2xl relative text-center">
             <button onclick="closeGuestModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-white text-lg">
                 <i class="fa-solid fa-xmark"></i>
             </button>
-            
+
             <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-1">Barcode / QR Code Hasil</h3>
             <p class="text-xs text-emerald-600 dark:text-emerald-400 font-semibold mb-4">
                 QR Code Berhasil Dibuat
@@ -217,7 +265,7 @@
         </div>
     </div>
 
-    <!-- MODAL AUTH (LOGIN / REGISTER) -->
+    <!-- MODAL AUTH -->
     <div id="authModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-emerald-900/50 rounded-2xl w-full max-w-md p-6 shadow-2xl relative">
             <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-white text-lg">
@@ -246,7 +294,7 @@
         </div>
     </div>
 
-    <!-- FOOTER CORPORATE -->
+    <!-- FOOTER -->
     <footer class="border-t border-slate-200 dark:border-emerald-950 bg-white dark:bg-slate-950 pt-10 pb-6 text-center text-xs text-slate-500 dark:text-slate-400 transition-colors">
         <div class="max-w-5xl mx-auto px-4 space-y-8">
             <div class="bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-emerald-900/30 rounded-2xl p-6">
@@ -256,36 +304,24 @@
                         <i class="fa-solid fa-building text-emerald-600 dark:text-emerald-500 text-lg"></i>
                         <span class="font-bold text-xs tracking-tight">PT. BINAYASA PUTRABATARA</span>
                     </div>
-                    <div class="flex items-center gap-2 text-slate-700 dark:text-slate-200 hover:text-emerald-600 transition">
-                        <i class="fa-solid fa-network-wired text-emerald-600 dark:text-emerald-500 text-lg"></i>
-                        <span class="font-bold text-xs tracking-tight">BMIS <span class="text-slate-400 font-normal">(Building Management Info System)</span></span>
-                    </div>
-                    <div class="flex items-center gap-2 text-slate-700 dark:text-slate-200 hover:text-emerald-600 transition">
-                        <i class="fa-solid fa-mobile-screen-button text-emerald-600 dark:text-emerald-500 text-lg"></i>
-                        <span class="font-bold text-xs tracking-tight">BPB MOBILE</span>
-                    </div>
                 </div>
-            </div>
-
-            <div class="flex justify-center items-center space-x-6 font-medium text-slate-600 dark:text-slate-300">
-                <a href="/" class="hover:text-emerald-600 dark:hover:text-emerald-400 transition">Beranda</a>
-                <span class="text-slate-300 dark:text-slate-800">•</span>
-                <a href="privacy.html" class="hover:text-emerald-600 dark:hover:text-emerald-400 transition">Privacy Policy</a>
-                <span class="text-slate-300 dark:text-slate-800">•</span>
-                <a href="kontak.html" class="hover:text-emerald-600 dark:hover:text-emerald-400 transition">Kontak Kami</a>
             </div>
 
             <p class="text-slate-400 dark:text-slate-600 text-[11px]">© 2026 Short Link Manager. Database Powered by Supabase & Hosted on GitHub Pages</p>
         </div>
     </footer>
 
-    <!-- LOGIKA JAVASCRIPT & QR CODE CANVAS GENERATOR -->
+    <!-- LOGIKA JAVASCRIPT MASTER UTUH -->
     <script>
         const SUPABASE_URL = "https://lcpskriooezyxgrnarol.supabase.co"; 
         const SUPABASE_KEY = "sb_publishable_puy9U_93p-7_Q64oHrYUpg_iEF3nJ-c";
 
+        // GANTI EMAIL INI DENGAN EMAIL ACC SUPERADMIN ANDA
+        const SUPERADMIN_EMAILS = ["mastrisnocom@gmail.com", "adnan@ahtris.my.id"];
+
         let currentUser = null;
         let isRegisterMode = false;
+        let adSettings = {};
 
         function initTheme() {
             const savedTheme = localStorage.getItem('theme') || 'dark';
@@ -310,7 +346,86 @@
             }
         }
 
-        // --- FUNGSI PROSESSING CANVAS KUSTOM LOGO "AH" DI TENGAH QR ---
+        function getHeaders(token = null) {
+            return {
+                'apikey': SUPABASE_KEY,
+                'Content-Type': 'application/json',
+                'Prefer': 'return=representation',
+                'Authorization': `Bearer ${token || SUPABASE_KEY}`
+            };
+        }
+
+        // --- MANAJEMEN PENGATURAN IKLAN ---
+        async function fetchAdSettings() {
+            try {
+                const res = await fetch(`${SUPABASE_URL}/rest/v1/ad_settings?id=eq.default_ads&select=*`, {
+                    headers: getHeaders()
+                });
+                const data = await res.json();
+                if (data && data.length > 0) {
+                    adSettings = data[0];
+                    renderPublicAds();
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        function renderPublicAds() {
+            if (adSettings.ad_header) document.getElementById('adHeaderSlot').innerHTML = adSettings.ad_header;
+            if (adSettings.ad_middle) document.getElementById('adMiddleSlot').innerHTML = adSettings.ad_middle;
+            if (adSettings.ad_footer) document.getElementById('adFooterSlot').innerHTML = adSettings.ad_footer;
+        }
+
+        function openAdminModal() {
+            document.getElementById('adHeaderInput').value = adSettings.ad_header || '';
+            document.getElementById('adMiddleInput').value = adSettings.ad_middle || '';
+            document.getElementById('adFooterInput').value = adSettings.ad_footer || '';
+            document.getElementById('adInterstitialInput').value = adSettings.ad_interstitial || '';
+            document.getElementById('adTopFrameInput').value = adSettings.ad_top_frame || '';
+            document.getElementById('adminModal').classList.remove('hidden');
+        }
+
+        function closeAdminModal() {
+            document.getElementById('adminModal').classList.add('hidden');
+        }
+
+        document.getElementById('adminAdsForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btnSaveAds');
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Menyimpan...`;
+
+            const payload = {
+                ad_header: document.getElementById('adHeaderInput').value,
+                ad_middle: document.getElementById('adMiddleInput').value,
+                ad_footer: document.getElementById('adFooterInput').value,
+                ad_interstitial: document.getElementById('adInterstitialInput').value,
+                ad_top_frame: document.getElementById('adTopFrameInput').value,
+                updated_at: new Date().toISOString()
+            };
+
+            try {
+                const res = await fetch(`${SUPABASE_URL}/rest/v1/ad_settings?id=eq.default_ads`, {
+                    method: 'PATCH',
+                    headers: getHeaders(currentUser.access_token),
+                    body: JSON.stringify(payload)
+                });
+
+                if (res.ok) {
+                    alert("Pengaturan Iklan Berhasil Disimpan!");
+                    closeAdminModal();
+                    fetchAdSettings();
+                } else {
+                    alert("Gagal menyimpan iklan. Pastikan Anda login sebagai Superadmin.");
+                }
+            } catch (err) {
+                alert("Error: " + err.message);
+            } finally {
+                btn.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Simpan Pengaturan Iklan`;
+            }
+        });
+
+        // --- QR CODE GENERATOR ---
         function generateQrWithCenterText(targetUrl, callback) {
             const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(targetUrl)}`;
             const img = new Image();
@@ -319,38 +434,24 @@
 
             img.onload = function() {
                 const canvas = document.createElement('canvas');
-                canvas.width = 300;
-                canvas.height = 300;
+                canvas.width = 300; canvas.height = 300;
                 const ctx = canvas.getContext('2d');
 
-                // 1. Gambar QR Code Dasar
                 ctx.drawImage(img, 0, 0, 300, 300);
 
-                // 2. Lingkaran Dasar Putih di Tengah
-                const centerX = 150;
-                const centerY = 150;
-                const boxSize = 54;
-
+                const centerX = 150; const centerY = 150; const boxSize = 54;
                 ctx.fillStyle = "#ffffff";
-                ctx.beginPath();
-                ctx.arc(centerX, centerY, boxSize / 2 + 4, 0, 2 * Math.PI);
-                ctx.fill();
+                ctx.beginPath(); ctx.arc(centerX, centerY, boxSize / 2 + 4, 0, 2 * Math.PI); ctx.fill();
 
-                // 3. Badge Lingkaran Hijau Emerald
-                ctx.fillStyle = "#059669"; 
-                ctx.beginPath();
-                ctx.arc(centerX, centerY, boxSize / 2, 0, 2 * Math.PI);
-                ctx.fill();
+                ctx.fillStyle = "#059669";
+                ctx.beginPath(); ctx.arc(centerX, centerY, boxSize / 2, 0, 2 * Math.PI); ctx.fill();
 
-                // 4. Teks "AH"
                 ctx.fillStyle = "#ffffff";
                 ctx.font = "bold 22px 'Plus Jakarta Sans', sans-serif";
-                ctx.textAlign = "center";
-                ctx.textBaseline = "middle";
+                ctx.textAlign = "center"; ctx.textBaseline = "middle";
                 ctx.fillText("AH", centerX, centerY + 1);
 
-                const finalImageDataUrl = canvas.toDataURL("image/png");
-                if (callback) callback(finalImageDataUrl);
+                if (callback) callback(canvas.toDataURL("image/png"));
             };
         }
 
@@ -361,29 +462,7 @@
             });
         }
 
-        function closeSampleQrModal() {
-            document.getElementById('sampleQrModal').classList.add('hidden');
-        }
-
-        function getHeaders(token = null) {
-            return {
-                'apikey': SUPABASE_KEY,
-                'Content-Type': 'application/json',
-                'Prefer': 'return=representation',
-                'Authorization': `Bearer ${token || SUPABASE_KEY}`
-            };
-        }
-
-        const form = document.getElementById('shortenForm');
-        const originalUrlInput = document.getElementById('originalUrl');
-        const customSlugInput = document.getElementById('customSlug');
-        const customSlugField = document.getElementById('customSlugField');
-        const statusMessage = document.getElementById('statusMessage');
-        const tableContainer = document.getElementById('tableContainer');
-        const urlTableBody = document.getElementById('urlTableBody');
-
-        const currentOrigin = window.location.origin;
-        document.getElementById('domainPrefix').textContent = `${window.location.host}/`;
+        function closeSampleQrModal() { document.getElementById('sampleQrModal').classList.add('hidden'); }
 
         function checkSession() {
             const sessionData = localStorage.getItem('sb_user_session');
@@ -400,19 +479,32 @@
         }
 
         function renderUserUI() {
+            const btnSuperadmin = document.getElementById('btnSuperadmin');
+            const customSlugField = document.getElementById('customSlugField');
+            const tableContainer = document.getElementById('tableContainer');
+
             if (currentUser && currentUser.access_token) {
                 document.getElementById('btnOpenAuth').classList.add('hidden');
                 document.getElementById('userProfile').classList.remove('hidden');
                 document.getElementById('userProfile').classList.add('flex');
                 customSlugField.classList.remove('hidden');
                 tableContainer.classList.remove('hidden');
+
+                // Cek Email Superadmin
+                const email = currentUser.user?.email || currentUser.email;
+                if (SUPERADMIN_EMAILS.includes(email)) {
+                    btnSuperadmin.classList.remove('hidden');
+                    btnSuperadmin.classList.add('flex');
+                } else {
+                    btnSuperadmin.classList.add('hidden');
+                }
+
                 loadUrls();
             } else {
                 document.getElementById('btnOpenAuth').classList.remove('hidden');
                 document.getElementById('userProfile').classList.add('hidden');
-                document.getElementById('userProfile').classList.remove('flex');
+                btnSuperadmin.classList.add('hidden');
                 customSlugField.classList.add('hidden');
-                customSlugInput.value = '';
                 tableContainer.classList.add('hidden');
             }
         }
@@ -424,11 +516,8 @@
             isRegisterMode = !isRegisterMode;
             document.getElementById('modalTitle').textContent = isRegisterMode ? "Daftar Akun Baru" : "Masuk ke Akun";
             document.getElementById('btnAuthSubmit').textContent = isRegisterMode ? "Daftar" : "Login";
-            document.getElementById('toggleAuthText').textContent = isRegisterMode ? "Sudah punya akun?" : "Belum punya akun?";
-            document.getElementById('btnToggleAuth').textContent = isRegisterMode ? "Login di sini" : "Daftar Sekarang";
         }
 
-        // --- AUTENTIKASI SUPABASE AUTH AMAN ---
         document.getElementById('authForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('authEmail').value.trim();
@@ -439,17 +528,12 @@
             authStatus.className = "mt-3 text-center text-xs font-medium text-slate-400";
             authStatus.classList.remove('hidden');
 
-            const endpoint = isRegisterMode 
-                ? `${SUPABASE_URL}/auth/v1/signup` 
-                : `${SUPABASE_URL}/auth/v1/token?grant_type=password`;
+            const endpoint = isRegisterMode ? `${SUPABASE_URL}/auth/v1/signup` : `${SUPABASE_URL}/auth/v1/token?grant_type=password`;
 
             try {
                 const response = await fetch(endpoint, {
                     method: 'POST',
-                    headers: {
-                        'apikey': SUPABASE_KEY,
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, password })
                 });
 
@@ -461,27 +545,18 @@
                         authStatus.className = "mt-3 text-center text-xs font-medium text-emerald-500";
                         toggleAuthMode();
                     } else {
-                        const sessionPayload = {
-                            access_token: data.access_token,
-                            refresh_token: data.refresh_token,
-                            user: data.user || data
-                        };
-                        currentUser = sessionPayload;
-                        localStorage.setItem('sb_user_session', JSON.stringify(sessionPayload));
-                        
+                        currentUser = { access_token: data.access_token, user: data.user || data };
+                        localStorage.setItem('sb_user_session', JSON.stringify(currentUser));
                         renderUserUI();
                         closeAuthModal();
                         document.getElementById('authForm').reset();
-                        authStatus.classList.add('hidden');
                     }
                 } else {
-                    const errorMsg = data.error_description || data.msg || data.message || "Gagal Autentikasi";
-                    authStatus.textContent = errorMsg;
+                    authStatus.textContent = data.error_description || data.msg || "Gagal Autentikasi";
                     authStatus.className = "mt-3 text-center text-xs font-medium text-rose-500";
                 }
             } catch (err) {
-                authStatus.textContent = "Terjadi kesalahan koneksi jaringan.";
-                authStatus.className = "mt-3 text-center text-xs font-medium text-rose-500";
+                authStatus.textContent = "Terjadi kesalahan koneksi.";
             }
         });
 
@@ -512,9 +587,7 @@
         function generateRandomSlug(length = 5) {
             const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
             let result = '';
-            for (let i = 0; i < length; i++) {
-                result += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
+            for (let i = 0; i < length; i++) result += chars.charAt(Math.floor(Math.random() * chars.length));
             return result;
         }
 
@@ -543,9 +616,9 @@
             });
         }
 
-        form.addEventListener('submit', async (e) => {
+        document.getElementById('shortenForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const original_url = originalUrlInput.value.trim();
+            const original_url = document.getElementById('originalUrl').value.trim();
 
             if (!currentUser) {
                 const slug = generateRandomSlug(5);
@@ -559,15 +632,14 @@
                     });
 
                     if (response.ok) {
-                        const generatedUrl = `${currentOrigin}/${slug}`;
-                        openGuestModal(generatedUrl);
-                        form.reset();
+                        openGuestModal(`${window.location.origin}/${slug}`);
+                        document.getElementById('shortenForm').reset();
                     }
                 } catch (err) {}
                 return;
             }
 
-            let slug = customSlugInput.value.trim().replace(/^\/|\/$/g, '');
+            let slug = document.getElementById('customSlug').value.trim().replace(/^\/|\/$/g, '');
             if (!slug) slug = generateRandomSlug(5);
 
             await startGenerateDelay(3);
@@ -580,15 +652,15 @@
                 });
 
                 if (response.ok) {
-                    const generatedUrl = `${currentOrigin}/${slug}`;
-                    openGuestModal(generatedUrl);
-                    form.reset();
+                    openGuestModal(`${window.location.origin}/${slug}`);
+                    document.getElementById('shortenForm').reset();
                     loadUrls();
                 }
             } catch (err) {}
         });
 
         async function loadUrls() {
+            const urlTableBody = document.getElementById('urlTableBody');
             urlTableBody.innerHTML = '';
             if (!currentUser) return;
 
@@ -601,7 +673,7 @@
 
                 if (data && data.length > 0) {
                     data.forEach(item => {
-                        const fullShortUrl = `${currentOrigin}/${item.slug}`;
+                        const fullShortUrl = `${window.location.origin}/${item.slug}`;
                         const row = document.createElement('tr');
                         row.className = "hover:bg-slate-50 dark:hover:bg-slate-800/40 transition";
                         row.innerHTML = `
@@ -622,6 +694,7 @@
 
         initTheme();
         checkSession();
+        fetchAdSettings();
     </script>
 </body>
 </html>
