@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Short Link Manager - Guest Interstitial & Delay</title>
+    <title>Short Link Manager - QR Code Edition</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome Icons -->
@@ -46,7 +46,7 @@
     <div class="max-w-3xl mx-auto px-4 py-10 w-full">
         <!-- Header Title -->
         <div class="text-center mb-8">
-            <h1 class="text-3xl sm:text-4xl font-extrabold text-teal-400 tracking-tight">Short Link</h1>
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-teal-400 tracking-tight">Short Link Database</h1>
             <p class="text-slate-400 mt-2 text-sm sm:text-base">
                 Domain: <span class="text-teal-300 font-semibold" id="displayDomain">...</span>
             </p>
@@ -57,14 +57,14 @@
             <form id="shortenForm" class="space-y-4">
                 <div>
                     <label class="block text-sm font-medium text-slate-300 mb-1">URL Original</label>
-                    <input type="url" id="originalUrl" required placeholder="paste disini link" 
+                    <input type="url" id="originalUrl" required placeholder="https://example.com/halaman-sangat-panjang" 
                            class="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-slate-100 focus:outline-none focus:border-teal-400 transition">
                 </div>
                 <div>
                     <div class="flex justify-between items-center mb-1">
                         <label class="block text-sm font-medium text-slate-300">Custom Slug</label>
                         <span id="slugNotice" class="text-xs text-amber-400 font-medium">
-                            <i class="fa-solid fa-lock text-[10px]"></i> Login untuk simpan link
+                            <i class="fa-solid fa-lock text-[10px]"></i> Login untuk simpan link & custom slug
                         </span>
                     </div>
                     <div class="flex items-center bg-slate-900 border border-slate-700 rounded-xl overflow-hidden focus-within:border-teal-400 transition">
@@ -75,7 +75,7 @@
                 </div>
                 <button type="submit" id="btnSubmit" 
                         class="w-full py-3 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold rounded-xl transition duration-200 flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-link"></i> Pendekkan URL
+                    <i class="fa-solid fa-link"></i> Pendekkan URL & Buat QR Code
                 </button>
             </form>
             <div id="statusMessage" class="mt-4 text-center text-sm font-medium hidden"></div>
@@ -107,25 +107,51 @@
         </div>
     </div>
 
-    <!-- MODAL POPUP HASIL SHORT LINK GUEST -->
+    <!-- MODAL POPUP HASIL SHORT LINK + BARCODE/QR CODE GUEST -->
     <div id="guestResultModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-slate-800 border border-teal-500/40 rounded-2xl w-full max-w-md p-6 shadow-2xl relative text-center">
             <button onclick="closeGuestModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">
                 <i class="fa-solid fa-xmark"></i>
             </button>
-            <div class="w-12 h-12 bg-teal-500/10 text-teal-400 rounded-full flex items-center justify-center mx-auto mb-4 text-xl border border-teal-500/20">
-                <i class="fa-solid fa-check"></i>
-            </div>
-            <h3 class="text-xl font-bold text-white mb-1">Short Link Berhasil Dibuat!</h3>
-            <p class="text-xs text-amber-400 mb-6 flex items-center justify-center gap-1">
-                <i class="fa-solid fa-triangle-exclamation"></i> Link ini sementara & tidak tersimpan di ahtris.my.id.
+            
+            <h3 class="text-xl font-bold text-white mb-1">Short Link & Barcode</h3>
+            <p class="text-xs text-amber-400 mb-4 flex items-center justify-center gap-1">
+                <i class="fa-solid fa-triangle-exclamation"></i> Link sementara & tidak tersimpan di database.
             </p>
+
+            <!-- Display Gambar QR Code / Barcode -->
+            <div class="bg-white p-3 rounded-xl inline-block mb-4 shadow-lg border border-slate-200">
+                <img id="guestQrCodeImg" src="" alt="QR Code" class="w-40 h-40 object-contain mx-auto">
+            </div>
+
+            <!-- Area Link & Button Copy -->
             <div class="space-y-3">
                 <input type="text" id="guestShortUrlInput" readonly class="w-full bg-slate-900 text-teal-300 px-4 py-3 rounded-xl text-sm font-mono border border-slate-700 text-center focus:outline-none">
-                <button onclick="copyGuestLink()" class="w-full py-3 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold rounded-xl text-sm transition flex items-center justify-center gap-2">
-                    <i class="fa-regular fa-copy"></i> Salin Short Link
-                </button>
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="copyGuestLink()" class="py-2.5 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold rounded-xl text-xs transition flex items-center justify-center gap-1.5">
+                        <i class="fa-regular fa-copy"></i> Salin Link
+                    </button>
+                    <a id="downloadQrBtn" href="" download="qrcode.png" target="_blank" class="py-2.5 bg-slate-700 hover:bg-slate-600 text-white font-semibold rounded-xl text-xs transition flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-download"></i> Unduh QR
+                    </a>
+                </div>
             </div>
+        </div>
+    </div>
+
+    <!-- MODAL KHUSUS QR CODE UNTUK MEMBER (TABEL) -->
+    <div id="qrModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-800 border border-slate-700 rounded-2xl w-full max-w-xs p-6 shadow-2xl relative text-center">
+            <button onclick="closeQrModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <h3 class="text-lg font-bold text-white mb-4">QR Code Barcode</h3>
+            <div class="bg-white p-3 rounded-xl inline-block mb-4 shadow-lg">
+                <img id="memberQrCodeImg" src="" alt="QR Code" class="w-44 h-44 object-contain mx-auto">
+            </div>
+            <a id="downloadMemberQrBtn" href="" download="qrcode.png" target="_blank" class="w-full py-2.5 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold rounded-xl text-xs transition flex items-center justify-center gap-2">
+                <i class="fa-solid fa-download"></i> Unduh Barcode (QR)
+            </a>
         </div>
     </div>
 
@@ -136,7 +162,7 @@
                 <i class="fa-solid fa-xmark"></i>
             </button>
             <h3 id="modalTitle" class="text-2xl font-bold text-white mb-2">Masuk ke Akun</h3>
-            <p class="text-xs text-slate-400 mb-6">Login untuk menyimpan riwayat link</p>
+            <p class="text-xs text-slate-400 mb-6">Login untuk menyimpan riwayat link & custom slug milik Anda.</p>
 
             <form id="authForm" class="space-y-4">
                 <div>
@@ -160,7 +186,7 @@
 
     <!-- Footer -->
     <footer class="py-6 text-center text-xs text-slate-500 border-t border-slate-800">
-        Database Powered by ahtris.my.id
+        Database Powered by Supabase & Hosted on GitHub Pages
     </footer>
 
     <!-- LOGIKA JAVASCRIPT -->
@@ -221,7 +247,6 @@
                 customSlugInput.placeholder = "hasilshort";
                 slugNotice.innerHTML = `<span class="text-teal-400"><i class="fa-solid fa-check text-[10px]"></i> Tersimpan Permanen</span>`;
                 
-                // TAMPILKAN TABEL HANYA SAAT LOGIN
                 tableContainer.classList.remove('hidden');
                 loadUrls();
             } else {
@@ -234,7 +259,6 @@
                 customSlugInput.placeholder = "Otomatis 5 karakter (Guest tidak tersimpan)";
                 slugNotice.innerHTML = `<i class="fa-solid fa-lock text-[10px]"></i> Login untuk simpan link & custom slug`;
                 
-                // SEMBUNYIKAN TABEL JIKA TIDAK LOGIN
                 tableContainer.classList.add('hidden');
             }
         }
@@ -242,13 +266,29 @@
         function openAuthModal() { document.getElementById('authModal').classList.remove('hidden'); }
         function closeAuthModal() { document.getElementById('authModal').classList.add('hidden'); }
 
+        // Modal QR Guest
         function openGuestModal(url) {
+            const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(url)}`;
             document.getElementById('guestShortUrlInput').value = url;
+            document.getElementById('guestQrCodeImg').src = qrApiUrl;
+            document.getElementById('downloadQrBtn').href = qrApiUrl;
             document.getElementById('guestResultModal').classList.remove('hidden');
         }
 
         function closeGuestModal() {
             document.getElementById('guestResultModal').classList.add('hidden');
+        }
+
+        // Modal QR Member
+        function openMemberQrModal(url) {
+            const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(url)}`;
+            document.getElementById('memberQrCodeImg').src = qrApiUrl;
+            document.getElementById('downloadMemberQrBtn').href = qrApiUrl;
+            document.getElementById('qrModal').classList.remove('hidden');
+        }
+
+        function closeQrModal() {
+            document.getElementById('qrModal').classList.add('hidden');
         }
 
         function copyGuestLink() {
@@ -314,7 +354,7 @@
         }
 
         // ----------------------------------------------------
-        // 2. LOGIKA REDIRECT (DELAY 5 DETIK & INTERSTITIAL)
+        // 2. LOGIKA REDIRECT (FULLSCREEN NDELET.COM)
         // ----------------------------------------------------
         async function handleRedirect() {
             let redirectPath = sessionStorage.getItem('redirect_path');
@@ -342,62 +382,53 @@
                             body: JSON.stringify({ target_slug: pathSlug })
                         }).catch(() => {});
 
-                        let timeLeft = 5;
+                        const totalTime = isOwnerUser ? 5 : 10;
+                        let timeLeft = totalTime;
 
-                        if (isOwnerUser) {
-                            // User Member -> Redirect biasa + countdown 5s
-                            document.body.innerHTML = `
-                                <div class="min-h-screen flex items-center justify-center bg-slate-900 text-white p-4">
-                                    <div class="text-center max-w-md">
-                                        <i class="fa-solid fa-spinner fa-spin text-5xl text-teal-400 mb-6"></i>
-                                        <h1 class="text-2xl font-bold mb-2">Mengalihkan Halaman...</h1>
-                                        <p class="text-slate-400 mb-4">Anda akan dialihkan secara otomatis dalam <span id="countdown" class="text-teal-400 font-bold text-xl">5</span> detik.</p>
-                                        <a href="${targetUrl}" class="inline-block px-5 py-2.5 bg-teal-500 hover:bg-teal-400 text-slate-950 font-semibold rounded-xl text-xs transition">
-                                            Klik di sini jika tidak beralih otomatis
-                                        </a>
-                                    </div>
-                                </div>
-                            `;
-
-                            const interval = setInterval(() => {
-                                timeLeft--;
-                                const countdownEl = document.getElementById('countdown');
-                                if (countdownEl) countdownEl.textContent = timeLeft;
-                                if (timeLeft <= 0) {
-                                    clearInterval(interval);
-                                    window.location.href = targetUrl;
-                                }
-                            }, 1000);
-
-                        } else {
-                            // Guest -> Sponsor ndelet.com 5s
-                            document.body.innerHTML = `
-                                <div class="min-h-screen flex flex-col items-center justify-center bg-slate-900 text-white p-4">
-                                    <div class="text-center max-w-md w-full mb-4">
-                                        <p class="text-slate-400 text-sm mb-2">Mengalihkan sponsor (<span class="text-teal-400 font-mono">ndelet.com</span>) dalam <span id="countdown" class="text-teal-400 font-bold text-lg">5</span> detik...</p>
-                                        <div class="w-full bg-slate-800 rounded-full h-2 overflow-hidden border border-slate-700">
-                                            <div id="progressBar" class="bg-teal-400 h-full w-full transition-all duration-1000 ease-linear"></div>
+                        document.body.innerHTML = `
+                            <div class="fixed inset-0 z-50 flex flex-col bg-slate-950">
+                                <div class="bg-slate-900 border-b border-slate-800 px-4 py-3 flex items-center justify-between shrink-0 shadow-lg z-10">
+                                    <div class="flex items-center gap-3">
+                                        <span class="inline-flex items-center justify-center w-8 h-8 bg-teal-500/10 text-teal-400 rounded-full text-sm font-bold border border-teal-500/20">
+                                            <i class="fa-solid fa-spinner fa-spin"></i>
+                                        </span>
+                                        <div>
+                                            <p class="text-xs sm:text-sm font-semibold text-white">
+                                                Mengalihkan ke lokasi tujuan dalam <span id="countdown" class="text-teal-400 font-bold text-base sm:text-lg">${timeLeft}</span> detik...
+                                            </p>
+                                            <p class="text-[10px] sm:text-xs text-slate-400">
+                                                ${isOwnerUser ? '<span class="text-teal-400 font-semibold"><i class="fa-solid fa-user-check"></i> Member (5s)</span>' : '<span class="text-amber-400 font-semibold"><i class="fa-solid fa-user-xmark"></i> Guest (10s)</span>'} — Sponsor oleh <span class="text-slate-200 font-mono">ndelet.com</span>
+                                            </p>
                                         </div>
                                     </div>
-                                    <div class="w-full max-w-3xl h-[600px] border border-slate-700 rounded-2xl overflow-hidden shadow-2xl bg-slate-950">
-                                        <iframe src="https://ndelet.com" class="w-full h-full border-0"></iframe>
-                                    </div>
+                                    <a href="${targetUrl}" class="px-3 py-1.5 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs rounded-lg transition shrink-0">
+                                        Lewati <i class="fa-solid fa-arrow-right ml-1"></i>
+                                    </a>
                                 </div>
-                            `;
 
-                            const progressBar = document.getElementById('progressBar');
-                            const interval = setInterval(() => {
-                                timeLeft--;
-                                const countdownEl = document.getElementById('countdown');
-                                if (countdownEl) countdownEl.textContent = timeLeft;
-                                if (progressBar) progressBar.style.width = `${(timeLeft / 5) * 100}%`;
+                                <div class="w-full bg-slate-800 h-1 overflow-hidden shrink-0">
+                                    <div id="progressBar" class="bg-teal-400 h-full w-full transition-all duration-1000 ease-linear"></div>
+                                </div>
 
-                                if (timeLeft <= 0) {
-                                    clearInterval(interval);
-                                    window.location.href = targetUrl;
-                                }
-                            }, 1000);
-                        }
+                                <div class="flex-1 w-full h-full relative">
+                                    <iframe src="https://ndelet.com" class="w-full h-full border-0"></iframe>
+                                </div>
+                            </div>
+                        `;
+
+                        const progressBar = document.getElementById('progressBar');
+                        const countdownEl = document.getElementById('countdown');
+
+                        const interval = setInterval(() => {
+                            timeLeft--;
+                            if (countdownEl) countdownEl.textContent = timeLeft;
+                            if (progressBar) progressBar.style.width = `${(timeLeft / totalTime) * 100}%`;
+
+                            if (timeLeft <= 0) {
+                                clearInterval(interval);
+                                window.location.href = targetUrl;
+                            }
+                        }, 1000);
 
                     } else {
                         throw new Error('Link tidak ditemukan');
@@ -456,7 +487,6 @@
                         const generatedUrl = `${currentOrigin}/${slug}`;
                         statusMessage.classList.add('hidden');
                         
-                        // Buka Pop-up
                         openGuestModal(generatedUrl);
                         form.reset();
                     } else {
@@ -539,9 +569,12 @@
                         <td class="p-3 text-center font-bold text-slate-200">
                             ${item.click_count || 0}
                         </td>
-                        <td class="p-3 text-right">
-                            <button onclick="copyToClipboard('${fullShortUrl}')" class="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-xs text-slate-200 rounded-lg transition inline-flex items-center gap-1">
-                                <i class="fa-regular fa-copy"></i> Salin
+                        <td class="p-3 text-right flex justify-end gap-1.5">
+                            <button onclick="copyToClipboard('${fullShortUrl}')" class="px-2.5 py-1.5 bg-slate-700 hover:bg-slate-600 text-xs text-slate-200 rounded-lg transition inline-flex items-center gap-1" title="Salin Link">
+                                <i class="fa-regular fa-copy"></i>
+                            </button>
+                            <button onclick="openMemberQrModal('${fullShortUrl}')" class="px-2.5 py-1.5 bg-teal-500/20 hover:bg-teal-500/30 text-teal-300 border border-teal-500/30 text-xs rounded-lg transition inline-flex items-center gap-1" title="Lihat Barcode">
+                                <i class="fa-solid fa-qrcode"></i>
                             </button>
                         </td>
                     `;
