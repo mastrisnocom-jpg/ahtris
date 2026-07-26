@@ -56,8 +56,8 @@
                     </button>
 
                     <div id="userProfile" class="hidden items-center gap-3">
-                        <span id="userBadgePro" class="px-2.5 py-1 bg-amber-500/10 text-amber-500 border border-amber-500/30 rounded-lg text-[10px] font-black uppercase tracking-wider flex items-center gap-1">
-                            <i class="fa-solid fa-crown text-amber-400"></i> PRO MEMBER
+                        <span id="userBadgePro" class="px-2.5 py-1 bg-slate-500/10 text-slate-400 border border-slate-500/30 rounded-lg text-[10px] font-black uppercase tracking-wider flex items-center gap-1">
+                            <i class="fa-solid fa-user text-slate-400"></i> FREE MEMBER
                         </span>
                         <button type="button" onclick="handleLogout()" class="px-3 py-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 dark:text-rose-400 border border-rose-500/20 rounded-xl text-xs font-semibold transition flex items-center gap-1.5">
                             <i class="fa-solid fa-arrow-right-from-bracket"></i> Keluar
@@ -111,8 +111,8 @@
                             <h4 id="totalClicksDisplay" class="text-xl font-black text-white font-mono">0 <span class="text-xs text-emerald-400 font-normal">Klik</span></h4>
                         </div>
                     </div>
-                    <span class="px-2.5 py-1 bg-amber-500/20 text-amber-400 border border-amber-500/40 rounded-lg text-[10px] font-black uppercase tracking-wider flex items-center gap-1">
-                        <i class="fa-solid fa-bolt"></i> PRO Analytics
+                    <span id="analyticsBadge" class="px-2.5 py-1 bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 rounded-lg text-[10px] font-black uppercase tracking-wider flex items-center gap-1">
+                        <i class="fa-solid fa-bolt"></i> Realtime Stats
                     </span>
                 </div>
 
@@ -155,17 +155,17 @@
                                 <span class="w-4 h-4 rounded-full bg-emerald-500 shrink-0"></span>
                                 <span class="text-xs font-bold text-white">Emerald</span>
                             </button>
-                            <button type="button" onclick="selectTheme('cyan')" id="themeBtn_cyan" class="p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-left transition flex items-center gap-2">
+                            <button type="button" id="themeBtn_cyan" class="p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-left transition flex items-center gap-2">
                                 <span class="w-4 h-4 rounded-full bg-cyan-400 shrink-0"></span>
-                                <span class="text-xs font-bold text-white">Cyber Cyan</span>
+                                <span class="text-xs font-bold text-white flex items-center justify-between w-full">Cyan <i class="fa-solid fa-lock text-[10px] text-amber-500 lock-icon"></i></span>
                             </button>
-                            <button type="button" onclick="selectTheme('purple')" id="themeBtn_purple" class="p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-left transition flex items-center gap-2">
+                            <button type="button" id="themeBtn_purple" class="p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-left transition flex items-center gap-2">
                                 <span class="w-4 h-4 rounded-full bg-purple-500 shrink-0"></span>
-                                <span class="text-xs font-bold text-white">Sunset Violet</span>
+                                <span class="text-xs font-bold text-white flex items-center justify-between w-full">Violet <i class="fa-solid fa-lock text-[10px] text-amber-500 lock-icon"></i></span>
                             </button>
-                            <button type="button" onclick="selectTheme('amber')" id="themeBtn_amber" class="p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-left transition flex items-center gap-2">
+                            <button type="button" id="themeBtn_amber" class="p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-left transition flex items-center gap-2">
                                 <span class="w-4 h-4 rounded-full bg-amber-400 shrink-0"></span>
-                                <span class="text-xs font-bold text-white">Luxury Gold</span>
+                                <span class="text-xs font-bold text-white flex items-center justify-between w-full">Gold <i class="fa-solid fa-lock text-[10px] text-amber-500 lock-icon"></i></span>
                             </button>
                         </div>
                     </div>
@@ -269,10 +269,13 @@
         © 2026 Short Link & Microsite Manager — Supported by PT. Binayasa Putrabatara
     </footer>
 
-    <!-- LOGIKA JAVASCRIPT MASTER TEMA PRO & ANALITIK -->
+    <!-- LOGIKA JAVASCRIPT MASTER TEMA PRO & AKSES FITUR -->
     <script>
         const SUPABASE_URL = "https://lcpskriooezyxgrnarol.supabase.co"; 
         const SUPABASE_KEY = "sb_publishable_puy9U_93p-7_Q64oHrYUpg_iEF3nJ-c";
+
+        // Daftar email yang otomatis memiliki akses status PRO
+        const PRO_EMAILS = ["mastrisnocom@gmail.com", "adnan@ahtris.my.id"];
 
         let currentUser = null;
         let isRegisterMode = false;
@@ -280,6 +283,7 @@
         let selectedAvatarFile = null;
         let currentUploadedAvatarUrl = "";
         let selectedThemeColor = "emerald";
+        let isProUser = false;
 
         function escapeHtml(text) {
             if (!text) return '';
@@ -299,10 +303,19 @@
             return trimmed;
         }
 
+        function getUserEmail() {
+            if (!currentUser) return "";
+            return currentUser.user ? currentUser.user.email : (currentUser.email || "");
+        }
+
         function selectTheme(themeName) {
             selectedThemeColor = themeName;
-            ['emerald', 'cyan', 'purple', 'amber'].forEach(t => {
+            const themes = ['emerald', 'cyan', 'purple', 'amber'];
+            
+            themes.forEach(t => {
                 const btn = document.getElementById(`themeBtn_${t}`);
+                if (!btn) return;
+
                 if (t === themeName) {
                     btn.className = `p-2.5 bg-slate-950 border-2 border-${t === 'cyan' ? 'cyan-400' : (t === 'purple' ? 'purple-500' : (t === 'amber' ? 'amber-400' : 'emerald-500'))} rounded-xl text-left transition flex items-center gap-2`;
                 } else {
@@ -310,6 +323,30 @@
                 }
             });
             updatePreview();
+        }
+
+        function applyProThemeLock() {
+            const themes = ['cyan', 'purple', 'amber'];
+            
+            themes.forEach(themeName => {
+                const btn = document.getElementById(`themeBtn_${themeName}`);
+                if (!btn) return;
+
+                const lockIcon = btn.querySelector('.lock-icon');
+
+                if (!isProUser) {
+                    if (lockIcon) lockIcon.classList.remove('hidden');
+                    btn.onclick = function() {
+                        alert("Fitur Tema ini khusus Member PRO!\n\nSilakan hubungi Admin untuk upgrade akun Anda ke PRO.");
+                        window.open("https://wa.me/6281234567890?text=Halo%20Admin,%20saya%20ingin%20upgrade%20ke%20Microsite%20PRO", "_blank");
+                    };
+                    btn.classList.add('opacity-60');
+                } else {
+                    if (lockIcon) lockIcon.classList.add('hidden');
+                    btn.onclick = function() { selectTheme(themeName); };
+                    btn.classList.remove('opacity-60');
+                }
+            });
         }
 
         function initTheme() {
@@ -366,6 +403,10 @@
             const userProfile = document.getElementById('userProfile');
             const loginWarning = document.getElementById('loginWarning');
             const builderContainer = document.getElementById('builderContainer');
+            const userBadgePro = document.getElementById('userBadgePro');
+
+            const email = getUserEmail().toLowerCase();
+            isProUser = PRO_EMAILS.includes(email);
 
             if (currentUser && currentUser.access_token) {
                 btnOpenAuth.classList.add('hidden');
@@ -373,6 +414,14 @@
                 userProfile.classList.add('flex');
                 loginWarning.classList.add('hidden');
                 builderContainer.classList.remove('opacity-50', 'pointer-events-none');
+
+                if (isProUser) {
+                    userBadgePro.innerHTML = `<i class="fa-solid fa-crown text-amber-400"></i> PRO MEMBER`;
+                    userBadgePro.className = "px-2.5 py-1 bg-amber-500/10 text-amber-500 border border-amber-500/30 rounded-lg text-[10px] font-black uppercase tracking-wider flex items-center gap-1";
+                } else {
+                    userBadgePro.innerHTML = `<i class="fa-solid fa-user text-slate-400"></i> FREE MEMBER`;
+                    userBadgePro.className = "px-2.5 py-1 bg-slate-500/10 text-slate-400 border border-slate-500/30 rounded-lg text-[10px] font-black uppercase tracking-wider flex items-center gap-1";
+                }
             } else {
                 btnOpenAuth.classList.remove('hidden');
                 userProfile.classList.add('hidden');
@@ -380,6 +429,8 @@
                 loginWarning.classList.remove('hidden');
                 builderContainer.classList.add('opacity-50', 'pointer-events-none');
             }
+
+            applyProThemeLock();
         }
 
         function openAuthModal() { document.getElementById('authModal').classList.remove('hidden'); }
@@ -574,7 +625,8 @@
                 amber: { text: 'text-amber-400', ring: 'from-amber-400 to-orange-500', border: 'border-amber-400', bg: 'to-amber-950/40' }
             };
 
-            const t = themeMap[selectedThemeColor] || themeMap.emerald;
+            const activeTheme = isProUser ? selectedThemeColor : 'emerald';
+            const t = themeMap[activeTheme] || themeMap.emerald;
 
             document.getElementById('prevBio').className = `text-[11px] ${t.text} font-semibold tracking-widest uppercase mt-0.5 mb-6 px-2`;
             document.getElementById('watermarkBrand').className = `${t.text} font-bold`;
@@ -623,7 +675,11 @@
                     document.getElementById('inputBio').value = prof.bio || '';
                     document.getElementById('inputSlug').value = prof.slug || '';
 
-                    if (prof.theme_color) selectTheme(prof.theme_color);
+                    if (prof.theme_color && isProUser) {
+                        selectTheme(prof.theme_color);
+                    } else {
+                        selectTheme('emerald');
+                    }
 
                     if (prof.avatar_url) {
                         currentUploadedAvatarUrl = prof.avatar_url;
@@ -671,13 +727,16 @@
             }
 
             const btn = document.getElementById('btnSaveMicrosite');
-            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Mempublikasikan PRO...`;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Mempublikasikan...`;
 
             try {
                 let finalAvatarUrl = currentUploadedAvatarUrl;
                 if (selectedAvatarFile) {
                     finalAvatarUrl = await uploadAvatarToSupabaseStorage();
                 }
+
+                // Proteksi Backend untuk Pilihan Tema (Hanya PRO yang bisa pakai tema kustom)
+                const finalThemeColor = isProUser ? selectedThemeColor : 'emerald';
 
                 const checkRes = await fetch(`${SUPABASE_URL}/rest/v1/microsite_profiles?user_id=eq.${currentUser.user.id}&select=id`, {
                     method: 'GET',
@@ -697,7 +756,7 @@
                             bio: bio,
                             slug: slug,
                             avatar_url: finalAvatarUrl,
-                            theme_color: selectedThemeColor,
+                            theme_color: finalThemeColor,
                             updated_at: new Date().toISOString()
                         })
                     });
@@ -716,7 +775,7 @@
                             bio: bio,
                             slug: slug,
                             avatar_url: finalAvatarUrl,
-                            theme_color: selectedThemeColor
+                            theme_color: finalThemeColor
                         })
                     });
 
@@ -762,7 +821,7 @@
                 }
 
                 const fullMicrositeUrl = `${window.location.origin}/${slug}`;
-                alert(`Microsite PRO Berhasil Dipublikasikan!\n\nTautan Anda: ${fullMicrositeUrl}`);
+                alert(`Microsite Berhasil Dipublikasikan!\n\nTautan Anda: ${fullMicrositeUrl}`);
                 window.location.href = fullMicrositeUrl;
 
             } catch (err) {
