@@ -28,6 +28,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        /* Custom Scrollbar untuk Preview HP */
+        .scrollbar-none::-webkit-scrollbar { display: none; }
+        .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
 <body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 min-h-screen font-sans flex flex-col justify-between transition-colors duration-300">
@@ -36,7 +39,7 @@
     <header class="w-full border-b border-slate-200 dark:border-emerald-900/40 bg-white/80 dark:bg-slate-900/90 backdrop-blur-md sticky top-0 z-40">
         <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
             <a href="/" class="text-xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-2.5">
-                <div class="w-9 h-9 bg-emerald-600 rounded-lg flex items-center justify-center text-white font-black text-lg">
+                <div class="w-9 h-9 bg-emerald-600 rounded-lg flex items-center justify-center text-white font-black text-lg shadow-md shadow-emerald-600/20">
                     <i class="fa-solid fa-link"></i>
                 </div>
                 <span class="font-extrabold tracking-wider">AHTRIS<span class="text-emerald-600 dark:text-emerald-400">.MY.ID</span></span>
@@ -49,7 +52,7 @@
 
                 <!-- Auth Area -->
                 <div id="authArea">
-                    <button id="btnOpenAuth" onclick="openAuthModal()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 dark:bg-slate-800 dark:hover:bg-emerald-900/30 border border-emerald-600 dark:border-emerald-800/40 rounded-xl text-xs font-bold text-white dark:text-emerald-400 transition flex items-center gap-2">
+                    <button id="btnOpenAuth" onclick="openAuthModal()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 dark:bg-slate-800 dark:hover:bg-emerald-900/30 border border-emerald-600 dark:border-emerald-800/40 rounded-xl text-xs font-bold text-white dark:text-emerald-400 transition flex items-center gap-2 shadow-sm">
                         <i class="fa-regular fa-user"></i> Login / Daftar
                     </button>
 
@@ -64,7 +67,7 @@
     </header>
 
     <!-- BAR MARQUEE BERITA -->
-    <div class="w-full bg-slate-900 dark:bg-slate-900 text-slate-200 border-b border-emerald-900/40 py-2 px-4 flex items-center text-xs shadow-inner">
+    <div class="w-full bg-slate-900 text-slate-200 border-b border-emerald-900/40 py-2 px-4 flex items-center text-xs shadow-inner">
         <div class="flex items-center gap-1.5 bg-emerald-600 text-white font-extrabold px-2.5 py-1 rounded-md shrink-0 uppercase tracking-wider text-[10px] mr-3 shadow-sm">
             <i class="fa-solid fa-newspaper text-xs"></i>
             <span>Berita RI</span>
@@ -78,26 +81,26 @@
 
     <!-- Content Utama Builder -->
     <main id="mainContent" class="max-w-6xl mx-auto px-4 py-10 w-full flex-1">
-        <div class="text-center mb-8">
-            <span class="px-3 py-1 bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 text-xs font-semibold rounded-full uppercase tracking-wider">
+        <div class="text-center mb-10">
+            <span class="px-3 py-1 bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 text-xs font-semibold rounded-full uppercase tracking-wider border border-emerald-200 dark:border-emerald-800/40">
                 Creator Bio Link & Mini Site
             </span>
-            <h1 class="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tight mt-2">
+            <h1 class="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tight mt-3">
                 Microsite Content Creator
             </h1>
-            <p class="text-slate-600 dark:text-slate-400 text-xs sm:text-sm mt-1">
-                Kumpulkan seluruh link sosial media & portofoliomu dalam satu halaman eksklusif.
+            <p class="text-slate-600 dark:text-slate-400 text-xs sm:text-sm mt-1 max-w-lg mx-auto">
+                Kumpulkan seluruh link sosial media & portofoliomu dalam satu halaman eksklusif yang cepat & elegan.
             </p>
         </div>
 
         <!-- PERINGATAN JIKA BELUM LOGIN -->
-        <div id="loginWarning" class="max-w-md mx-auto bg-amber-500/10 border border-amber-500/30 rounded-2xl p-6 text-center mb-8">
+        <div id="loginWarning" class="max-w-md mx-auto bg-amber-500/10 border border-amber-500/30 rounded-2xl p-6 text-center mb-8 shadow-lg backdrop-blur-sm">
             <i class="fa-solid fa-lock text-3xl text-amber-500 mb-3"></i>
             <h3 class="text-lg font-bold text-slate-900 dark:text-white">Pendaftaran Diperlukan</h3>
-            <p class="text-xs text-slate-600 dark:text-slate-400 mt-1 mb-4">
+            <p class="text-xs text-slate-600 dark:text-slate-400 mt-1 mb-4 leading-relaxed">
                 Silakan <b>Login</b> atau <b>Daftar Akun</b> terlebih dahulu untuk membuat dan mengelola halaman Microsite Anda.
             </p>
-            <button onclick="openAuthModal()" class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl transition">
+            <button onclick="openAuthModal()" class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl transition shadow-lg shadow-emerald-600/20">
                 Login / Daftar Sekarang
             </button>
         </div>
@@ -106,8 +109,8 @@
         <div id="builderContainer" class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start opacity-50 pointer-events-none transition-all duration-300">
             
             <!-- FORM BUILDER (LEFT) -->
-            <div class="lg:col-span-7 bg-white dark:bg-slate-900 border border-slate-200 dark:border-emerald-900/40 rounded-2xl p-6 shadow-xl space-y-6">
-                <h2 class="text-lg font-bold text-slate-900 dark:text-white border-b border-slate-100 dark:border-slate-800 pb-3 flex items-center gap-2">
+            <div class="lg:col-span-7 bg-white dark:bg-slate-900 border border-slate-200 dark:border-emerald-900/40 rounded-3xl p-6 sm:p-8 shadow-xl space-y-6">
+                <h2 class="text-lg font-bold text-slate-900 dark:text-white border-b border-slate-100 dark:border-slate-800 pb-4 flex items-center gap-2">
                     <i class="fa-solid fa-sliders text-emerald-600 dark:text-emerald-400"></i> Pengaturan Profil Creator
                 </h2>
 
@@ -116,7 +119,7 @@
                     <div>
                         <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-2">Foto Profil (Maksimal 2MB)</label>
                         <div class="flex items-center gap-4">
-                            <div class="relative w-16 h-16 rounded-full overflow-hidden bg-slate-100 dark:bg-slate-800 border-2 border-emerald-500 flex items-center justify-center shrink-0">
+                            <div class="relative w-16 h-16 rounded-full overflow-hidden bg-slate-100 dark:bg-slate-800 border-2 border-emerald-500 flex items-center justify-center shrink-0 shadow-md">
                                 <img id="avatarPreview" src="" alt="" class="w-full h-full object-cover hidden">
                                 <i id="avatarPlaceholderIcon" class="fa-solid fa-user text-2xl text-slate-400"></i>
                             </div>
@@ -132,15 +135,15 @@
 
                     <div>
                         <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Nama Creator / Judul</label>
-                        <input type="text" id="inputName" oninput="updatePreview()" placeholder="Contoh: AHTRIS" class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-sm focus:outline-none focus:border-emerald-500 font-bold uppercase">
+                        <input type="text" id="inputName" oninput="updatePreview()" placeholder="Contoh: AHTRIS" class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-sm focus:outline-none focus:border-emerald-500 font-bold uppercase transition">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Bio / Profesi</label>
-                        <input type="text" id="inputBio" oninput="updatePreview()" placeholder="Contoh: CONTENT CREATOR" class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-sm focus:outline-none focus:border-emerald-500 uppercase">
+                        <input type="text" id="inputBio" oninput="updatePreview()" placeholder="Contoh: CONTENT CREATOR" class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-sm focus:outline-none focus:border-emerald-500 uppercase transition">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Custom Slug URL</label>
-                        <div class="flex items-center bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl px-4 py-2.5">
+                        <div class="flex items-center bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl px-4 py-2.5 focus-within:border-emerald-500 transition">
                             <span class="text-slate-400 text-xs font-mono mr-1" id="slugPrefix">ahtris.my.id/</span>
                             <input type="text" id="inputSlug" placeholder="ahtris" class="w-full bg-transparent focus:outline-none font-mono text-xs text-emerald-600 dark:text-emerald-400 font-bold">
                         </div>
@@ -163,23 +166,43 @@
                 </button>
             </div>
 
-            <!-- LIVE PREVIEW HP (RIGHT) -->
+            <!-- LIVE PREVIEW HP MODERN (RIGHT) -->
             <div class="lg:col-span-5 flex justify-center sticky top-24">
-                <div class="w-full max-w-[320px] bg-white border-8 border-slate-800 rounded-[40px] shadow-2xl overflow-hidden p-6 flex flex-col items-center text-center relative min-h-[520px]">
-                    <div class="w-28 h-4 bg-slate-800 absolute top-0 rounded-b-xl mb-6"></div>
-
-                    <!-- Avatar Profile Preview -->
-                    <div class="w-24 h-24 rounded-full mt-6 mb-3 overflow-hidden border-2 border-emerald-500 shadow-md flex items-center justify-center bg-emerald-500 text-white shrink-0">
-                        <img id="prevAvatarImg" src="" alt="" class="w-full h-full object-cover hidden">
-                        <i id="prevAvatarIcon" class="fa-solid fa-user text-4xl"></i>
+                <div class="w-full max-w-[330px] bg-slate-900 border-[10px] border-slate-800 rounded-[48px] shadow-[0_25px_60px_-15px_rgba(16,185,129,0.15)] overflow-hidden flex flex-col items-center relative min-h-[580px] transition-all duration-300">
+                    
+                    <!-- Mockup Dynamic Island Notch -->
+                    <div class="w-28 h-4 bg-slate-800 absolute top-0 rounded-b-2xl z-20 flex items-center justify-center">
+                        <div class="w-2.5 h-2.5 bg-slate-950 rounded-full mr-2"></div>
+                        <div class="w-7 h-1 bg-slate-700 rounded-full"></div>
                     </div>
 
-                    <h3 id="prevName" class="font-extrabold text-lg text-slate-900 tracking-wide uppercase">AHTRIS</h3>
-                    <p id="prevBio" class="text-xs text-slate-500 font-medium tracking-wider uppercase mt-0.5 mb-6">CONTENT CREATOR</p>
+                    <!-- Phone Screen Container (Scrollable) -->
+                    <div class="w-full h-full bg-gradient-to-b from-slate-900 via-slate-950 to-emerald-950/40 p-6 flex flex-col items-center text-center overflow-y-auto pt-10 scrollbar-none">
+                        
+                        <!-- Avatar Profile Preview dengan Ring Glow Effect -->
+                        <div class="relative group mt-4 mb-3">
+                            <div class="absolute -inset-0.5 bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full blur opacity-60"></div>
+                            <div class="relative w-24 h-24 rounded-full overflow-hidden border-2 border-emerald-400 shadow-xl flex items-center justify-center bg-slate-800 text-white shrink-0">
+                                <img id="prevAvatarImg" src="" alt="" class="w-full h-full object-cover hidden">
+                                <i id="prevAvatarIcon" class="fa-solid fa-user text-4xl text-slate-400"></i>
+                            </div>
+                        </div>
 
-                    <div id="prevLinksContainer" class="w-full space-y-3 overflow-y-auto max-h-[300px] pr-1"></div>
+                        <!-- Profile Info -->
+                        <h3 id="prevName" class="font-extrabold text-lg text-white tracking-wide uppercase mt-1">AHTRIS</h3>
+                        <p id="prevBio" class="text-[11px] text-emerald-400/90 font-semibold tracking-widest uppercase mt-0.5 mb-6 px-2">CONTENT CREATOR</p>
+
+                        <!-- Social Links Container -->
+                        <div id="prevLinksContainer" class="w-full space-y-3 pb-6"></div>
+
+                        <!-- Footer Small Watermark -->
+                        <div class="mt-auto pt-4 text-[9px] text-slate-500 tracking-wider uppercase font-semibold">
+                            Powered by <span class="text-emerald-400 font-bold">Ahtris.my.id</span>
+                        </div>
+                    </div>
                 </div>
             </div>
+
         </div>
     </main>
 
@@ -217,7 +240,7 @@
         © 2026 Short Link & Microsite Manager — Supported by PT. Binayasa Putrabatara
     </footer>
 
-    <!-- LOGIKA JAVASCRIPT AMAN -->
+    <!-- LOGIKA JAVASCRIPT MASTER & AMAN -->
     <script>
         const SUPABASE_URL = "https://lcpskriooezyxgrnarol.supabase.co"; 
         const SUPABASE_KEY = "sb_publishable_puy9U_93p-7_Q64oHrYUpg_iEF3nJ-c";
@@ -436,7 +459,6 @@
             const file = event.target.files[0];
             if (!file) return;
 
-            // Batas ukuran 2MB & jenis file
             if (file.size > 2 * 1024 * 1024) {
                 alert("Ukuran foto maksimal 2MB!");
                 return;
@@ -506,11 +528,11 @@
             if (lowerUrl.includes('youtube.com') || lowerUrl.includes('youtu.be')) return { icon: 'fa-brands fa-youtube', color: 'text-red-500', name: 'YouTube' };
             if (lowerUrl.includes('facebook.com') || lowerUrl.includes('fb.watch')) return { icon: 'fa-brands fa-facebook', color: 'text-blue-600', name: 'Facebook' };
             if (lowerUrl.includes('instagram.com')) return { icon: 'fa-brands fa-instagram', color: 'text-pink-500', name: 'Instagram' };
-            if (lowerUrl.includes('twitter.com') || lowerUrl.includes('x.com')) return { icon: 'fa-brands fa-x-twitter', color: 'text-slate-800', name: 'Twitter / X' };
-            if (lowerUrl.includes('tiktok.com')) return { icon: 'fa-brands fa-tiktok', color: 'text-slate-900', name: 'TikTok' };
-            if (lowerUrl.includes('wa.me') || lowerUrl.includes('whatsapp.com')) return { icon: 'fa-brands fa-whatsapp', color: 'text-emerald-500', name: 'WhatsApp' };
-            if (lowerUrl.includes('linkedin.com')) return { icon: 'fa-brands fa-linkedin', color: 'text-blue-500', name: 'LinkedIn' };
-            return { icon: 'fa-solid fa-globe', color: 'text-emerald-500', name: 'Website' };
+            if (lowerUrl.includes('twitter.com') || lowerUrl.includes('x.com')) return { icon: 'fa-brands fa-x-twitter', color: 'text-slate-200', name: 'Twitter / X' };
+            if (lowerUrl.includes('tiktok.com')) return { icon: 'fa-brands fa-tiktok', color: 'text-white', name: 'TikTok' };
+            if (lowerUrl.includes('wa.me') || lowerUrl.includes('whatsapp.com')) return { icon: 'fa-brands fa-whatsapp', color: 'text-emerald-400', name: 'WhatsApp' };
+            if (lowerUrl.includes('linkedin.com')) return { icon: 'fa-brands fa-linkedin', color: 'text-blue-400', name: 'LinkedIn' };
+            return { icon: 'fa-solid fa-globe', color: 'text-emerald-400', name: 'Website' };
         }
 
         function addLinkInput(title = '', url = '') {
@@ -519,15 +541,15 @@
             const id = `link_item_${linkCount}`;
 
             const itemHtml = `
-                <div id="${id}" class="p-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl space-y-2 relative">
-                    <button type="button" onclick="removeLinkInput('${id}')" class="absolute top-2 right-2 text-slate-400 hover:text-rose-500 text-xs">
+                <div id="${id}" class="p-3.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl space-y-2 relative shadow-sm">
+                    <button type="button" onclick="removeLinkInput('${id}')" class="absolute top-3 right-3 text-slate-400 hover:text-rose-500 text-xs transition">
                         <i class="fa-solid fa-trash"></i>
                     </button>
                     <div class="flex items-center gap-2">
-                        <span id="icon_${id}" class="text-lg text-emerald-500"><i class="fa-solid fa-globe"></i></span>
-                        <input type="text" id="title_${id}" oninput="updatePreview()" value="${escapeHtml(title)}" placeholder="Judul Tautan" class="w-full bg-transparent text-xs font-semibold focus:outline-none text-slate-900 dark:text-white">
+                        <span id="icon_${id}" class="text-base text-emerald-500"><i class="fa-solid fa-globe"></i></span>
+                        <input type="text" id="title_${id}" oninput="updatePreview()" value="${escapeHtml(title)}" placeholder="Judul Tautan" class="w-full bg-transparent text-xs font-bold focus:outline-none text-slate-900 dark:text-white">
                     </div>
-                    <input type="url" id="url_${id}" oninput="onUrlChange('${id}')" value="${escapeHtml(url)}" placeholder="https://..." class="w-full bg-transparent text-xs font-mono text-slate-500 focus:outline-none border-t border-slate-200 dark:border-slate-800/60 pt-1.5">
+                    <input type="url" id="url_${id}" oninput="onUrlChange('${id}')" value="${escapeHtml(url)}" placeholder="https://..." class="w-full bg-transparent text-xs font-mono text-slate-500 focus:outline-none border-t border-slate-200 dark:border-slate-800/60 pt-2">
                 </div>
             `;
             container.insertAdjacentHTML('beforeend', itemHtml);
@@ -573,10 +595,12 @@
                 const detected = detectSocialIcon(url);
 
                 const linkBtnHtml = `
-                    <a href="${url}" target="_blank" class="w-full py-3.5 px-5 bg-slate-50 hover:bg-slate-100 rounded-2xl text-sm font-bold text-slate-800 transition flex items-center justify-between border border-slate-200 shadow-sm">
-                        <i class="${detected.icon} ${detected.color} text-xl"></i>
-                        <span class="truncate px-2 font-bold">${title}</span>
-                        <i class="fa-solid fa-chevron-right text-xs text-slate-400"></i>
+                    <a href="${url}" target="_blank" class="w-full py-3 px-4 bg-slate-800/80 hover:bg-emerald-600/20 hover:border-emerald-500/50 backdrop-blur-md rounded-2xl text-xs font-bold text-white transition-all duration-200 flex items-center justify-between border border-slate-700/60 shadow-md group hover:-translate-y-0.5">
+                        <div class="w-7 h-7 rounded-lg bg-slate-900/60 flex items-center justify-center shrink-0">
+                            <i class="${detected.icon} ${detected.color} text-sm"></i>
+                        </div>
+                        <span class="truncate px-2 font-semibold text-slate-200 group-hover:text-white transition-colors">${title}</span>
+                        <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-slate-400 group-hover:text-emerald-400 transition-colors"></i>
                     </a>
                 `;
                 prevLinksContainer.insertAdjacentHTML('beforeend', linkBtnHtml);
@@ -736,10 +760,6 @@
         fetchIndonesiaNews();
         addLinkInput('Channel YouTube', 'https://youtube.com');
         addLinkInput('Instagram Resmi', 'https://instagram.com');
-   addLinkInput('Tiktok Resmi', 'https://tiktok.com');
-        addLinkInput('Facebook Resmi', 'https://facebook.com');
-   
-    
     </script>
 </body>
 </html>
