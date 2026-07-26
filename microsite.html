@@ -32,7 +32,7 @@
 </head>
 <body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 min-h-screen font-sans flex flex-col justify-between transition-colors duration-300">
 
-    <!-- Header / Navbar Tanpa Tampilan Email -->
+    <!-- Header / Navbar -->
     <header class="w-full border-b border-slate-200 dark:border-emerald-900/40 bg-white/80 dark:bg-slate-900/90 backdrop-blur-md sticky top-0 z-40">
         <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
             <a href="/" class="text-xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-2.5">
@@ -63,7 +63,7 @@
         </div>
     </header>
 
-    <!-- BAR MARQUEE BERITA INDONESIA TERKINI -->
+    <!-- BAR MARQUEE BERITA -->
     <div class="w-full bg-slate-900 dark:bg-slate-900 text-slate-200 border-b border-emerald-900/40 py-2 px-4 flex items-center text-xs shadow-inner">
         <div class="flex items-center gap-1.5 bg-emerald-600 text-white font-extrabold px-2.5 py-1 rounded-md shrink-0 uppercase tracking-wider text-[10px] mr-3 shadow-sm">
             <i class="fa-solid fa-newspaper text-xs"></i>
@@ -114,18 +114,18 @@
                 <div class="space-y-4">
                     <!-- UPLOAD FOTO PROFIL -->
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-2">Foto Profil (Supabase Storage)</label>
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-2">Foto Profil (Maksimal 2MB)</label>
                         <div class="flex items-center gap-4">
                             <div class="relative w-16 h-16 rounded-full overflow-hidden bg-slate-100 dark:bg-slate-800 border-2 border-emerald-500 flex items-center justify-center shrink-0">
                                 <img id="avatarPreview" src="" alt="" class="w-full h-full object-cover hidden">
                                 <i id="avatarPlaceholderIcon" class="fa-solid fa-user text-2xl text-slate-400"></i>
                             </div>
                             <div class="flex-1">
-                                <input type="file" id="inputAvatar" accept="image/*" onchange="handleAvatarSelection(event)" class="hidden">
+                                <input type="file" id="inputAvatar" accept="image/png, image/jpeg, image/webp" onchange="handleAvatarSelection(event)" class="hidden">
                                 <button type="button" onclick="document.getElementById('inputAvatar').click()" class="px-4 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-emerald-50 dark:hover:bg-emerald-950 border border-slate-300 dark:border-slate-700 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 transition flex items-center gap-2">
                                     <i class="fa-solid fa-cloud-arrow-up text-emerald-500"></i> Pilih Foto
                                 </button>
-                                <p class="text-[10px] text-slate-400 mt-1">Foto otomatis tersimpan di Supabase Storage.</p>
+                                <p class="text-[10px] text-slate-400 mt-1">Format: JPG, PNG, WEBP. Tersimpan aman di Supabase Storage.</p>
                             </div>
                         </div>
                     </div>
@@ -217,7 +217,7 @@
         © 2026 Short Link & Microsite Manager — Supported by PT. Binayasa Putrabatara
     </footer>
 
-    <!-- LOGIKA JAVASCRIPT & ENGINE BERITA MULTI-SOURCE -->
+    <!-- LOGIKA JAVASCRIPT AMAN -->
     <script>
         const SUPABASE_URL = "https://lcpskriooezyxgrnarol.supabase.co"; 
         const SUPABASE_KEY = "sb_publishable_puy9U_93p-7_Q64oHrYUpg_iEF3nJ-c";
@@ -228,15 +228,35 @@
         let selectedAvatarFile = null;
         let currentUploadedAvatarUrl = "";
 
-        // --- FUNGSI PROSESSING AMBIL BERITA RI MULTI-SOURCE HANDLER ---
+        // --- FUNGSI PEMBERSIH TEKS (ANTI XSS) ---
+        function escapeHtml(text) {
+            if (!text) return '';
+            return String(text)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        // --- VALIDASI URL AMAN ---
+        function sanitizeUrl(url) {
+            if (!url) return '#';
+            const trimmed = url.trim();
+            if (trimmed.toLowerCase().startsWith('javascript:') || trimmed.toLowerCase().startsWith('data:')) {
+                return '#';
+            }
+            if (!trimmed.startsWith('http://') && !trimmed.startsWith('https://')) {
+                return 'https://' + trimmed;
+            }
+            return trimmed;
+        }
+
         async function fetchIndonesiaNews() {
             const marquee = document.getElementById('newsMarqueeContainer');
-            
-            // Daftar Feed Berita Indonesia via RSS2JSON Service
             const newsSources = [
                 'https://api.rss2json.com/v1/api.json?rss_url=https://www.antaranews.com/rss/terkini.xml',
-                'https://api.rss2json.com/v1/api.json?rss_url=https://www.cnbcindonesia.com/news/rss',
-                'https://api.rss2json.com/v1/api.json?rss_url=https://www.republika.co.id/rss'
+                'https://api.rss2json.com/v1/api.json?rss_url=https://www.cnbcindonesia.com/news/rss'
             ];
 
             for (let url of newsSources) {
@@ -247,26 +267,25 @@
                     if (data.status === 'ok' && data.items && data.items.length > 0) {
                         let newsHtml = "";
                         data.items.slice(0, 10).forEach((item, idx) => {
+                            const safeTitle = escapeHtml(item.title);
+                            const safeLink = sanitizeUrl(item.link);
                             newsHtml += `
-                                <a href="${item.link}" target="_blank" class="hover:underline hover:text-white transition">
-                                    <span class="font-bold text-emerald-400">#${idx + 1}</span> ${item.title}
+                                <a href="${safeLink}" target="_blank" class="hover:underline hover:text-white transition">
+                                    <span class="font-bold text-emerald-400">#${idx + 1}</span> ${safeTitle}
                                 </a>
                                 <span class="mx-4 text-emerald-600 dark:text-emerald-500">•</span>
                             `;
                         });
                         marquee.innerHTML = newsHtml;
-                        return; // Berhasil dimuat, hentikan loop
+                        return;
                     }
                 } catch (e) {
-                    console.error("Gagal memuat feed:", url);
+                    console.error("Gagal memuat feed berita:", url);
                 }
             }
 
-            // Backup Teks Jika Koneksi Internet Bermasalah
             marquee.innerHTML = `
                 <span class="font-bold text-emerald-400">AHTRIS.MY.ID</span> Selamat Datang di Layanan Shortlink & Microsite Creator Indonesia.
-                <span class="mx-4 text-emerald-600">•</span>
-                <span class="font-bold text-emerald-400">INFO</span> Kelola tautan dan sosial mediamu secara mudah dan cepat di sini.
             `;
         }
 
@@ -370,10 +389,7 @@
             try {
                 const response = await fetch(endpoint, {
                     method: 'POST',
-                    headers: {
-                        'apikey': SUPABASE_KEY,
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, password })
                 });
 
@@ -400,8 +416,7 @@
                         authStatus.classList.add('hidden');
                     }
                 } else {
-                    const errorMsg = data.error_description || data.msg || data.message || "Gagal Autentikasi";
-                    authStatus.textContent = errorMsg;
+                    authStatus.textContent = data.error_description || data.msg || "Gagal Autentikasi";
                     authStatus.className = "mt-3 text-center text-xs font-medium text-rose-500";
                 }
             } catch (err) {
@@ -421,8 +436,14 @@
             const file = event.target.files[0];
             if (!file) return;
 
-            if (file.size > 5 * 1024 * 1024) {
-                alert("Ukuran file gambar maksimal 5MB!");
+            // Batas ukuran 2MB & jenis file
+            if (file.size > 2 * 1024 * 1024) {
+                alert("Ukuran foto maksimal 2MB!");
+                return;
+            }
+
+            if (!file.type.startsWith('image/')) {
+                alert("File harus berupa gambar (JPG, PNG, WEBP)!");
                 return;
             }
 
@@ -458,7 +479,7 @@
             if (!selectedAvatarFile || !currentUser) return currentUploadedAvatarUrl;
 
             const fileExt = selectedAvatarFile.name.split('.').pop();
-            const fileName = `${currentUser.user.id}_avatar_${Date.now()}.${fileExt}`;
+            const fileName = `${currentUser.user.id}_${Date.now()}.${fileExt}`;
 
             const uploadHeaders = {
                 'apikey': SUPABASE_KEY,
@@ -474,8 +495,7 @@
             });
 
             if (!uploadRes.ok) {
-                const errJson = await uploadRes.json();
-                throw new Error("Gagal unggah foto ke Storage: " + (errJson.message || "Pastikan Bucket 'avatars' sudah dibuat"));
+                throw new Error("Gagal mengunggah foto. Pastikan Storage Bucket 'avatars' sudah dibuat dan diatur Public di Supabase.");
             }
 
             return `${SUPABASE_URL}/storage/v1/object/public/avatars/${fileName}`;
@@ -483,21 +503,13 @@
 
         function detectSocialIcon(url) {
             const lowerUrl = url.toLowerCase();
-            if (lowerUrl.includes('youtube.com') || lowerUrl.includes('youtu.be')) {
-                return { icon: 'fa-brands fa-youtube', color: 'text-red-500', name: 'YouTube' };
-            } else if (lowerUrl.includes('facebook.com') || lowerUrl.includes('fb.watch')) {
-                return { icon: 'fa-brands fa-facebook', color: 'text-blue-600', name: 'Facebook' };
-            } else if (lowerUrl.includes('instagram.com')) {
-                return { icon: 'fa-brands fa-instagram', color: 'text-pink-500', name: 'Instagram' };
-            } else if (lowerUrl.includes('twitter.com') || lowerUrl.includes('x.com')) {
-                return { icon: 'fa-brands fa-x-twitter', color: 'text-slate-800', name: 'Twitter / X' };
-            } else if (lowerUrl.includes('tiktok.com')) {
-                return { icon: 'fa-brands fa-tiktok', color: 'text-slate-900', name: 'TikTok' };
-            } else if (lowerUrl.includes('wa.me') || lowerUrl.includes('whatsapp.com')) {
-                return { icon: 'fa-brands fa-whatsapp', color: 'text-emerald-500', name: 'WhatsApp' };
-            } else if (lowerUrl.includes('linkedin.com')) {
-                return { icon: 'fa-brands fa-linkedin', color: 'text-blue-500', name: 'LinkedIn' };
-            }
+            if (lowerUrl.includes('youtube.com') || lowerUrl.includes('youtu.be')) return { icon: 'fa-brands fa-youtube', color: 'text-red-500', name: 'YouTube' };
+            if (lowerUrl.includes('facebook.com') || lowerUrl.includes('fb.watch')) return { icon: 'fa-brands fa-facebook', color: 'text-blue-600', name: 'Facebook' };
+            if (lowerUrl.includes('instagram.com')) return { icon: 'fa-brands fa-instagram', color: 'text-pink-500', name: 'Instagram' };
+            if (lowerUrl.includes('twitter.com') || lowerUrl.includes('x.com')) return { icon: 'fa-brands fa-x-twitter', color: 'text-slate-800', name: 'Twitter / X' };
+            if (lowerUrl.includes('tiktok.com')) return { icon: 'fa-brands fa-tiktok', color: 'text-slate-900', name: 'TikTok' };
+            if (lowerUrl.includes('wa.me') || lowerUrl.includes('whatsapp.com')) return { icon: 'fa-brands fa-whatsapp', color: 'text-emerald-500', name: 'WhatsApp' };
+            if (lowerUrl.includes('linkedin.com')) return { icon: 'fa-brands fa-linkedin', color: 'text-blue-500', name: 'LinkedIn' };
             return { icon: 'fa-solid fa-globe', color: 'text-emerald-500', name: 'Website' };
         }
 
@@ -513,9 +525,9 @@
                     </button>
                     <div class="flex items-center gap-2">
                         <span id="icon_${id}" class="text-lg text-emerald-500"><i class="fa-solid fa-globe"></i></span>
-                        <input type="text" id="title_${id}" oninput="updatePreview()" value="${title}" placeholder="Judul Tautan" class="w-full bg-transparent text-xs font-semibold focus:outline-none text-slate-900 dark:text-white">
+                        <input type="text" id="title_${id}" oninput="updatePreview()" value="${escapeHtml(title)}" placeholder="Judul Tautan" class="w-full bg-transparent text-xs font-semibold focus:outline-none text-slate-900 dark:text-white">
                     </div>
-                    <input type="url" id="url_${id}" oninput="onUrlChange('${id}')" value="${url}" placeholder="https://..." class="w-full bg-transparent text-xs font-mono text-slate-500 focus:outline-none border-t border-slate-200 dark:border-slate-800/60 pt-1.5">
+                    <input type="url" id="url_${id}" oninput="onUrlChange('${id}')" value="${escapeHtml(url)}" placeholder="https://..." class="w-full bg-transparent text-xs font-mono text-slate-500 focus:outline-none border-t border-slate-200 dark:border-slate-800/60 pt-1.5">
                 </div>
             `;
             container.insertAdjacentHTML('beforeend', itemHtml);
@@ -542,11 +554,11 @@
         }
 
         function updatePreview() {
-            const name = document.getElementById('inputName').value || 'AHTRIS';
-            const bio = document.getElementById('inputBio').value || 'CONTENT CREATOR';
+            const rawName = document.getElementById('inputName').value || 'AHTRIS';
+            const rawBio = document.getElementById('inputBio').value || 'CONTENT CREATOR';
 
-            document.getElementById('prevName').textContent = name;
-            document.getElementById('prevBio').textContent = bio;
+            document.getElementById('prevName').textContent = rawName;
+            document.getElementById('prevBio').textContent = rawBio;
 
             const prevLinksContainer = document.getElementById('prevLinksContainer');
             prevLinksContainer.innerHTML = '';
@@ -556,8 +568,8 @@
 
             items.forEach(item => {
                 const id = item.id;
-                const title = document.getElementById(`title_${id}`).value || 'Kunjungi Link';
-                const url = document.getElementById(`url_${id}`).value || '#';
+                const title = escapeHtml(document.getElementById(`title_${id}`).value || 'Kunjungi Link');
+                const url = sanitizeUrl(document.getElementById(`url_${id}`).value);
                 const detected = detectSocialIcon(url);
 
                 const linkBtnHtml = `
@@ -627,7 +639,7 @@
             }
 
             const btn = document.getElementById('btnSaveMicrosite');
-            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Mempublikasikan ke Supabase...`;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Mempublikasikan...`;
 
             try {
                 let finalAvatarUrl = currentUploadedAvatarUrl;
@@ -657,10 +669,7 @@
                         })
                     });
 
-                    if (!updateRes.ok) {
-                        const errJson = await updateRes.json();
-                        throw new Error(errJson.message || "Gagal memperbarui profil.");
-                    }
+                    if (!updateRes.ok) throw new Error("Gagal memperbarui profil.");
                 } else {
                     const insertRes = await fetch(`${SUPABASE_URL}/rest/v1/microsite_profiles`, {
                         method: 'POST',
@@ -674,11 +683,7 @@
                         })
                     });
 
-                    if (!insertRes.ok) {
-                        const errJson = await insertRes.json();
-                        throw new Error(errJson.message || "Gagal membuat profil (Slug mungkin sudah dipakai).");
-                    }
-
+                    if (!insertRes.ok) throw new Error("Gagal membuat profil. Custom Slug mungkin sudah dipakai.");
                     const newProfData = await insertRes.json();
                     profileId = newProfData[0].id;
                 }
@@ -690,9 +695,9 @@
                 items.forEach((item, index) => {
                     const id = item.id;
                     const title = document.getElementById(`title_${id}`).value;
-                    const url = document.getElementById(`url_${id}`).value;
+                    const url = sanitizeUrl(document.getElementById(`url_${id}`).value);
 
-                    if (title && url) {
+                    if (title && url !== '#') {
                         linksToSave.push({
                             profile_id: profileId,
                             title: title,
@@ -716,26 +721,7 @@
                 }
 
                 const fullMicrositeUrl = `${window.location.origin}/${slug}`;
-                
-                const checkUrlRes = await fetch(`${SUPABASE_URL}/rest/v1/urls?slug=eq.${slug}&select=id`, {
-                    method: 'GET',
-                    headers: getHeaders(currentUser.access_token)
-                });
-                const existingUrlData = await checkUrlRes.json();
-
-                if (!existingUrlData || existingUrlData.length === 0) {
-                    await fetch(`${SUPABASE_URL}/rest/v1/urls`, {
-                        method: 'POST',
-                        headers: getHeaders(currentUser.access_token),
-                        body: JSON.stringify({
-                            original_url: fullMicrositeUrl,
-                            slug: slug,
-                            user_id: currentUser.user.id
-                        })
-                    });
-                }
-
-                alert(`Microsite Berhasil Dipublikasikan!\n\nTautan Anda: ${fullMicrositeUrl}\n(Link ini juga telah ditambahkan ke Daftar Link Saya).`);
+                alert(`Microsite Berhasil Dipublikasikan!\n\nTautan Anda: ${fullMicrositeUrl}`);
                 window.location.href = fullMicrositeUrl;
 
             } catch (err) {
@@ -747,9 +733,13 @@
 
         initTheme();
         checkSession();
-        fetchIndonesiaNews(); // Memanggil fungsi berita otomatis
+        fetchIndonesiaNews();
         addLinkInput('Channel YouTube', 'https://youtube.com');
         addLinkInput('Instagram Resmi', 'https://instagram.com');
+   addLinkInput('Tiktok Resmi', 'https://tiktok.com');
+        addLinkInput('Facebook Resmi', 'https://facebook.com');
+   
+    
     </script>
 </body>
 </html>
