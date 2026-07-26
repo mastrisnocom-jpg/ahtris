@@ -455,7 +455,6 @@
                 loginWarning.classList.add('hidden');
                 builderContainer.classList.remove('opacity-50', 'pointer-events-none');
 
-                // Tampilkan Tombol Superadmin jika email terdaftar
                 if (PRO_EMAILS.includes(email)) {
                     isProUser = true;
                     if (btnManageProUsers) {
@@ -727,7 +726,6 @@
                     document.getElementById('inputBio').value = prof.bio || '';
                     document.getElementById('inputSlug').value = prof.slug || '';
 
-                    // Set status isProUser jika di database bertanda true
                     if (prof.is_pro) {
                         isProUser = true;
                         renderUserUI();
@@ -929,7 +927,7 @@
                                 </span>
                             </td>
                             <td class="p-3 text-right">
-                                <button onclick="toggleUserProStatus('${u.profile_id}', ${!isPro})" class="px-3 py-1.5 ${isPro ? 'bg-rose-500/10 text-rose-400 border border-rose-500/30 hover:bg-rose-500/20' : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/20'} rounded-xl text-[11px] font-bold transition">
+                                <button onclick="toggleUserProStatus('${u.profile_id}', '${u.user_id}', ${!isPro})" class="px-3 py-1.5 ${isPro ? 'bg-rose-500/10 text-rose-400 border border-rose-500/30 hover:bg-rose-500/20' : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/20'} rounded-xl text-[11px] font-bold transition">
                                     ${isPro ? 'Nonaktifkan PRO' : 'Aktifkan PRO'}
                                 </button>
                             </td>
@@ -937,20 +935,34 @@
                         tableBody.appendChild(row);
                     });
                 } else {
-                    tableBody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-400">Belum ada user mendaftar microsite.</td></tr>`;
+                    tableBody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-400">Belum ada user mendaftar.</td></tr>`;
                 }
             } catch (err) {
                 tableBody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-rose-500">Gagal memuat data user.</td></tr>`;
             }
         }
 
-        async function toggleUserProStatus(profileId, targetStatus) {
+        async function toggleUserProStatus(profileId, userId, targetStatus) {
             try {
-                const res = await fetch(`${SUPABASE_URL}/rest/v1/microsite_profiles?id=eq.${profileId}`, {
-                    method: 'PATCH',
-                    headers: getHeaders(currentUser ? currentUser.access_token : null),
-                    body: JSON.stringify({ is_pro: targetStatus })
-                });
+                let res;
+                if (profileId && profileId !== 'null' && profileId !== 'undefined') {
+                    res = await fetch(`${SUPABASE_URL}/rest/v1/microsite_profiles?id=eq.${profileId}`, {
+                        method: 'PATCH',
+                        headers: getHeaders(currentUser ? currentUser.access_token : null),
+                        body: JSON.stringify({ is_pro: targetStatus })
+                    });
+                } else {
+                    res = await fetch(`${SUPABASE_URL}/rest/v1/microsite_profiles`, {
+                        method: 'POST',
+                        headers: getHeaders(currentUser ? currentUser.access_token : null),
+                        body: JSON.stringify({ 
+                            user_id: userId,
+                            display_name: 'Member New',
+                            slug: 'user-' + Math.random().toString(36).substring(2, 7),
+                            is_pro: targetStatus 
+                        })
+                    });
+                }
 
                 if (res.ok) {
                     loadAllUsersProStatus();
