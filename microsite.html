@@ -49,9 +49,9 @@
                     <i id="themeIcon" class="fa-solid fa-moon"></i>
                 </button>
 
-                <!-- Tombol Khusus Superadmin untuk Kelola User PRO -->
-                <button id="btnManageProUsers" onclick="openProUsersModal()" class="hidden px-3 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-xl text-xs transition items-center gap-1.5 shadow-md">
-                    <i class="fa-solid fa-users-gear"></i> <span class="hidden sm:inline">Kelola User PRO</span>
+                <!-- Tombol Generator Voucher Khusus Superadmin -->
+                <button id="btnAdminGenVoucher" onclick="openAdminVoucherModal()" class="hidden px-3 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-xl text-xs transition items-center gap-1.5 shadow-md">
+                    <i class="fa-solid fa-key"></i> <span class="hidden sm:inline">Generator Kode PRO</span>
                 </button>
 
                 <!-- Auth Area -->
@@ -105,6 +105,21 @@
             <!-- FORM BUILDER (LEFT) -->
             <div class="lg:col-span-7 bg-white dark:bg-slate-900 border border-slate-200 dark:border-emerald-900/40 rounded-3xl p-6 sm:p-8 shadow-xl space-y-6">
                 
+                <!-- KOTAK KLAIM VOUCHER PRO (KHUSUS MEMBER FREE) -->
+                <div id="claimVoucherBox" class="bg-gradient-to-r from-amber-500/10 via-slate-900 to-amber-500/10 border border-amber-500/30 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-md">
+                    <div class="flex items-center gap-2.5">
+                        <i class="fa-solid fa-ticket text-amber-400 text-xl"></i>
+                        <div>
+                            <h4 class="text-xs font-bold text-white">Aktivasi Kode Lisensi PRO</h4>
+                            <p class="text-[10px] text-slate-400">Punya kode lisensi? Masukkan untuk buka fitur PRO.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-1.5 w-full sm:w-auto">
+                        <input type="text" id="inputClaimCode" placeholder="PRO-XXXX" class="px-3 py-1.5 bg-slate-950 border border-amber-500/40 rounded-xl text-xs font-mono font-bold text-amber-400 uppercase w-full sm:w-32 focus:outline-none">
+                        <button onclick="claimProVoucher()" class="px-3 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-xl transition shrink-0">Klaim</button>
+                    </div>
+                </div>
+
                 <!-- HEADER DASHBOARD STATISTIK PRO -->
                 <div class="bg-slate-950 border border-emerald-900/50 rounded-2xl p-4 flex items-center justify-between shadow-inner">
                     <div class="flex items-center gap-3">
@@ -240,38 +255,27 @@
         </div>
     </main>
 
-    <!-- MODAL SUPERADMIN: KELOLA PRO USERS -->
-    <div id="proUsersModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white dark:bg-slate-900 border border-amber-500/40 rounded-3xl w-full max-w-2xl p-6 shadow-2xl relative max-h-[85vh] flex flex-col">
-            
-            <button onclick="closeProUsersModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">
+    <!-- MODAL SUPERADMIN: GENERATOR KODE VOUCHER PRO -->
+    <div id="adminVoucherModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white dark:bg-slate-900 border border-amber-500/40 rounded-3xl w-full max-w-md p-6 shadow-2xl relative">
+            <button onclick="closeAdminVoucherModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">
                 <i class="fa-solid fa-xmark"></i>
             </button>
+            <h3 class="text-xl font-black text-slate-900 dark:text-white mb-1 flex items-center gap-2">
+                <i class="fa-solid fa-key text-amber-500"></i> Generator Kode PRO
+            </h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mb-6">Buat kode voucher lisensi PRO baru untuk diberikan ke pengguna.</p>
 
-            <div class="mb-4">
-                <h3 class="text-xl font-black text-slate-900 dark:text-white flex items-center gap-2">
-                    <i class="fa-solid fa-crown text-amber-500"></i> Panel Aktivasi PRO User
-                </h3>
-                <p class="text-xs text-slate-500 dark:text-slate-400">Aktifkan atau nonaktifkan status PRO member pengguna Microsite secara langsung.</p>
+            <button onclick="generateNewProVoucherCode()" class="w-full py-3 bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold rounded-xl text-xs transition shadow-lg flex items-center justify-center gap-2 mb-6">
+                <i class="fa-solid fa-plus-circle"></i> Generate Kode Baru
+            </button>
+
+            <div class="space-y-2">
+                <label class="block text-xs font-bold text-slate-400 uppercase">Daftar Kode Voucher Aktif</label>
+                <div id="voucherListContainer" class="max-h-48 overflow-y-auto space-y-2 border border-slate-800 p-2 rounded-xl bg-slate-950/50">
+                    <!-- Loaded via JS -->
+                </div>
             </div>
-
-            <!-- Tabel Daftar User -->
-            <div class="overflow-y-auto flex-1 border border-slate-200 dark:border-slate-800 rounded-2xl">
-                <table class="w-full text-left text-xs text-slate-700 dark:text-slate-300">
-                    <thead class="bg-slate-100 dark:bg-slate-950 text-slate-500 uppercase font-bold sticky top-0 border-b border-slate-200 dark:border-slate-800">
-                        <tr>
-                            <th class="p-3">User & Email</th>
-                            <th class="p-3">Slug</th>
-                            <th class="p-3 text-center">Status</th>
-                            <th class="p-3 text-right">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody id="proUsersTableBody" class="divide-y divide-slate-100 dark:divide-slate-800/60">
-                        <!-- Data User Di-load via JS -->
-                    </tbody>
-                </table>
-            </div>
-
         </div>
     </div>
 
@@ -309,12 +313,11 @@
         © 2026 Short Link & Microsite Manager — Supported by PT. Binayasa Putrabatara
     </footer>
 
-    <!-- LOGIKA JAVASCRIPT MASTER TEMA PRO & AKSES FITUR SUPERADMIN -->
+    <!-- LOGIKA JAVASCRIPT MASTER TEMA PRO & AKSES GENERATOR -->
     <script>
         const SUPABASE_URL = "https://lcpskriooezyxgrnarol.supabase.co"; 
         const SUPABASE_KEY = "sb_publishable_puy9U_93p-7_Q64oHrYUpg_iEF3nJ-c";
 
-        // Daftar email yang otomatis memiliki wewenang Superadmin
         const PRO_EMAILS = ["mastrisnocom@gmail.com", "adnan@ahtris.my.id"];
 
         let currentUser = null;
@@ -327,12 +330,7 @@
 
         function escapeHtml(text) {
             if (!text) return '';
-            return String(text)
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#039;");
+            return String(text).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
         }
 
         function sanitizeUrl(url) {
@@ -351,11 +349,9 @@
         function selectTheme(themeName) {
             selectedThemeColor = themeName;
             const themes = ['emerald', 'cyan', 'purple', 'amber'];
-            
             themes.forEach(t => {
                 const btn = document.getElementById(`themeBtn_${t}`);
                 if (!btn) return;
-
                 if (t === themeName) {
                     btn.className = `p-2.5 bg-slate-950 border-2 border-${t === 'cyan' ? 'cyan-400' : (t === 'purple' ? 'purple-500' : (t === 'amber' ? 'amber-400' : 'emerald-500'))} rounded-xl text-left transition flex items-center gap-2`;
                 } else {
@@ -367,18 +363,15 @@
 
         function applyProThemeLock() {
             const themes = ['cyan', 'purple', 'amber'];
-            
             themes.forEach(themeName => {
                 const btn = document.getElementById(`themeBtn_${themeName}`);
                 if (!btn) return;
-
                 const lockIcon = btn.querySelector('.lock-icon');
 
                 if (!isProUser) {
                     if (lockIcon) lockIcon.classList.remove('hidden');
                     btn.onclick = function() {
-                        alert("Fitur Tema ini khusus Member PRO!\n\nSilakan hubungi Admin untuk upgrade akun Anda ke PRO.");
-                        window.open("https://wa.me/6281234567890?text=Halo%20Admin,%20saya%20ingin%20upgrade%20ke%20Microsite%20PRO", "_blank");
+                        alert("Fitur Tema ini khusus Member PRO!\n\nSilakan masukkan Kode Lisensi PRO Anda atau hubungi Admin untuk upgrade.");
                     };
                     btn.classList.add('opacity-60');
                 } else {
@@ -444,7 +437,8 @@
             const loginWarning = document.getElementById('loginWarning');
             const builderContainer = document.getElementById('builderContainer');
             const userBadgePro = document.getElementById('userBadgePro');
-            const btnManageProUsers = document.getElementById('btnManageProUsers');
+            const btnAdminGenVoucher = document.getElementById('btnAdminGenVoucher');
+            const claimVoucherBox = document.getElementById('claimVoucherBox');
 
             const email = getUserEmail().toLowerCase();
 
@@ -457,20 +451,19 @@
 
                 if (PRO_EMAILS.includes(email)) {
                     isProUser = true;
-                    if (btnManageProUsers) {
-                        btnManageProUsers.classList.remove('hidden');
-                        btnManageProUsers.classList.add('flex');
-                    }
+                    if (btnAdminGenVoucher) btnAdminGenVoucher.classList.remove('hidden');
                 } else {
-                    if (btnManageProUsers) btnManageProUsers.classList.add('hidden');
+                    if (btnAdminGenVoucher) btnAdminGenVoucher.classList.add('hidden');
                 }
 
                 if (isProUser) {
                     userBadgePro.innerHTML = `<i class="fa-solid fa-crown text-amber-400"></i> PRO MEMBER`;
                     userBadgePro.className = "px-2.5 py-1 bg-amber-500/10 text-amber-500 border border-amber-500/30 rounded-lg text-[10px] font-black uppercase tracking-wider flex items-center gap-1";
+                    if (claimVoucherBox) claimVoucherBox.classList.add('hidden');
                 } else {
                     userBadgePro.innerHTML = `<i class="fa-solid fa-user text-slate-400"></i> FREE MEMBER`;
                     userBadgePro.className = "px-2.5 py-1 bg-slate-500/10 text-slate-400 border border-slate-500/30 rounded-lg text-[10px] font-black uppercase tracking-wider flex items-center gap-1";
+                    if (claimVoucherBox) claimVoucherBox.classList.remove('hidden');
                 }
             } else {
                 btnOpenAuth.classList.remove('hidden');
@@ -478,7 +471,7 @@
                 userProfile.classList.remove('flex');
                 loginWarning.classList.remove('hidden');
                 builderContainer.classList.add('opacity-50', 'pointer-events-none');
-                if (btnManageProUsers) btnManageProUsers.classList.add('hidden');
+                if (btnAdminGenVoucher) btnAdminGenVoucher.classList.add('hidden');
             }
 
             applyProThemeLock();
@@ -504,9 +497,7 @@
             authStatus.textContent = "Memproses...";
             authStatus.className = "mt-3 text-center text-xs font-medium text-slate-400 block";
 
-            const endpoint = isRegisterMode 
-                ? `${SUPABASE_URL}/auth/v1/signup` 
-                : `${SUPABASE_URL}/auth/v1/token?grant_type=password`;
+            const endpoint = isRegisterMode ? `${SUPABASE_URL}/auth/v1/signup` : `${SUPABASE_URL}/auth/v1/token?grant_type=password`;
 
             try {
                 const response = await fetch(endpoint, {
@@ -523,11 +514,7 @@
                         authStatus.className = "mt-3 text-center text-xs font-medium text-emerald-500 block";
                         toggleAuthMode();
                     } else {
-                        const sessionPayload = {
-                            access_token: data.access_token,
-                            refresh_token: data.refresh_token,
-                            user: data.user || data
-                        };
+                        const sessionPayload = { access_token: data.access_token, refresh_token: data.refresh_token, user: data.user || data };
                         currentUser = sessionPayload;
                         localStorage.setItem('sb_user_session', JSON.stringify(sessionPayload));
                         renderUserUI();
@@ -555,15 +542,9 @@
         function handleAvatarSelection(event) {
             const file = event.target.files[0];
             if (!file) return;
-
-            if (file.size > 2 * 1024 * 1024) {
-                alert("Ukuran foto maksimal 2MB!");
-                return;
-            }
-
+            if (file.size > 2 * 1024 * 1024) { alert("Ukuran foto maksimal 2MB!"); return; }
             selectedAvatarFile = file;
-            const tempUrl = URL.createObjectURL(file);
-            setAvatarPreviewImage(tempUrl);
+            setAvatarPreviewImage(URL.createObjectURL(file));
         }
 
         function setAvatarPreviewImage(imgUrl) {
@@ -589,7 +570,6 @@
 
         async function uploadAvatarToSupabaseStorage() {
             if (!selectedAvatarFile || !currentUser) return currentUploadedAvatarUrl;
-
             const fileExt = selectedAvatarFile.name.split('.').pop();
             const fileName = `${currentUser.user.id}_${Date.now()}.${fileExt}`;
 
@@ -604,10 +584,7 @@
                 body: selectedAvatarFile
             });
 
-            if (!uploadRes.ok) {
-                throw new Error("Gagal mengunggah foto. Pastikan Storage Bucket 'avatars' sudah dibuat Public.");
-            }
-
+            if (!uploadRes.ok) throw new Error("Gagal mengunggah foto.");
             return `${SUPABASE_URL}/storage/v1/object/public/avatars/${fileName}`;
         }
 
@@ -887,90 +864,123 @@
             }
         }
 
-        // --- LOGIKA SUPERADMIN KELOLA USER PRO ---
-        function openProUsersModal() {
-            document.getElementById('proUsersModal').classList.remove('hidden');
-            loadAllUsersProStatus();
+        // --- LOGIKA KODE VOUCHER GENERATOR ---
+        function openAdminVoucherModal() {
+            document.getElementById('adminVoucherModal').classList.remove('hidden');
+            loadVouchersList();
         }
 
-        function closeProUsersModal() {
-            document.getElementById('proUsersModal').classList.add('hidden');
+        function closeAdminVoucherModal() {
+            document.getElementById('adminVoucherModal').classList.add('hidden');
         }
 
-        async function loadAllUsersProStatus() {
-            const tableBody = document.getElementById('proUsersTableBody');
-            tableBody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-400"><i class="fa-solid fa-spinner fa-spin mr-1"></i> Memuat daftar user...</td></tr>`;
+        async function generateNewProVoucherCode() {
+            const randomStr = Math.random().toString(36).substring(2, 6).toUpperCase();
+            const newCode = `PRO-AHTRIS-${randomStr}`;
 
             try {
-                const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/get_all_users_pro_status`, {
+                const res = await fetch(`${SUPABASE_URL}/rest/v1/pro_vouchers`, {
                     method: 'POST',
-                    headers: getHeaders(currentUser ? currentUser.access_token : null)
+                    headers: getHeaders(currentUser ? currentUser.access_token : null),
+                    body: JSON.stringify({ code: newCode })
                 });
 
-                const users = await res.json();
-
-                if (users && Array.isArray(users) && users.length > 0) {
-                    tableBody.innerHTML = '';
-                    users.forEach(u => {
-                        const isPro = u.is_pro;
-                        const row = document.createElement('tr');
-                        row.className = "hover:bg-slate-50 dark:hover:bg-slate-800/40 transition";
-                        row.innerHTML = `
-                            <td class="p-3">
-                                <div class="font-bold text-slate-900 dark:text-white">${escapeHtml(u.display_name || 'Tanpa Nama')}</div>
-                                <div class="text-[10px] text-slate-400 font-mono">${escapeHtml(u.user_email)}</div>
-                            </td>
-                            <td class="p-3 font-mono text-emerald-500 font-semibold">/${escapeHtml(u.slug)}</td>
-                            <td class="p-3 text-center">
-                                <span class="px-2 py-0.5 text-[10px] font-bold rounded-full ${isPro ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : 'bg-slate-500/20 text-slate-400'}">
-                                    ${isPro ? 'PRO' : 'FREE'}
-                                </span>
-                            </td>
-                            <td class="p-3 text-right">
-                                <button onclick="toggleUserProStatus('${u.profile_id}', '${u.user_id}', ${!isPro})" class="px-3 py-1.5 ${isPro ? 'bg-rose-500/10 text-rose-400 border border-rose-500/30 hover:bg-rose-500/20' : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/20'} rounded-xl text-[11px] font-bold transition">
-                                    ${isPro ? 'Nonaktifkan PRO' : 'Aktifkan PRO'}
-                                </button>
-                            </td>
-                        `;
-                        tableBody.appendChild(row);
-                    });
-                } else {
-                    tableBody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-400">Belum ada user mendaftar.</td></tr>`;
-                }
-            } catch (err) {
-                tableBody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-rose-500">Gagal memuat data user.</td></tr>`;
-            }
-        }
-
-        async function toggleUserProStatus(profileId, userId, targetStatus) {
-            try {
-                let res;
-                if (profileId && profileId !== 'null' && profileId !== 'undefined') {
-                    res = await fetch(`${SUPABASE_URL}/rest/v1/microsite_profiles?id=eq.${profileId}`, {
-                        method: 'PATCH',
-                        headers: getHeaders(currentUser ? currentUser.access_token : null),
-                        body: JSON.stringify({ is_pro: targetStatus })
-                    });
-                } else {
-                    res = await fetch(`${SUPABASE_URL}/rest/v1/microsite_profiles`, {
-                        method: 'POST',
-                        headers: getHeaders(currentUser ? currentUser.access_token : null),
-                        body: JSON.stringify({ 
-                            user_id: userId,
-                            display_name: 'Member New',
-                            slug: 'user-' + Math.random().toString(36).substring(2, 7),
-                            is_pro: targetStatus 
-                        })
-                    });
-                }
-
                 if (res.ok) {
-                    loadAllUsersProStatus();
+                    alert(`Kode PRO Baru Berhasil Dibuat:\n\n${newCode}\n\nSalin dan berikan kode ini kepada pembeli.`);
+                    loadVouchersList();
                 } else {
-                    alert("Gagal mengubah status PRO user.");
+                    alert("Gagal membuat kode voucher.");
                 }
             } catch (e) {
                 alert("Terjadi kesalahan koneksi.");
+            }
+        }
+
+        async function loadVouchersList() {
+            const container = document.getElementById('voucherListContainer');
+            container.innerHTML = `<div class="text-center text-xs text-slate-500 py-2"><i class="fa-solid fa-spinner fa-spin"></i> Memuat...</div>`;
+
+            try {
+                const res = await fetch(`${SUPABASE_URL}/rest/v1/pro_vouchers?select=*&order=created_at.desc`, {
+                    method: 'GET',
+                    headers: getHeaders(currentUser ? currentUser.access_token : null)
+                });
+                const data = await res.json();
+
+                if (data && data.length > 0) {
+                    container.innerHTML = '';
+                    data.forEach(v => {
+                        container.innerHTML += `
+                            <div class="flex items-center justify-between p-2 bg-slate-900 rounded-lg text-xs font-mono border border-slate-800">
+                                <span class="font-bold ${v.is_used ? 'text-slate-500 line-through' : 'text-amber-400'}">${v.code}</span>
+                                <span class="text-[10px] ${v.is_used ? 'text-rose-400' : 'text-emerald-400'}">${v.is_used ? 'Sudah Dipakai' : 'Aktif'}</span>
+                            </div>
+                        `;
+                    });
+                } else {
+                    container.innerHTML = `<div class="text-center text-xs text-slate-500 py-2">Belum ada kode voucher dibuat.</div>`;
+                }
+            } catch (e) {
+                container.innerHTML = `<div class="text-center text-xs text-rose-500 py-2">Gagal memuat.</div>`;
+            }
+        }
+
+        async function claimProVoucher() {
+            const inputCode = document.getElementById('inputClaimCode').value.trim().toUpperCase();
+            if (!inputCode) { alert("Masukkan kode lisensi PRO Anda!"); return; }
+
+            try {
+                const res = await fetch(`${SUPABASE_URL}/rest/v1/pro_vouchers?code=eq.${encodeURIComponent(inputCode)}&is_used=eq.false&select=*`, {
+                    method: 'GET',
+                    headers: getHeaders(currentUser ? currentUser.access_token : null)
+                });
+                const data = await res.json();
+
+                if (data && data.length > 0) {
+                    const voucher = data[0];
+
+                    // 1. Tandai voucher sudah digunakan
+                    await fetch(`${SUPABASE_URL}/rest/v1/pro_vouchers?id=eq.${voucher.id}`, {
+                        method: 'PATCH',
+                        headers: getHeaders(currentUser ? currentUser.access_token : null),
+                        body: JSON.stringify({ is_used: true, used_by_email: getUserEmail() })
+                    });
+
+                    // 2. Set profil user menjadi PRO
+                    const userEmail = getUserEmail();
+                    const checkProf = await fetch(`${SUPABASE_URL}/rest/v1/microsite_profiles?user_id=eq.${currentUser.user.id}&select=id`, {
+                        headers: getHeaders(currentUser ? currentUser.access_token : null)
+                    });
+                    const profData = await checkProf.json();
+
+                    if (profData && profData.length > 0) {
+                        await fetch(`${SUPABASE_URL}/rest/v1/microsite_profiles?id=eq.${profData[0].id}`, {
+                            method: 'PATCH',
+                            headers: getHeaders(currentUser ? currentUser.access_token : null),
+                            body: JSON.stringify({ is_pro: true })
+                        });
+                    } else {
+                        await fetch(`${SUPABASE_URL}/rest/v1/microsite_profiles`, {
+                            method: 'POST',
+                            headers: getHeaders(currentUser ? currentUser.access_token : null),
+                            body: JSON.stringify({
+                                user_id: currentUser.user.id,
+                                display_name: userEmail.split('@')[0],
+                                slug: userEmail.split('@')[0],
+                                is_pro: true
+                            })
+                        });
+                    }
+
+                    alert("Selamat! Akun Anda berhasil di-upgrade ke PRO MEMBER!");
+                    isProUser = true;
+                    renderUserUI();
+
+                } else {
+                    alert("Kode Lisensi tidak valid atau sudah digunakan!");
+                }
+            } catch (e) {
+                alert("Terjadi kesalahan saat mengklaim voucher.");
             }
         }
 
