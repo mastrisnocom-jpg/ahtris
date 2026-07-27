@@ -30,6 +30,19 @@
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
         .scrollbar-none::-webkit-scrollbar { display: none; }
         .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* SHAPE CLIP PATHS FOR AVATAR BORDERS */
+        .shape-circle { border-radius: 9999px; }
+        .shape-square { border-radius: 1.5rem; }
+        .shape-pentagon { clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%); }
+        .shape-hexagon { clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%); }
+
+        /* BACKGROUND STYLES */
+        .bg-dark-slate { background: linear-gradient(180deg, #020617 0%, #0f172a 100%); }
+        .bg-sunset-glow { background: linear-gradient(135deg, #2e1065 0%, #701a75 50%, #020617 100%); }
+        .bg-cyber-neon { background: linear-gradient(135deg, #030712 0%, #064e3b 50%, #0284c7 100%); }
+        .bg-midnight-gold { background: linear-gradient(135deg, #18181b 0%, #451a03 50%, #020617 100%); }
+        .bg-mesh-gradient { background: radial-gradient(at 0% 0%, #1e1b4b 0px, transparent 50%), radial-gradient(at 100% 0%, #064e3b 0px, transparent 50%), radial-gradient(at 100% 100%, #311042 0px, transparent 50%), #020617; }
     </style>
 </head>
 <body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 min-h-screen font-sans flex flex-col justify-between transition-colors duration-300">
@@ -83,7 +96,7 @@
                 Microsite Builder & Analytics
             </h1>
             <p class="text-slate-600 dark:text-slate-400 text-xs sm:text-sm mt-1 max-w-lg mx-auto">
-                Kelola tautan sosial media, pilih tema gaya PRO, dan pantau analitik performa klik secara detail.
+                Kelola tautan sosial media, kustom latar belakang, bingkai bentuk foto, dan pantau analitik.
             </p>
         </div>
 
@@ -105,7 +118,7 @@
             <!-- FORM BUILDER (LEFT) -->
             <div class="lg:col-span-7 bg-white dark:bg-slate-900 border border-slate-200 dark:border-emerald-900/40 rounded-3xl p-6 sm:p-8 shadow-xl space-y-6">
                 
-                <!-- KOTAK KLAIM VOUCHER PRO (KHUSUS MEMBER FREE) -->
+                <!-- KOTAK KLAIM VOUCHER PRO -->
                 <div id="claimVoucherBox" class="bg-gradient-to-r from-amber-500/10 via-slate-900 to-amber-500/10 border border-amber-500/30 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-md">
                     <div class="flex items-center gap-2.5">
                         <i class="fa-solid fa-ticket text-amber-400 text-xl"></i>
@@ -120,7 +133,7 @@
                     </div>
                 </div>
 
-                <!-- HEADER DASHBOARD STATISTIK PRO -->
+                <!-- HEADER DASHBOARD STATISTIK -->
                 <div class="bg-slate-950 border border-emerald-900/50 rounded-2xl p-4 flex items-center justify-between shadow-inner">
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 bg-emerald-500/10 border border-emerald-500/30 rounded-xl flex items-center justify-center text-emerald-400 text-lg font-bold">
@@ -141,7 +154,7 @@
                     <div>
                         <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-2">Foto Profil (Maksimal 2MB)</label>
                         <div class="flex items-center gap-4">
-                            <div class="relative w-16 h-16 rounded-full overflow-hidden bg-slate-100 dark:bg-slate-800 border-2 border-emerald-500 flex items-center justify-center shrink-0 shadow-md">
+                            <div class="relative w-16 h-16 bg-slate-100 dark:bg-slate-800 border-2 border-emerald-500 flex items-center justify-center shrink-0 shadow-md shape-circle overflow-hidden">
                                 <img id="avatarPreview" src="" alt="" class="w-full h-full object-cover hidden">
                                 <i id="avatarPlaceholderIcon" class="fa-solid fa-user text-2xl text-slate-400"></i>
                             </div>
@@ -155,6 +168,29 @@
                         </div>
                     </div>
 
+                    <!-- DESAIN BINGKAI FOTO PROFIL (CIRCLE, SQUARE, PENTAGON, HEXAGON) -->
+                    <div class="pt-2">
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-2">Bentuk Bingkai Foto Profil</label>
+                        <div class="grid grid-cols-4 gap-2">
+                            <button type="button" onclick="selectAvatarShape('circle')" id="shapeBtn_circle" class="p-2.5 bg-slate-950 border-2 border-emerald-500 rounded-xl text-center text-xs font-bold text-white transition flex flex-col items-center gap-1">
+                                <div class="w-5 h-5 bg-emerald-500 shape-circle"></div>
+                                <span>Oval</span>
+                            </button>
+                            <button type="button" onclick="selectAvatarShape('square')" id="shapeBtn_square" class="p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-center text-xs font-bold text-white transition flex flex-col items-center gap-1">
+                                <div class="w-5 h-5 bg-slate-600 shape-square"></div>
+                                <span>Persegi 4</span>
+                            </button>
+                            <button type="button" onclick="selectAvatarShape('pentagon')" id="shapeBtn_pentagon" class="p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-center text-xs font-bold text-white transition flex flex-col items-center gap-1">
+                                <div class="w-5 h-5 bg-slate-600 shape-pentagon"></div>
+                                <span>Segi 5</span>
+                            </button>
+                            <button type="button" onclick="selectAvatarShape('hexagon')" id="shapeBtn_hexagon" class="p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-center text-xs font-bold text-white transition flex flex-col items-center gap-1">
+                                <div class="w-5 h-5 bg-slate-600 shape-hexagon"></div>
+                                <span>Segi 6</span>
+                            </button>
+                        </div>
+                    </div>
+
                     <div>
                         <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Nama Creator / Judul</label>
                         <input type="text" id="inputName" oninput="updatePreview()" placeholder="Contoh: AHTRIS" class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-sm focus:outline-none focus:border-emerald-500 font-bold uppercase transition">
@@ -164,10 +200,32 @@
                         <input type="text" id="inputBio" oninput="updatePreview()" placeholder="Contoh: CONTENT CREATOR" class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-sm focus:outline-none focus:border-emerald-500 uppercase transition">
                     </div>
 
-                    <!-- PILIHAN TEMA KHUSUS PRO -->
+                    <!-- DESAIN GANTI LATAR BELAKANG BACKGROUND -->
+                    <div class="pt-2">
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-2">Pilihan Gaya Latar Belakang (Background)</label>
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                            <button type="button" onclick="selectBgStyle('bg-dark-slate')" id="bgBtn_bg-dark-slate" class="p-2.5 bg-dark-slate border-2 border-emerald-500 rounded-xl text-left transition text-xs font-bold text-white shadow-md">
+                                Dark Slate
+                            </button>
+                            <button type="button" onclick="selectBgStyle('bg-sunset-glow')" id="bgBtn_bg-sunset-glow" class="p-2.5 bg-sunset-glow border border-slate-800 rounded-xl text-left transition text-xs font-bold text-white shadow-md">
+                                Sunset Glow
+                            </button>
+                            <button type="button" onclick="selectBgStyle('bg-cyber-neon')" id="bgBtn_bg-cyber-neon" class="p-2.5 bg-cyber-neon border border-slate-800 rounded-xl text-left transition text-xs font-bold text-white shadow-md">
+                                Cyber Neon
+                            </button>
+                            <button type="button" onclick="selectBgStyle('bg-midnight-gold')" id="bgBtn_bg-midnight-gold" class="p-2.5 bg-midnight-gold border border-slate-800 rounded-xl text-left transition text-xs font-bold text-white shadow-md">
+                                Midnight Gold
+                            </button>
+                            <button type="button" onclick="selectBgStyle('bg-mesh-gradient')" id="bgBtn_bg-mesh-gradient" class="p-2.5 bg-mesh-gradient border border-slate-800 rounded-xl text-left transition text-xs font-bold text-white shadow-md col-span-2 sm:col-span-1">
+                                Mesh Gradient
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- PILIHAN TEMA AKSES PRO -->
                     <div class="pt-2">
                         <div class="flex justify-between items-center mb-2">
-                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase">Pilih Tema Warna Style</label>
+                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase">Pilih Tema Akses Aksen</label>
                             <span class="text-[10px] font-bold text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded-md border border-amber-500/20"><i class="fa-solid fa-crown mr-1"></i>PRO FEATURE</span>
                         </div>
                         <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
@@ -226,12 +284,12 @@
                     </div>
 
                     <!-- Phone Screen Container -->
-                    <div id="phoneScreen" class="w-full h-full bg-gradient-to-b from-slate-900 via-slate-950 to-emerald-950/40 p-6 flex flex-col items-center text-center overflow-y-auto pt-10 scrollbar-none transition-colors duration-300">
+                    <div id="phoneScreen" class="w-full h-full bg-dark-slate p-6 flex flex-col items-center text-center overflow-y-auto pt-10 scrollbar-none transition-all duration-300">
                         
-                        <!-- Avatar Profile Preview dengan Ring Glow PRO -->
-                        <div class="relative group mt-4 mb-3">
-                            <div id="ringGlow" class="absolute -inset-0.5 bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full blur opacity-60 transition-all"></div>
-                            <div id="avatarFrame" class="relative w-24 h-24 rounded-full overflow-hidden border-2 border-emerald-400 shadow-xl flex items-center justify-center bg-slate-800 text-white shrink-0">
+                        <!-- Avatar Profile Preview dengan Ring Glow & Shape Border Custom -->
+                        <div class="relative group mt-4 mb-3 flex items-center justify-center">
+                            <div id="ringGlow" class="absolute -inset-0.5 bg-gradient-to-r from-emerald-500 to-teal-400 blur opacity-60 transition-all shape-circle"></div>
+                            <div id="avatarFrame" class="relative w-24 h-24 overflow-hidden border-2 border-emerald-400 shadow-xl flex items-center justify-center bg-slate-800 text-white shrink-0 shape-circle">
                                 <img id="prevAvatarImg" src="" alt="" class="w-full h-full object-cover hidden">
                                 <i id="prevAvatarIcon" class="fa-solid fa-user text-4xl text-slate-400"></i>
                             </div>
@@ -244,7 +302,7 @@
                         <!-- Social Links Container -->
                         <div id="prevLinksContainer" class="w-full space-y-3 pb-6"></div>
 
-                        <!-- Footer Watermark PRO -->
+                        <!-- Footer Watermark -->
                         <div class="mt-auto pt-4 text-[9px] text-slate-500 tracking-wider uppercase font-semibold">
                             Powered by <span id="watermarkBrand" class="text-emerald-400 font-bold">Ahtris.my.id</span>
                         </div>
@@ -272,9 +330,7 @@
 
             <div class="space-y-2">
                 <label class="block text-xs font-bold text-slate-400 uppercase">Daftar Kode Voucher Aktif</label>
-                <div id="voucherListContainer" class="max-h-48 overflow-y-auto space-y-2 border border-slate-800 p-2 rounded-xl bg-slate-950/50">
-                    <!-- Loaded via JS -->
-                </div>
+                <div id="voucherListContainer" class="max-h-48 overflow-y-auto space-y-2 border border-slate-800 p-2 rounded-xl bg-slate-950/50"></div>
             </div>
         </div>
     </div>
@@ -313,7 +369,7 @@
         © 2026 Short Link & Microsite Manager — Supported by PT. Binayasa Putrabatara
     </footer>
 
-    <!-- LOGIKA JAVASCRIPT MASTER TEMA PRO & AKSES GENERATOR -->
+    <!-- LOGIKA JAVASCRIPT MASTER BUILDER -->
     <script>
         const SUPABASE_URL = "https://lcpskriooezyxgrnarol.supabase.co"; 
         const SUPABASE_KEY = "sb_publishable_puy9U_93p-7_Q64oHrYUpg_iEF3nJ-c";
@@ -326,6 +382,8 @@
         let selectedAvatarFile = null;
         let currentUploadedAvatarUrl = "";
         let selectedThemeColor = "emerald";
+        let selectedBgStyle = "bg-dark-slate";
+        let selectedAvatarShape = "circle";
         let isProUser = false;
 
         function escapeHtml(text) {
@@ -356,6 +414,40 @@
                     btn.className = `p-2.5 bg-slate-950 border-2 border-${t === 'cyan' ? 'cyan-400' : (t === 'purple' ? 'purple-500' : (t === 'amber' ? 'amber-400' : 'emerald-500'))} rounded-xl text-left transition flex items-center gap-2`;
                 } else {
                     btn.className = "p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-left transition flex items-center gap-2";
+                }
+            });
+            updatePreview();
+        }
+
+        function selectBgStyle(bgName) {
+            selectedBgStyle = bgName;
+            const bgs = ['bg-dark-slate', 'bg-sunset-glow', 'bg-cyber-neon', 'bg-midnight-gold', 'bg-mesh-gradient'];
+            bgs.forEach(b => {
+                const btn = document.getElementById(`bgBtn_${b}`);
+                if (!btn) return;
+                if (b === bgName) {
+                    btn.classList.add('border-2', 'border-emerald-500');
+                    btn.classList.remove('border-slate-800');
+                } else {
+                    btn.classList.remove('border-2', 'border-emerald-500');
+                    btn.classList.add('border', 'border-slate-800');
+                }
+            });
+            updatePreview();
+        }
+
+        function selectAvatarShape(shapeName) {
+            selectedAvatarShape = shapeName;
+            const shapes = ['circle', 'square', 'pentagon', 'hexagon'];
+            shapes.forEach(s => {
+                const btn = document.getElementById(`shapeBtn_${s}`);
+                if (!btn) return;
+                if (s === shapeName) {
+                    btn.classList.add('border-2', 'border-emerald-500');
+                    btn.classList.remove('border-slate-800');
+                } else {
+                    btn.classList.remove('border-2', 'border-emerald-500');
+                    btn.classList.add('border', 'border-slate-800');
                 }
             });
             updatePreview();
@@ -646,21 +738,33 @@
             document.getElementById('prevName').textContent = rawName;
             document.getElementById('prevBio').textContent = rawBio;
 
+            // WARNA TEMA AKSEN
             const themeMap = {
-                emerald: { text: 'text-emerald-400', ring: 'from-emerald-500 to-teal-400', border: 'border-emerald-400', bg: 'to-emerald-950/40' },
-                cyan: { text: 'text-cyan-400', ring: 'from-cyan-500 to-blue-500', border: 'border-cyan-400', bg: 'to-cyan-950/40' },
-                purple: { text: 'text-purple-400', ring: 'from-purple-500 to-pink-500', border: 'border-purple-400', bg: 'to-purple-950/40' },
-                amber: { text: 'text-amber-400', ring: 'from-amber-400 to-orange-500', border: 'border-amber-400', bg: 'to-amber-950/40' }
+                emerald: { text: 'text-emerald-400', ring: 'from-emerald-500 to-teal-400', border: 'border-emerald-400' },
+                cyan: { text: 'text-cyan-400', ring: 'from-cyan-500 to-blue-500', border: 'border-cyan-400' },
+                purple: { text: 'text-purple-400', ring: 'from-purple-500 to-pink-500', border: 'border-purple-400' },
+                amber: { text: 'text-amber-400', ring: 'from-amber-400 to-orange-500', border: 'border-amber-400' }
             };
 
             const activeTheme = isProUser ? selectedThemeColor : 'emerald';
             const t = themeMap[activeTheme] || themeMap.emerald;
 
+            // BENTUK FOTO PROFIL
+            const shapeClassMap = {
+                circle: 'shape-circle',
+                square: 'shape-square',
+                pentagon: 'shape-pentagon',
+                hexagon: 'shape-hexagon'
+            };
+            const activeShapeClass = shapeClassMap[selectedAvatarShape] || 'shape-circle';
+
             document.getElementById('prevBio').className = `text-[11px] ${t.text} font-semibold tracking-widest uppercase mt-0.5 mb-6 px-2`;
             document.getElementById('watermarkBrand').className = `${t.text} font-bold`;
-            document.getElementById('ringGlow').className = `absolute -inset-0.5 bg-gradient-to-r ${t.ring} rounded-full blur opacity-60 transition-all`;
-            document.getElementById('avatarFrame').className = `relative w-24 h-24 rounded-full overflow-hidden border-2 ${t.border} shadow-xl flex items-center justify-center bg-slate-800 text-white shrink-0`;
-            document.getElementById('phoneScreen').className = `w-full h-full bg-gradient-to-b from-slate-900 via-slate-950 ${t.bg} p-6 flex flex-col items-center text-center overflow-y-auto pt-10 scrollbar-none transition-colors duration-300`;
+            document.getElementById('ringGlow').className = `absolute -inset-0.5 bg-gradient-to-r ${t.ring} blur opacity-60 transition-all ${activeShapeClass}`;
+            document.getElementById('avatarFrame').className = `relative w-24 h-24 overflow-hidden border-2 ${t.border} shadow-xl flex items-center justify-center bg-slate-800 text-white shrink-0 ${activeShapeClass}`;
+            
+            // STYLE BACKGROUND PREVIEW
+            document.getElementById('phoneScreen').className = `w-full h-full p-6 flex flex-col items-center text-center overflow-y-auto pt-10 scrollbar-none transition-all duration-300 ${selectedBgStyle}`;
 
             const prevLinksContainer = document.getElementById('prevLinksContainer');
             prevLinksContainer.innerHTML = '';
@@ -675,8 +779,8 @@
                 const detected = detectSocialIcon(url);
 
                 const linkBtnHtml = `
-                    <a href="${url}" target="_blank" class="w-full py-3 px-4 bg-slate-800/80 hover:bg-slate-700/80 backdrop-blur-md rounded-2xl text-xs font-bold text-white transition-all duration-200 flex items-center justify-between border border-slate-700/60 shadow-md group hover:-translate-y-0.5">
-                        <div class="w-7 h-7 rounded-lg bg-slate-900/60 flex items-center justify-center shrink-0">
+                    <a href="${url}" target="_blank" class="w-full py-3 px-4 bg-slate-900/80 hover:bg-slate-800/90 backdrop-blur-md rounded-2xl text-xs font-bold text-white transition-all duration-200 flex items-center justify-between border border-slate-700/60 shadow-md group hover:-translate-y-0.5">
+                        <div class="w-7 h-7 rounded-lg bg-slate-950 flex items-center justify-center shrink-0">
                             <i class="${detected.icon} ${detected.color} text-sm"></i>
                         </div>
                         <span class="truncate px-2 font-semibold text-slate-200 group-hover:text-white transition-colors">${title}</span>
@@ -708,11 +812,9 @@
                         renderUserUI();
                     }
 
-                    if (prof.theme_color && isProUser) {
-                        selectTheme(prof.theme_color);
-                    } else {
-                        selectTheme('emerald');
-                    }
+                    if (prof.theme_color && isProUser) selectTheme(prof.theme_color);
+                    if (prof.bg_style) selectBgStyle(prof.bg_style);
+                    if (prof.avatar_shape) selectAvatarShape(prof.avatar_shape);
 
                     if (prof.avatar_url) {
                         currentUploadedAvatarUrl = prof.avatar_url;
@@ -778,19 +880,23 @@
 
                 let profileId = null;
 
+                const payload = {
+                    display_name: name,
+                    bio: bio,
+                    slug: slug,
+                    avatar_url: finalAvatarUrl,
+                    theme_color: finalThemeColor,
+                    bg_style: selectedBgStyle,
+                    avatar_shape: selectedAvatarShape,
+                    updated_at: new Date().toISOString()
+                };
+
                 if (existingData && existingData.length > 0) {
                     profileId = existingData[0].id;
                     const updateRes = await fetch(`${SUPABASE_URL}/rest/v1/microsite_profiles?id=eq.${profileId}`, {
                         method: 'PATCH',
                         headers: getHeaders(currentUser.access_token),
-                        body: JSON.stringify({
-                            display_name: name,
-                            bio: bio,
-                            slug: slug,
-                            avatar_url: finalAvatarUrl,
-                            theme_color: finalThemeColor,
-                            updated_at: new Date().toISOString()
-                        })
+                        body: JSON.stringify(payload)
                     });
 
                     if (!updateRes.ok) {
@@ -798,18 +904,13 @@
                         throw new Error(errJson.message || errJson.hint || "Gagal memperbarui profil.");
                     }
                 } else {
+                    payload.user_id = currentUser.user.id;
+                    payload.is_pro = isProUser;
+
                     const insertRes = await fetch(`${SUPABASE_URL}/rest/v1/microsite_profiles`, {
                         method: 'POST',
                         headers: getHeaders(currentUser.access_token),
-                        body: JSON.stringify({
-                            user_id: currentUser.user.id,
-                            display_name: name,
-                            bio: bio,
-                            slug: slug,
-                            avatar_url: finalAvatarUrl,
-                            theme_color: finalThemeColor,
-                            is_pro: isProUser
-                        })
+                        body: JSON.stringify(payload)
                     });
 
                     if (!insertRes.ok) {
@@ -939,14 +1040,12 @@
                 if (data && data.length > 0) {
                     const voucher = data[0];
 
-                    // 1. Tandai voucher sudah digunakan
                     await fetch(`${SUPABASE_URL}/rest/v1/pro_vouchers?id=eq.${voucher.id}`, {
                         method: 'PATCH',
                         headers: getHeaders(currentUser ? currentUser.access_token : null),
                         body: JSON.stringify({ is_used: true, used_by_email: getUserEmail() })
                     });
 
-                    // 2. Set profil user menjadi PRO
                     const userEmail = getUserEmail();
                     const checkProf = await fetch(`${SUPABASE_URL}/rest/v1/microsite_profiles?user_id=eq.${currentUser.user.id}&select=id`, {
                         headers: getHeaders(currentUser ? currentUser.access_token : null)
