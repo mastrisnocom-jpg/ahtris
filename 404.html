@@ -28,6 +28,19 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        
+        /* SHAPE CLIP PATHS FOR AVATAR BORDERS */
+        .shape-circle { border-radius: 9999px; }
+        .shape-square { border-radius: 1.5rem; }
+        .shape-pentagon { clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%); }
+        .shape-hexagon { clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%); }
+
+        /* BACKGROUND STYLES */
+        .bg-dark-slate { background: linear-gradient(180deg, #020617 0%, #0f172a 100%); }
+        .bg-sunset-glow { background: linear-gradient(135deg, #2e1065 0%, #701a75 50%, #020617 100%); }
+        .bg-cyber-neon { background: linear-gradient(135deg, #030712 0%, #064e3b 50%, #0284c7 100%); }
+        .bg-midnight-gold { background: linear-gradient(135deg, #18181b 0%, #451a03 50%, #020617 100%); }
+        .bg-mesh-gradient { background: radial-gradient(at 0% 0%, #1e1b4b 0px, transparent 50%), radial-gradient(at 100% 0%, #064e3b 0px, transparent 50%), radial-gradient(at 100% 100%, #311042 0px, transparent 50%), #020617; }
     </style>
 </head>
 <body class="bg-slate-950 text-slate-100 h-screen w-screen flex flex-col overflow-hidden m-0 p-0">
@@ -58,7 +71,7 @@
     </header>
 
     <!-- MAIN AREA WEBSITE / MICROSITE PUBLIK -->
-    <main id="mainContainerBg" class="w-full flex-1 relative overflow-hidden flex items-center justify-center bg-gradient-to-b from-slate-950 via-slate-900 to-emerald-950/30 transition-colors duration-500">
+    <main id="mainContainerBg" class="w-full flex-1 relative overflow-hidden flex items-center justify-center bg-dark-slate transition-all duration-500">
         
         <!-- LOADING STATE -->
         <div id="loadingState" class="text-center py-12">
@@ -71,12 +84,12 @@
             <div id="dynamicAdSlot" class="w-full h-full flex items-center justify-center overflow-hidden"></div>
         </div>
 
-        <!-- TAMPILAN MICROSITE PUBLIK DENGAN TEMA TERTAMPIL -->
+        <!-- TAMPILAN MICROSITE PUBLIK -->
         <div id="micrositeContainer" class="w-full max-w-sm text-center my-auto p-6 hidden overflow-y-auto max-h-screen">
             
-            <div class="relative group mx-auto mb-4 w-28 h-28">
-                <div id="pubGlow" class="absolute -inset-1 bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full blur opacity-75 transition-all"></div>
-                <div id="pubFrame" class="relative w-28 h-28 rounded-full overflow-hidden border-2 border-emerald-400 shadow-2xl flex items-center justify-center bg-slate-900 text-white shrink-0">
+            <div class="relative group mx-auto mb-5 w-28 h-28 flex items-center justify-center">
+                <div id="pubGlow" class="absolute -inset-1 bg-gradient-to-r from-emerald-500 to-teal-400 blur opacity-75 transition-all shape-circle"></div>
+                <div id="pubFrame" class="relative w-28 h-28 overflow-hidden border-2 border-emerald-400 shadow-2xl flex items-center justify-center bg-slate-900 text-white shrink-0 shape-circle">
                     <img id="userAvatar" src="" class="w-full h-full object-cover hidden">
                     <i id="userAvatarIcon" class="fa-solid fa-user text-5xl text-slate-400"></i>
                 </div>
@@ -113,12 +126,7 @@
 
         function escapeHtml(text) {
             if (!text) return '';
-            return String(text)
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#039;");
+            return String(text).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
         }
 
         function sanitizeUrl(url) {
@@ -141,7 +149,6 @@
             return { icon: 'fa-solid fa-globe', color: 'text-emerald-400' };
         }
 
-        // PENCATAT KLIK UNTUK ANALITIK MICROSITE
         async function trackMicrositeClick(linkId, destinationUrl) {
             try {
                 fetch(`${SUPABASE_URL}/rest/v1/rpc/increment_microsite_link_click`, {
@@ -162,7 +169,7 @@
             }
 
             try {
-                // 1. CEK MICROSITE TERLEBIH DAHULU
+                // 1. CEK MICROSITE
                 const resProf = await fetch(`${SUPABASE_URL}/rest/v1/microsite_profiles?slug=eq.${encodeURIComponent(pathSlug)}&select=*`, { headers: getHeaders() });
                 const profData = await resProf.json();
 
@@ -171,20 +178,34 @@
                     document.getElementById('userName').textContent = prof.display_name || 'User';
                     document.getElementById('userBio').textContent = prof.bio || '';
 
-                    // PERBAIKAN TEMA WARNA DYNAMIC STYLE (DAPATKAN DARI SUPABASE)
+                    // TERAPKAN TEMA WARNA & AKSEN
                     const themeMap = {
-                        emerald: { text: 'text-emerald-400', ring: 'from-emerald-500 to-teal-400', border: 'border-emerald-400', bg: 'to-emerald-950/40' },
-                        cyan: { text: 'text-cyan-400', ring: 'from-cyan-500 to-blue-500', border: 'border-cyan-400', bg: 'to-cyan-950/40' },
-                        purple: { text: 'text-purple-400', ring: 'from-purple-500 to-pink-500', border: 'border-purple-400', bg: 'to-purple-950/40' },
-                        amber: { text: 'text-amber-400', ring: 'from-amber-400 to-orange-500', border: 'border-amber-400', bg: 'to-amber-950/40' }
+                        emerald: { text: 'text-emerald-400', ring: 'from-emerald-500 to-teal-400', border: 'border-emerald-400' },
+                        cyan: { text: 'text-cyan-400', ring: 'from-cyan-500 to-blue-500', border: 'border-cyan-400' },
+                        purple: { text: 'text-purple-400', ring: 'from-purple-500 to-pink-500', border: 'border-purple-400' },
+                        amber: { text: 'text-amber-400', ring: 'from-amber-400 to-orange-500', border: 'border-amber-400' }
                     };
                     const t = themeMap[prof.theme_color] || themeMap.emerald;
 
+                    // TERAPKAN STYLE BACKGROUND
+                    const mainBg = document.getElementById('mainContainerBg');
+                    const validBgStyles = ['bg-dark-slate', 'bg-sunset-glow', 'bg-cyber-neon', 'bg-midnight-gold', 'bg-mesh-gradient'];
+                    const selectedBg = prof.bg_style || 'bg-dark-slate';
+                    mainBg.className = `w-full flex-1 relative overflow-hidden flex items-center justify-center transition-all duration-500 ${selectedBg}`;
+
+                    // TERAPKAN BENTUK SHAPE FOTO PROFIL (Oval, Persegi, Pentagon, Hexagon)
+                    const shapeMap = {
+                        circle: 'shape-circle',
+                        square: 'shape-square',
+                        pentagon: 'shape-pentagon',
+                        hexagon: 'shape-hexagon'
+                    };
+                    const selectedShapeClass = shapeMap[prof.avatar_shape] || 'shape-circle';
+
                     document.getElementById('userBio').className = `text-xs ${t.text} font-semibold tracking-widest uppercase mt-1 mb-8`;
                     document.getElementById('pubBrand').className = t.text;
-                    document.getElementById('pubGlow').className = `absolute -inset-1 bg-gradient-to-r ${t.ring} rounded-full blur opacity-75 transition-all`;
-                    document.getElementById('pubFrame').className = `relative w-28 h-28 rounded-full overflow-hidden border-2 ${t.border} shadow-2xl flex items-center justify-center bg-slate-900 text-white shrink-0`;
-                    document.getElementById('mainContainerBg').className = `w-full flex-1 relative overflow-hidden flex items-center justify-center bg-gradient-to-b from-slate-950 via-slate-900 ${t.bg}`;
+                    document.getElementById('pubGlow').className = `absolute -inset-1 bg-gradient-to-r ${t.ring} blur opacity-75 transition-all ${selectedShapeClass}`;
+                    document.getElementById('pubFrame').className = `relative w-28 h-28 overflow-hidden border-2 ${t.border} shadow-2xl flex items-center justify-center bg-slate-900 text-white shrink-0 ${selectedShapeClass}`;
 
                     if (prof.avatar_url) {
                         document.getElementById('userAvatar').src = prof.avatar_url;
@@ -203,7 +224,7 @@
                         const detected = detectSocialIcon(safeUrl);
 
                         linksContainer.innerHTML += `
-                            <button onclick="trackMicrositeClick('${item.id}', '${safeUrl}')" class="w-full py-4 px-5 bg-slate-900/90 hover:bg-slate-800/90 backdrop-blur-md rounded-2xl text-sm font-bold text-white transition-all duration-200 flex items-center justify-between border border-slate-800/80 shadow-lg group hover:-translate-y-0.5">
+                            <button onclick="trackMicrositeClick('${item.id}', '${safeUrl}')" class="w-full py-4 px-5 bg-slate-900/80 hover:bg-slate-800/90 backdrop-blur-md rounded-2xl text-sm font-bold text-white transition-all duration-200 flex items-center justify-between border border-slate-700/60 shadow-lg group hover:-translate-y-0.5">
                                 <div class="w-8 h-8 rounded-xl bg-slate-950 flex items-center justify-center shrink-0 border border-slate-800">
                                     <i class="${detected.icon} ${detected.color} text-base"></i>
                                 </div>
