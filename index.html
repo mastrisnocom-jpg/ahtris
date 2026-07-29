@@ -5,7 +5,6 @@
 <!-- Favicon PNG (Satu File) -->
 <link rel="icon" type="image/png" href="image.png">
 
-
 <!-- Meta Utama untuk SEO -->
 <title>Short Link & QR Code Generator Gratis - AHTRIS.MY.ID</title>
 <meta name="description" content="Layanan pembuat tautan pendek (short link), QR Code kustom, dan microsite gratis dengan analitik lengkap dari AHTRIS.MY.ID.">
@@ -26,7 +25,6 @@
 <meta name="twitter:title" content="Short Link & QR Code Generator - AHTRIS.MY.ID">
 <meta name="twitter:description" content="Buat link bio, shortlink, dan QR Code lengkap dengan analitik dalam hitungan detik.">
 
-    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Short Link & QR Code Generator - ahtris.my.id</title>
@@ -209,7 +207,7 @@
         </div>
     </div>
 
-    <!-- MODAL KHUSUS SUPERADMIN: PENGATURAN IKLAN -->
+    <!-- MODAL KHUSUS SUPERADMIN: PENGATURAN IKLAN & MITRA -->
     <div id="adminModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white dark:bg-slate-900 border border-amber-500/40 rounded-2xl w-full max-w-2xl p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
             <button onclick="closeAdminModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-white text-lg">
@@ -236,8 +234,9 @@
                     <textarea id="adFooterInput" rows="2" placeholder="<!-- Script iklan footer -->" class="w-full p-3 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl font-mono text-xs focus:outline-none focus:border-amber-500"></textarea>
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-amber-500 uppercase mb-1">4. Iklan Interstitial / Website Kerjasama</label>
-                    <textarea id="adInterstitialInput" rows="2" placeholder="Tempelkan URL website mitra atau script iklan" class="w-full p-3 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl font-mono text-xs focus:outline-none focus:border-amber-500"></textarea>
+                    <label class="block text-xs font-bold text-amber-500 uppercase mb-1">4. Website Kerjasama / Link Mitra Bridge (Iframe)</label>
+                    <textarea id="adInterstitialInput" rows="2" placeholder="https://website-mitra-anda.com" class="w-full p-3 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl font-mono text-xs focus:outline-none focus:border-amber-500"></textarea>
+                    <span class="text-[10px] text-slate-400">URL ini akan tampil penuh di halaman tunggu detik shortlink.</span>
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-amber-500 uppercase mb-1">5. Iklan Top Frame</label>
@@ -453,6 +452,7 @@
 
         async function fetchAdSettings() {
             try {
+                // Fetch banner ads
                 const res = await fetch(`${SUPABASE_URL}/rest/v1/ad_settings?id=eq.default_ads&select=*`, {
                     headers: getHeaders()
                 });
@@ -460,6 +460,15 @@
                 if (data && data.length > 0) {
                     adSettings = data[0];
                     renderPublicAds();
+                }
+
+                // Fetch partner website URL
+                const resPartner = await fetch(`${SUPABASE_URL}/rest/v1/settings?key=eq.partner_website_url&select=value`, {
+                    headers: getHeaders()
+                });
+                const partnerData = await resPartner.json();
+                if (partnerData && partnerData.length > 0) {
+                    adSettings.ad_interstitial = partnerData[0].value;
                 }
             } catch (e) {
                 console.error("Gagal memuat iklan:", e);
@@ -490,24 +499,43 @@
             const btn = document.getElementById('btnSaveAds');
             btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Menyimpan...`;
 
-            const payload = {
+            const partnerUrlValue = document.getElementById('adInterstitialInput').value.trim();
+
+            const payloadAds = {
                 ad_header: document.getElementById('adHeaderInput').value,
                 ad_middle: document.getElementById('adMiddleInput').value,
                 ad_footer: document.getElementById('adFooterInput').value,
-                ad_interstitial: document.getElementById('adInterstitialInput').value,
+                ad_interstitial: partnerUrlValue,
                 ad_top_frame: document.getElementById('adTopFrameInput').value,
                 updated_at: new Date().toISOString()
             };
 
+            const payloadPartnerSetting = {
+                key: 'partner_website_url',
+                value: partnerUrlValue,
+                updated_at: new Date().toISOString()
+            };
+
             try {
-                const res = await fetch(`${SUPABASE_URL}/rest/v1/ad_settings?id=eq.default_ads`, {
+                // 1. Simpan ke ad_settings
+                const res1 = await fetch(`${SUPABASE_URL}/rest/v1/ad_settings?id=eq.default_ads`, {
                     method: 'PATCH',
                     headers: getHeaders(currentUser ? currentUser.access_token : null),
-                    body: JSON.stringify(payload)
+                    body: JSON.stringify(payloadAds)
                 });
 
-                if (res.ok) {
-                    alert("Pengaturan Iklan Berhasil Disimpan!");
+                // 2. Simpan ke settings (untuk partner website URL)
+                const res2 = await fetch(`${SUPABASE_URL}/rest/v1/settings`, {
+                    method: 'POST',
+                    headers: {
+                        ...getHeaders(currentUser ? currentUser.access_token : null),
+                        'Prefer': 'resolution=merge-duplicates' // Upsert data jika key sudah ada
+                    },
+                    body: JSON.stringify(payloadPartnerSetting)
+                });
+
+                if (res1.ok || res2.ok) {
+                    alert("Pengaturan Iklan & Link Mitra Berhasil Disimpan!");
                     closeAdminModal();
                     fetchAdSettings();
                 } else {
@@ -899,7 +927,7 @@
                 });
 
                 if (response.ok) {
-                    loadUrls(); // Refresh tabel riwayat setelah berhasil hapus
+                    loadUrls();
                 } else {
                     alert("Gagal menghapus link. Pastikan Anda memiliki hak akses.");
                 }
