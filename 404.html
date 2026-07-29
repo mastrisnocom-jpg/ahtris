@@ -86,7 +86,7 @@
         <!-- IKLAN / WEBSITE MITRA -->
         <div id="adPartnerContainer" class="w-full h-full hidden relative">
             <div id="dynamicAdSlot" class="w-full h-full flex items-center justify-center overflow-hidden">
-                <!-- Konten website/iklan mitra akan dimasukkan secara dinamis via JS -->
+                <!-- Konten iframe dimuat secara dinamis dari Database Supabase -->
             </div>
         </div>
 
@@ -117,9 +117,6 @@
     <script>
         const SUPABASE_URL = "https://lcpskriooezyxgrnarol.supabase.co"; 
         const SUPABASE_KEY = "sb_publishable_puy9U_93p-7_Q64oHrYUpg_iEF3nJ-c";
-
-        // SILAKAN GANTI URL DI BAWAH INI DENGAN URL WEBSITE MITRA / IKLAN ANDA
-        const PARTNER_WEBSITE_URL = "https://ahtris.my.id"; 
 
         let targetDestinationUrl = "";
         let linkRecordId = null;
@@ -167,6 +164,21 @@
                 });
             } catch (e) {}
             window.open(destinationUrl, '_blank');
+        }
+
+        // FUNGSI MENGAMBIL LINK MITRA / IKLAN DARI PENGATURAN DATABASE SUPERADMIN
+        async function fetchPartnerUrlFromDatabase() {
+            try {
+                const res = await fetch(`${SUPABASE_URL}/rest/v1/settings?key=eq.partner_website_url&select=value`, { headers: getHeaders() });
+                const data = await res.json();
+                if (data && data.length > 0 && data[0].value) {
+                    return data[0].value;
+                }
+            } catch (err) {
+                console.error("Gagal mengambil link mitra dari database:", err);
+            }
+            // Fallback default jika di database belum diset
+            return "https://ahtris.my.id";
         }
 
         async function initDynamicBridgeRouter() {
@@ -256,17 +268,18 @@
                     linkRecordId = urlData[0].id;
                     currentClickCount = urlData[0].click_count || 0;
 
-                    // INJEKSI LINK ASLI
+                    // INJEKSI LINK ASLI KE HEADER
                     const urlDisplay = document.getElementById('targetUrlDisplay');
                     urlDisplay.textContent = targetDestinationUrl;
                     urlDisplay.title = targetDestinationUrl;
                     urlDisplay.classList.remove('hidden');
                     urlDisplay.classList.add('block');
 
-                    // INJEKSI WEBSITE / IKLAN MITRA KE DALAM IFRAME SLOT
+                    // AMBIL DAN INJEKSI WEBSITE/IKLAN MITRA DARI DATABASE
+                    const partnerUrl = await fetchPartnerUrlFromDatabase();
                     const adSlot = document.getElementById('dynamicAdSlot');
-                    if (PARTNER_WEBSITE_URL) {
-                        adSlot.innerHTML = `<iframe src="${PARTNER_WEBSITE_URL}" class="w-full h-full border-0" allow="autoplay; encrypted-media"></iframe>`;
+                    if (partnerUrl) {
+                        adSlot.innerHTML = `<iframe src="${sanitizeUrl(partnerUrl)}" class="w-full h-full border-0" allow="autoplay; encrypted-media"></iframe>`;
                     }
 
                     document.getElementById('loadingState').classList.add('hidden');
@@ -299,6 +312,9 @@
                     btn.classList.remove('opacity-50', 'cursor-not-allowed');
                     btn.classList.add('hover:scale-105');
                     btn.innerHTML = `<span>Buka Website Asli</span> <i class="fa-solid fa-circle-arrow-right"></i>`;
+                    
+                    // METODE OTOMATIS BERPINDAH KE LINK ASLI SAAT WAKTU HABIS
+                    redirectToTarget();
                 }
             }, 1000);
         }
