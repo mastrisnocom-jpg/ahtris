@@ -49,12 +49,16 @@
     <header id="topCountdownHeader" class="w-full border-b border-emerald-900/50 bg-slate-900/95 backdrop-blur-md z-50 p-3 shadow-xl hidden shrink-0">
         <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 px-2">
             <div class="flex items-center gap-3">
-                <div class="w-8 h-8 bg-emerald-600 rounded-lg flex items-center justify-center text-white font-black text-sm shadow-md">
+                <div class="w-8 h-8 bg-emerald-600 rounded-lg flex items-center justify-center text-white font-black text-sm shadow-md shrink-0">
                     <i class="fa-solid fa-link"></i>
                 </div>
-                <div>
+                <div class="flex flex-col justify-center">
                     <span class="font-extrabold text-sm tracking-wider">AHTRIS<span class="text-emerald-400">.MY.ID</span></span>
-                    <p class="text-[10px] text-slate-400">Menghubungkan Anda ke website tujuan...</p>
+                    <p class="text-[10px] text-slate-400 mb-0.5">Menuju ke link:</p>
+                    <!-- TAMPILAN LINK ASLI -->
+                    <div id="targetUrlDisplay" class="hidden text-[11px] font-mono text-emerald-300 bg-slate-950/50 px-2 py-0.5 rounded border border-emerald-800/50 truncate max-w-[200px] sm:max-w-sm" title="URL Tujuan">
+                        <!-- URL dimuat via JS -->
+                    </div>
                 </div>
             </div>
             <div class="flex items-center gap-3 w-full sm:w-auto justify-end">
@@ -79,9 +83,11 @@
             <p class="text-sm font-semibold text-slate-400">Memuat Tautan & Informasi...</p>
         </div>
 
-        <!-- IKLAN SHORTLINK -->
+        <!-- IKLAN / WEBSITE MITRA -->
         <div id="adPartnerContainer" class="w-full h-full hidden relative">
-            <div id="dynamicAdSlot" class="w-full h-full flex items-center justify-center overflow-hidden"></div>
+            <div id="dynamicAdSlot" class="w-full h-full flex items-center justify-center overflow-hidden">
+                <!-- Konten website/iklan mitra akan dimasukkan secara dinamis via JS -->
+            </div>
         </div>
 
         <!-- TAMPILAN MICROSITE PUBLIK -->
@@ -111,6 +117,9 @@
     <script>
         const SUPABASE_URL = "https://lcpskriooezyxgrnarol.supabase.co"; 
         const SUPABASE_KEY = "sb_publishable_puy9U_93p-7_Q64oHrYUpg_iEF3nJ-c";
+
+        // SILAKAN GANTI URL DI BAWAH INI DENGAN URL WEBSITE MITRA / IKLAN ANDA
+        const PARTNER_WEBSITE_URL = "https://ahtris.my.id"; 
 
         let targetDestinationUrl = "";
         let linkRecordId = null;
@@ -189,11 +198,10 @@
 
                     // TERAPKAN STYLE BACKGROUND
                     const mainBg = document.getElementById('mainContainerBg');
-                    const validBgStyles = ['bg-dark-slate', 'bg-sunset-glow', 'bg-cyber-neon', 'bg-midnight-gold', 'bg-mesh-gradient'];
                     const selectedBg = prof.bg_style || 'bg-dark-slate';
                     mainBg.className = `w-full flex-1 relative overflow-hidden flex items-center justify-center transition-all duration-500 ${selectedBg}`;
 
-                    // TERAPKAN BENTUK SHAPE FOTO PROFIL (Oval, Persegi, Pentagon, Hexagon)
+                    // TERAPKAN BENTUK SHAPE FOTO PROFIL
                     const shapeMap = {
                         circle: 'shape-circle',
                         square: 'shape-square',
@@ -248,6 +256,19 @@
                     linkRecordId = urlData[0].id;
                     currentClickCount = urlData[0].click_count || 0;
 
+                    // INJEKSI LINK ASLI
+                    const urlDisplay = document.getElementById('targetUrlDisplay');
+                    urlDisplay.textContent = targetDestinationUrl;
+                    urlDisplay.title = targetDestinationUrl;
+                    urlDisplay.classList.remove('hidden');
+                    urlDisplay.classList.add('block');
+
+                    // INJEKSI WEBSITE / IKLAN MITRA KE DALAM IFRAME SLOT
+                    const adSlot = document.getElementById('dynamicAdSlot');
+                    if (PARTNER_WEBSITE_URL) {
+                        adSlot.innerHTML = `<iframe src="${PARTNER_WEBSITE_URL}" class="w-full h-full border-0" allow="autoplay; encrypted-media"></iframe>`;
+                    }
+
                     document.getElementById('loadingState').classList.add('hidden');
                     document.getElementById('topCountdownHeader').classList.remove('hidden');
                     document.getElementById('topCountdownHeader').classList.add('flex');
@@ -278,7 +299,6 @@
                     btn.classList.remove('opacity-50', 'cursor-not-allowed');
                     btn.classList.add('hover:scale-105');
                     btn.innerHTML = `<span>Buka Website Asli</span> <i class="fa-solid fa-circle-arrow-right"></i>`;
-                    redirectToTarget();
                 }
             }, 1000);
         }
