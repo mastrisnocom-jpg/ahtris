@@ -166,18 +166,25 @@
             window.open(destinationUrl, '_blank');
         }
 
-        // FUNGSI MENGAMBIL LINK MITRA / IKLAN DARI PENGATURAN DATABASE SUPERADMIN
+        // AMBIL LINK MITRA DARI TABEL settings (partner_website_url) & ad_settings
         async function fetchPartnerUrlFromDatabase() {
             try {
+                // 1. Cek tabel settings
                 const res = await fetch(`${SUPABASE_URL}/rest/v1/settings?key=eq.partner_website_url&select=value`, { headers: getHeaders() });
                 const data = await res.json();
                 if (data && data.length > 0 && data[0].value) {
                     return data[0].value;
                 }
+
+                // 2. Fallback cek ad_settings (ad_interstitial)
+                const resAds = await fetch(`${SUPABASE_URL}/rest/v1/ad_settings?id=eq.default_ads&select=ad_interstitial`, { headers: getHeaders() });
+                const dataAds = await resAds.json();
+                if (dataAds && dataAds.length > 0 && dataAds[0].ad_interstitial) {
+                    return dataAds[0].ad_interstitial;
+                }
             } catch (err) {
                 console.error("Gagal mengambil link mitra dari database:", err);
             }
-            // Fallback default jika di database belum diset
             return "https://ahtris.my.id";
         }
 
@@ -199,7 +206,6 @@
                     document.getElementById('userName').textContent = prof.display_name || 'User';
                     document.getElementById('userBio').textContent = prof.bio || '';
 
-                    // TERAPKAN TEMA WARNA & AKSEN
                     const themeMap = {
                         emerald: { text: 'text-emerald-400', ring: 'from-emerald-500 to-teal-400', border: 'border-emerald-400' },
                         cyan: { text: 'text-cyan-400', ring: 'from-cyan-500 to-blue-500', border: 'border-cyan-400' },
@@ -208,12 +214,10 @@
                     };
                     const t = themeMap[prof.theme_color] || themeMap.emerald;
 
-                    // TERAPKAN STYLE BACKGROUND
                     const mainBg = document.getElementById('mainContainerBg');
                     const selectedBg = prof.bg_style || 'bg-dark-slate';
                     mainBg.className = `w-full flex-1 relative overflow-hidden flex items-center justify-center transition-all duration-500 ${selectedBg}`;
 
-                    // TERAPKAN BENTUK SHAPE FOTO PROFIL
                     const shapeMap = {
                         circle: 'shape-circle',
                         square: 'shape-square',
@@ -275,7 +279,7 @@
                     urlDisplay.classList.remove('hidden');
                     urlDisplay.classList.add('block');
 
-                    // AMBIL DAN INJEKSI WEBSITE/IKLAN MITRA DARI DATABASE
+                    // INJEKSI WEBSITE MITRA YANG DISIMPAN SUPERADMIN
                     const partnerUrl = await fetchPartnerUrlFromDatabase();
                     const adSlot = document.getElementById('dynamicAdSlot');
                     if (partnerUrl) {
@@ -313,7 +317,7 @@
                     btn.classList.add('hover:scale-105');
                     btn.innerHTML = `<span>Buka Website Asli</span> <i class="fa-solid fa-circle-arrow-right"></i>`;
                     
-                    // METODE OTOMATIS BERPINDAH KE LINK ASLI SAAT WAKTU HABIS
+                    // OTOMATIS PINDAH KE LINK ASLI SAAT DETIKAN HABIS
                     redirectToTarget();
                 }
             }, 1000);
